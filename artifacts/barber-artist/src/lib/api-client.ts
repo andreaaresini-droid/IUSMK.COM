@@ -10,7 +10,8 @@ export async function fetchApi<T>(endpoint: string, options: RequestInit = {}, r
     headers["Authorization"] = `Bearer ${token}`;
   }
 
-  const response = await fetch(`/api${endpoint}`, {
+  const apiBase = (import.meta.env.VITE_API_URL as string | undefined) ?? "";
+  const response = await fetch(`${apiBase}/api${endpoint}`, {
     ...options,
     headers,
   });
