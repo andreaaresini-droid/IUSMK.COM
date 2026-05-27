@@ -1,0 +1,67 @@
+Devo correggere la logica delle sezioni “Academy” e “I miei corsi” nel sito IUSMK.
+
+PROBLEMA ATTUALE
+Dopo che il cliente inserisce correttamente il codice:
+- il sito lo riporta ancora alla pagina per sbloccare il corso
+- nella sezione “I miei corsi” compare ancora il corso da sbloccare
+- quindi la logica attuale è sbagliata
+
+COMPORTAMENTO CORRETTO DESIDERATO
+1. La sezione “I miei corsi” deve mostrare SOLO i corsi già sbloccati e già accessibili
+2. I corsi non ancora sbloccati NON devono comparire in “I miei corsi”
+3. Lo sblocco dei corsi deve avvenire solo:
+   - nella sezione “Academy”
+   - oppure tramite il bottone presente nella notifica del codice
+4. Dopo che il cliente inserisce un codice valido e lo sblocco va a buon fine:
+   - il corso deve essere segnato come sbloccato/attivo nel database
+   - il cliente deve essere reindirizzato automaticamente alla sezione “I miei corsi”
+   - in “I miei corsi” deve comparire solo il corso ormai attivo e apribile
+5. Se il corso non è ancora sbloccato, non deve apparire in “I miei corsi”
+
+COSA DEVI CORREGGERE
+A. Logica database / backend
+- separa chiaramente gli stati:
+  - codice assegnato
+  - corso sbloccato
+  - corso accessibile
+- “I miei corsi” deve leggere solo i corsi con stato sbloccato/attivo/accessibile
+- Academy può mostrare i corsi da sbloccare
+- se il codice viene attivato con successo, aggiorna davvero lo stato del corso nel DB in modo coerente
+
+B. Frontend / routing
+- dopo attivazione codice corretta, fai redirect automatico a “I miei corsi”
+- non tornare alla pagina di sblocco
+- non mostrare più la card come “da sbloccare” in “I miei corsi”
+
+C. Filtro corretto in “I miei corsi”
+- mostra solo corsi realmente sbloccati
+- escludi tutti i corsi solo assegnati ma non ancora attivati
+- escludi stati pending / locked / assigned-only
+
+D. UX corretta
+- se il codice è valido e lo sblocco riesce, mostra messaggio chiaro:
+  “Corso sbloccato con successo”
+- poi redirect automatico a “I miei corsi”
+- una volta lì, il corso deve avere bottone per aprirlo/vederlo, non per sbloccarlo
+
+E. Debug
+Aggiungi log chiari:
+- [UNLOCK] activation requested
+- [UNLOCK] code valid
+- [UNLOCK] course found
+- [UNLOCK] user found
+- [UNLOCK] status updated to active
+- [UNLOCK] redirecting to my-courses
+- [MY COURSES] fetched active courses only
+
+F. Importante
+- Non rompere notifiche
+- Non rompere assegnazione codici
+- Non rompere l’admin
+- Non rompere i corsi già esistenti
+
+Alla fine dimmi:
+1. quali file hai modificato
+2. qual era il bug logico per cui i corsi da sbloccare comparivano in “I miei corsi”
+3. come hai separato “Academy” da “I miei corsi”
+4. come hai implementato il redirect automatico dopo sblocco corretto

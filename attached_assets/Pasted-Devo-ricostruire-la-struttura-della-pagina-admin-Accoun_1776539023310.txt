@@ -1,0 +1,96 @@
+Devo ricostruire la struttura della pagina admin “Account registrati” del sito IUSMK perché su telefono NON entra bene nello schermo.
+
+Problema attuale:
+- i rettangoli/card degli account escono tagliati
+- il riquadro “Con codici” non si vede bene
+- la pagina non entra correttamente nella larghezza dello schermo
+- su mobile l’impaginazione è sbagliata rispetto alle altre pagine che invece si vedono bene
+
+Voglio una correzione strutturale vera, non una piccola toppa CSS.
+
+OBIETTIVO
+Ricostruisci la pagina “Account registrati” in modo che:
+1. entri perfettamente nello schermo del telefono
+2. non abbia card tagliate
+3. non abbia box statistiche fuori schermo
+4. sia ordinata, leggibile e coerente con il resto della dashboard
+5. funzioni bene anche su tablet e desktop
+
+RICHIESTE PRECISE
+
+A. Layout generale mobile
+- la pagina deve usare una struttura mobile-first reale
+- niente elementi che superano la viewport width
+- niente overflow orizzontale
+- niente card più larghe dello schermo
+- niente statistiche affiancate se su mobile non ci stanno bene
+- se serve, su mobile metti i box statistiche in colonna o in griglia 1x1 / 2x2 ben proporzionata
+
+B. Box statistiche
+Attualmente:
+- Totale
+- Con corsi
+- Con codici
+
+Devono vedersi tutti perfettamente su telefono.
+Correggi così:
+- su desktop possono stare in riga
+- su mobile devono disporsi in modo intelligente, senza tagli
+- spaziature coerenti
+- stessa larghezza visiva
+- nessun box fuori schermo
+
+C. Barra ricerca + filtri
+- anche questi devono entrare bene nello schermo
+- su mobile non devono sforare
+- se serve, i filtri devono andare a capo bene oppure diventare scrollabili orizzontalmente in modo pulito
+- niente elementi schiacciati male
+
+D. Lista account
+Ogni card account deve:
+- stare perfettamente dentro lo schermo
+- avere padding corretto
+- non tagliare avatar, nome, email o badge ruolo
+- non essere più larga della viewport
+- non creare scroll orizzontale
+- mantenere estetica pulita
+
+E. Controllo overflow
+Controlla tutta la pagina e correggi:
+- width troppo grandi
+- min-width errate
+- grid/flex non responsive
+- margini laterali e padding che sommano troppo
+- wrapper che causano overflow-x
+- contenitori che hanno max-width o width sbagliati
+
+F. Coerenza con altre pagine
+La pagina “Account registrati” deve avere la stessa qualità visiva delle altre pagine della dashboard che su telefono si vedono bene.
+Quindi:
+- larghezze corrette
+- allineamenti corretti
+- stessa logica responsive
+- nessun elemento “spezzato”
+
+G. Verifica finale obbligatoria
+Controlla che su mobile:
+- si vedano tutti i box statistiche
+- si vedano tutte le card per intero
+- non ci sia scroll orizzontale
+- la pagina risulti ordinata e professionale
+
+IMPORTANTISSIMO
+Non rompere:
+- ricerca
+- filtri
+- card account
+- tasto dettaglio
+- layout desktop
+- sidebar admin
+- resto della dashboard
+
+Alla fine dimmi:
+1. quali file hai modificato
+2. qual era la causa strutturale del layout rotto
+3. come hai ricostruito la versione mobile della pagina
+4. come hai fatto entrare bene statistiche, ricerca, filtri e card nello schermo del telefono

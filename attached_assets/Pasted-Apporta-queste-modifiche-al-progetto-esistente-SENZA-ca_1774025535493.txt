@@ -1,0 +1,245 @@
+Apporta queste modifiche al progetto esistente SENZA cambiare stile grafico, palette, layout e struttura generale del sito/admin panel. Devi aggiungere una funzione nuova nel pannello admin e correggere il flusso reale di attivazione accesso ai corsi, che attualmente dà errore.
+
+OBIETTIVO
+1. Aggiungere nella dashboard admin una sezione dove l’admin può cambiare:
+- nome utente
+- password
+per accedere al pannello admin
+
+2. Correggere il sistema di accesso ai corsi:
+- attualmente, dopo aver generato un codice per un corso, quando provo a usarlo nella pagina accesso corsi compare errore
+- il flusso deve funzionare davvero end-to-end
+
+--------------------------------------------------
+1. NUOVA SEZIONE ADMIN: CREDENZIALI ACCESSO
+--------------------------------------------------
+
+Aggiungi nella dashboard admin una nuova voce sidebar, ad esempio:
+- “Credenziali Admin”
+oppure
+- “Impostazioni Accesso”
+
+Questa sezione deve permettere all’admin di:
+- vedere il nome utente attuale
+- cambiare nome utente
+- cambiare password
+- salvare le nuove credenziali in modo reale e persistente
+
+REQUISITI:
+- crea pagina o sezione admin dedicata
+- usa un form chiaro e coerente col design attuale
+- campi:
+  - nome utente attuale
+  - nuovo nome utente
+  - password attuale
+  - nuova password
+  - conferma nuova password
+- il cambio password deve richiedere controllo password attuale
+- la nuova password deve essere salvata in modo sicuro (hash, non in chiaro)
+- dopo il salvataggio, il login admin deve funzionare con le nuove credenziali
+- mostra messaggi di successo/errore chiari
+- valida i campi:
+  - password attuale errata
+  - nuova password troppo debole
+  - conferma password non coincidente
+  - username vuoto o non valido
+
+IMPORTANTE:
+- non usare solo variabili temporanee lato frontend
+- salva davvero nel database / sistema auth usato dal progetto
+- aggiorna il flusso login admin affinché usi sempre le credenziali aggiornate
+- se esiste un solo admin, gestiscilo correttamente come record unico o utente admin principale
+
+--------------------------------------------------
+2. FIX ACCESSO CORSI: ERRORE ATTIVAZIONE CODICE
+--------------------------------------------------
+
+Attualmente il sistema genera un codice, ma quando provo ad attivarlo nella pagina accesso corsi ottengo errore.
+Devi correggere questa funzionalità realmente.
+
+PROBLEMA DA RISOLVERE:
+- nella pagina /access o equivalente, dopo inserimento dati e click su “Attiva e Sblocca”, appare errore
+- nello screenshot si vede un errore tipo:
+  “Activation Failed – Request failed with status 404”
+- quindi probabilmente c’è un endpoint mancante, un route mismatch, una chiamata API errata, un handler assente oppure un salvataggio/lookup incompleto
+
+DEVI:
+- controllare tutto il flusso frontend + backend/API + database
+- correggere route, endpoint, action, server handler e query
+- assicurarti che la pagina accesso chiami un endpoint realmente esistente
+- assicurarti che il codice generato venga trovato correttamente nel database
+- assicurarti che l’attivazione associ il codice all’utente/email inserita
+- assicurarti che dopo attivazione il corso venga sbloccato davvero
+
+--------------------------------------------------
+3. FLUSSO CORRETTO DI ATTIVAZIONE CODICE
+--------------------------------------------------
+
+Implementa e verifica questo comportamento:
+
+A. GENERAZIONE CODICE
+Quando l’admin genera un codice:
+- il codice viene salvato davvero nel database
+- viene associato a:
+  - corso
+  - cliente/nome
+  - email
+  - stato
+  - eventuale scadenza
+- il record deve essere leggibile dalla pagina accesso
+
+B. PAGINA ACCESSO CORSI
+Nella pagina di accesso corsi:
+- il primo campo deve essere davvero “Codice di accesso”
+- il secondo campo deve essere “Nome completo”
+- il terzo campo deve essere “Indirizzo email”
+
+Controlla anche che i campi siano mappati correttamente.
+Dallo screenshot sembra che il contenuto inserito sia finito nei campi sbagliati: verifica labels, state e payload inviato.
+
+C. SUBMIT ATTIVAZIONE
+Quando l’utente clicca “Attiva e Sblocca”:
+- il sistema cerca il codice nel database
+- verifica che sia valido e attivo
+- verifica che l’email inserita corrisponda, se il codice è associato a una email precisa
+- se il codice è valido:
+  - crea o aggiorna l’utente studente
+  - collega il codice all’utente
+  - registra l’attivazione
+  - registra sessione/device se previsto
+  - consente accesso al corso
+- se non valido:
+  - mostra errore chiaro e corretto
+
+D. DOPO ATTIVAZIONE
+Dopo attivazione riuscita:
+- reindirizza l’utente alla dashboard studente / area corsi / pagina del corso sbloccato
+oppure
+- effettua login e mostra i corsi disponibili
+
+E. ERRORI CHIARI
+Gestisci messaggi tipo:
+- codice non trovato
+- codice già usato
+- codice revocato
+- email non corrispondente
+- campi mancanti
+- errore server
+- endpoint non trovato
+
+--------------------------------------------------
+4. CONTROLLI TECNICI IMPORTANTI
+--------------------------------------------------
+
+Verifica e correggi:
+- che la route API usata dalla pagina accesso esista davvero
+- che non ci siano path sbagliati tipo /api/activate vs /api/access/activate
+- che il metodo HTTP corretto venga usato (POST/GET)
+- che il payload inviato dal frontend corrisponda ai nomi campi attesi dal backend
+- che il backend legga i nomi giusti:
+  - code
+  - fullName
+  - email
+- che il database schema abbia i campi corretti
+- che il codice venga salvato e recuperato con lo stesso formato
+- che non ci siano problemi di uppercase/lowercase/spazi
+- che il submit form non sia invertito nei campi
+- che le validazioni non blocchino tutto ingiustamente
+
+--------------------------------------------------
+5. PAGINA ACCESSO: SISTEMARE UX E CAMPI
+--------------------------------------------------
+
+Controlla e correggi la form di accesso corsi:
+- etichette corrette
+- placeholder coerenti
+- ogni input deve essere associato al giusto stato
+- niente valori che finiscono nel campo sbagliato
+- aggiungi validazione frontend minima
+- aggiungi loader durante submit
+- mostra toast o messaggi chiari di successo/errore
+
+--------------------------------------------------
+6. DATABASE / MODELLI
+--------------------------------------------------
+
+Se necessario, aggiorna i modelli già esistenti per supportare bene l’attivazione:
+- AccessCode
+- StudentUser
+- AccessActivation
+- DeviceSession
+
+Assicurati che almeno ci siano questi dati coerenti:
+AccessCode:
+- code
+- courseId
+- assignedName
+- assignedEmail
+- isActive
+- expiresAt
+- boundUserId
+- status
+
+AccessActivation:
+- accessCodeId
+- userId
+- activatedAt
+- firstIp
+- firstUserAgent
+- status
+
+StudentUser:
+- name
+- email
+- activatedCodeId o relazione equivalente
+
+--------------------------------------------------
+7. SEZIONE ADMIN: GESTIONE SICURA CREDENZIALI
+--------------------------------------------------
+
+Nella nuova sezione “Credenziali Admin”:
+- aggiungi bottone “Salva modifiche”
+- opzionale: pulsante mostra/nascondi password
+- opzionale: indicatore robustezza password
+- messaggio successo tipo:
+  “Credenziali aggiornate correttamente”
+- se cambio username, il login successivo deve usare quello nuovo
+- se cambio password, il login successivo deve usare quella nuova
+
+--------------------------------------------------
+8. TEST FINALE OBBLIGATORIO
+--------------------------------------------------
+
+Dopo le modifiche testa davvero questi flussi:
+
+TEST 1
+- login admin con credenziali attuali
+- apri nuova sezione credenziali
+- cambia username e password
+- logout
+- login di nuovo con le nuove credenziali
+- verifica che funzioni
+
+TEST 2
+- crea un corso
+- genera un codice di accesso per quel corso
+- vai nella pagina accesso corsi
+- inserisci:
+  - codice corretto
+  - nome corretto
+  - email corretta
+- premi “Attiva e Sblocca”
+- verifica che non esca più errore 404
+- verifica che il corso venga sbloccato davvero
+
+TEST 3
+- prova un codice errato
+- prova una email errata
+- prova un codice revocato
+- verifica che i messaggi di errore siano corretti
+
+IMPORTANTE
+- fai modifiche reali nel codice esistente
+- non limitarti a descrivere la soluzione
+- correggi davvero endpoint, route, handler, query e mapping campi fino a rendere il sistema funzionante end-to-end
+- mantieni il design attuale del sito e del pannello

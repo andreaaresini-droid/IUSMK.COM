@@ -1,0 +1,95 @@
+Voglio modificare la hero della homepage del sito IUSMK in questo modo:
+
+1. Sostituisci l’immagine attuale con 3 immagini in slideshow automatico
+
+Usa queste 3 immagini che ti allego come nuove immagini della hero.
+
+Le immagini devono:
+
+comparire una alla volta
+scorrere automaticamente
+andare in loop continuo
+avere una transizione morbida / elegante tra una e l’altra
+restare full-screen nella hero
+essere centrate bene (object-fit: cover / object-position: center)
+2. L’utente non deve poterle controllare
+
+Lo slideshow deve essere solo automatico:
+
+niente swipe
+niente scroll manuale
+niente frecce
+niente pallini indicatori cliccabili
+niente drag
+niente autoplay interrompibile dall’utente
+
+In pratica l’utente deve solo vedere le immagini cambiare da sole.
+
+3. Timing slideshow
+
+Imposta lo slideshow così:
+
+ogni immagine resta visibile circa 3–4 secondi
+transizione fade morbida tra le immagini
+loop infinito
+4. Mantieni overlay scuro / nero sull’immagine
+
+Sopra ogni immagine applica una sfumatura nera elegante, tipo ombra:
+
+non troppo pesante
+abbastanza da rendere il look più cinematografico
+uniforme su tutte e 3 le immagini
+
+Indicazione stile:
+
+background: linear-gradient(
+  to bottom,
+  rgba(0, 0, 0, 0.35),
+  rgba(0, 0, 0, 0.55)
+);
+
+Adatta i valori se serve per un risultato visivamente migliore.
+
+5. Elimina il tasto centrale
+
+Rimuovi completamente il pulsante centrale “ENTRA ALL’ACADEMY”.
+
+Controlla che non restino:
+
+container vuoti
+spazi centrali inutili
+margini o padding residui
+6. Mantieni invariato il resto
+
+Non modificare:
+
+header in alto
+logo in alto a sinistra
+pulsante “ACCEDI”
+menu hamburger
+chat button
+struttura generale della homepage
+7. Responsive mobile
+
+Su mobile le 3 immagini devono:
+
+vedersi bene
+restare proporzionate
+non essere tagliate male
+mantenere il focus principale del soggetto
+8. Implementazione pulita
+
+Preferisco una soluzione stabile e leggera:
+
+niente librerie pesanti se non servono
+se possibile usa un semplice slideshow React/CSS/JS già integrato nella hero
+preload delle immagini per evitare flash o salti
+9. Controllo finale
+
+Dopo aver fatto la modifica:
+
+verifica in anteprima che si vedano davvero le 3 immagini corrette
+verifica che cambino da sole
+verifica che il pulsante centrale non esista più
+
+Importante: voglio che la hero mostri solo queste 3 immagini in rotazione automatica, senza nessuna interazione da parte dell’utente.

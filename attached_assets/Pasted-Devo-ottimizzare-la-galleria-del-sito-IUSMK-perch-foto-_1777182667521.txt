@@ -1,0 +1,124 @@
+Devo ottimizzare la galleria del sito IUSMK perché foto e video caricano ancora troppo lentamente.
+
+OBIETTIVO:
+Rendere la galleria molto più veloce, alleggerendo foto e video già esistenti e facendo in modo che ogni nuovo contenuto caricato dall’admin venga automaticamente ottimizzato prima di essere mostrato sul sito.
+
+IMPORTANTE:
+Non rovinare la qualità visiva.
+L’obiettivo è ridurre il peso dei file mantenendo una qualità alta e professionale.
+
+INTERVENTI RICHIESTI:
+
+1. OTTIMIZZAZIONE FOTO GIÀ ESISTENTI:
+- Analizza tutte le immagini già presenti nella galleria.
+- Crea versioni ottimizzate per il web.
+- Non cancellare gli originali se non necessario.
+- Usa le versioni ottimizzate nella galleria pubblica.
+- Riduci il peso mantenendo buona qualità.
+
+Parametri consigliati:
+- Converti immagini in WebP dove possibile.
+- Qualità WebP: 75–85.
+- Larghezza massima immagini galleria: 1200px per desktop.
+- Versione thumbnail: 400px.
+- Versione mobile: 800px.
+- Mantieni proporzioni originali.
+- Non deformare, non tagliare male, non alterare colori.
+
+2. OTTIMIZZAZIONE VIDEO GIÀ ESISTENTI:
+- Analizza tutti i video già presenti nella galleria.
+- Crea versioni ottimizzate per web/mobile.
+- Mantieni una qualità visiva buona.
+- Usa i video ottimizzati nella galleria pubblica.
+
+Parametri consigliati:
+- Formato MP4 H.264.
+- Audio AAC se presente.
+- Risoluzione massima 720p per anteprime/galleria.
+- Bitrate ottimizzato.
+- Usa poster/thumbnail per ogni video.
+- Non caricare il video completo subito nella griglia: caricalo solo quando l’utente lo apre o lo manda in play.
+
+3. CARICAMENTO AUTOMATICO NUOVI FILE ADMIN:
+Quando l’admin carica una nuova foto o un nuovo video:
+- Il file deve essere salvato normalmente.
+- Subito dopo deve partire una funzione automatica di ottimizzazione.
+- Per le immagini:
+  - creare thumbnail
+  - creare versione mobile
+  - creare versione desktop ottimizzata
+  - convertire in WebP se possibile
+- Per i video:
+  - creare versione MP4 ottimizzata
+  - creare thumbnail/poster
+  - ridurre peso e risoluzione se troppo pesante
+- La galleria deve usare automaticamente la versione ottimizzata.
+
+4. STRUTTURA DATI:
+Aggiorna il modello dati della galleria per salvare:
+- originalUrl
+- optimizedUrl
+- thumbnailUrl
+- mobileUrl
+- posterUrl per i video
+- fileType
+- fileSizeOriginal
+- fileSizeOptimized
+- optimizationStatus: pending / completed / failed
+
+5. FRONTEND GALLERIA:
+- Nella griglia mostra solo thumbnail leggere.
+- Usa lazy loading per immagini e video.
+- Usa loading="lazy" sulle immagini.
+- Usa decoding="async".
+- Usa srcSet per caricare immagini diverse su mobile/desktop.
+- Non caricare video pesanti nella griglia.
+- Mostra solo poster/thumbnail del video.
+- Carica il video vero solo quando l’utente apre il dettaglio o clicca play.
+
+6. PERFORMANCE:
+- Evita di caricare tutta la galleria insieme.
+- Usa paginazione o infinite scroll.
+- Carica inizialmente massimo 12 elementi.
+- Poi carica altri elementi quando l’utente scorre.
+- Aggiungi skeleton/loading leggero durante il caricamento.
+- Usa cache del browser dove possibile.
+
+7. BACKEND / SERVER:
+- Implementa una funzione/server route per ottimizzare i file.
+- Per immagini usa una libreria tipo sharp.
+- Per video usa ffmpeg se disponibile.
+- Se ffmpeg non è disponibile su Replit, prepara comunque una struttura fallback:
+  - salva il video originale
+  - genera almeno poster/thumbnail
+  - usa lazy loading e preload="metadata"
+
+8. SICUREZZA:
+- Accetta solo formati validi:
+  immagini: jpg, jpeg, png, webp
+  video: mp4, mov, webm
+- Blocca file troppo grandi o mostra avviso admin.
+- Gestisci errori senza bloccare la pubblicazione.
+
+9. ADMIN:
+- Quando l’admin carica un file, mostra uno stato:
+  “Caricamento…”
+  “Ottimizzazione in corso…”
+  “Pubblicato”
+- Se l’ottimizzazione fallisce, pubblica comunque il file originale ma mostra avviso in admin.
+
+10. NON MODIFICARE:
+- Intro video
+- homepage
+- corsi
+- login
+- chat
+- pagamenti
+- admin generale
+- grafica principale del sito
+
+RISULTATO FINALE:
+La galleria pubblica deve caricarsi molto più velocemente.
+Le immagini e i video già presenti devono essere alleggeriti.
+Ogni nuova foto o video caricata dall’admin deve essere ottimizzata automaticamente.
+Il cliente deve vedere una galleria fluida, veloce e professionale sia da telefono sia da desktop.

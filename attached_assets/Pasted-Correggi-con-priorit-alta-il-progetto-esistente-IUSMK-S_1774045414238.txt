@@ -1,0 +1,176 @@
+Correggi con priorità alta il progetto esistente IUSMK SENZA cambiare branding, colori, font, stile grafico o layout generale. In questo momento ci sono due bug critici che impediscono di usare il sito.
+
+ATTENZIONE:
+Non voglio modifiche descrittive o temporanee.
+Voglio fix reali nel codice, nelle API, nella logica dati e nelle query.
+Testa tutto davvero prima di concludere.
+
+==================================================
+BUG CRITICO 1 — LOGIN ADMIN NON FUNZIONA PIÙ
+==================================================
+
+PROBLEMA
+Adesso il login admin non funziona più:
+- non funziona da computer
+- non funziona da telefono
+- inserendo credenziali corrette compare:
+  “Invalid credentials”
+- negli screenshot si vedono errori 401 sulle route tipo:
+  /api/auth/admin/login
+  /api/auth/me
+
+OBIETTIVO
+Ripristinare immediatamente il login admin funzionante.
+
+DEVI CONTROLLARE E CORREGGERE:
+
+1. ENDPOINT LOGIN ADMIN
+- verifica che la route /api/auth/admin/login esista davvero e funzioni
+- verifica metodo HTTP corretto
+- verifica parsing body JSON
+- verifica che frontend invii i campi corretti:
+  - username
+  - password
+
+2. LOGICA VERIFICA CREDENZIALI
+- controlla da dove vengono lette le credenziali admin reali
+- controlla se il sistema confronta username/password in modo errato
+- controlla problemi di case sensitivity
+- controlla eventuali hash password rotti
+- controlla se dopo le ultime modifiche è stato cambiato il formato delle credenziali
+
+3. SESSIONE / AUTH
+- dopo login corretto, crea davvero la sessione admin
+- verifica cookie/sessione/token
+- verifica che /api/auth/me legga correttamente la sessione
+- evita 401 subito dopo login corretto
+
+4. CREDENZIALI ATTUALI
+- controlla nel database/config quali sono le credenziali admin correnti reali
+- assicurati che il login usi quelle corrette
+- non lasciare il sistema in uno stato in cui nessuno può più entrare nel pannello admin
+
+5. UX
+- mostra “Invalid credentials” solo se le credenziali sono davvero errate
+- se c’è un problema tecnico, restituisci errore tecnico coerente
+- il pulsante login deve funzionare sia desktop sia mobile
+
+==================================================
+BUG CRITICO 2 — I CORSI NON COMPAIONO PIÙ
+==================================================
+
+PROBLEMA
+I corsi non escono più:
+- nella homepage, sezione “Le Masterclass”, compare il placeholder “Masterclass in arrivo”
+- nella pagina Academy i corsi non compaiono
+- però i corsi dovrebbero esistere nel sistema/admin
+
+OBIETTIVO
+Ripristinare la visualizzazione dei corsi pubblicati reali.
+
+DEVI CONTROLLARE E CORREGGERE:
+
+1. QUERY CORSI PUBBLICI
+- controlla la query usata dalla homepage
+- controlla la query usata dalla pagina Academy
+- assicurati che leggano davvero i corsi dal database corretto
+- non usare dati mock o hardcoded
+
+2. FILTRO STATO CORSO
+Controlla come viene salvato lo stato reale nel database:
+- pubblicato / published
+- bozza / draft
+- isPublished boolean
+- enum status
+Poi correggi il filtro.
+
+REGOLA:
+- se un corso nel pannello admin è “Pubblicato”, deve comparire nel sito pubblico
+- se non c’è nessun corso pubblicato, solo allora mostra placeholder/stato vuoto
+
+3. COPERTINA CORSO
+- verifica che la homepage legga la vera cover del corso pubblicato
+- controlla il campo reale usato:
+  - coverImage
+  - imageUrl
+  - thumbnail
+  - coverUrl
+  o equivalente
+- allinea frontend e backend sul campo giusto
+
+4. HOMEPAGE “LE MASTERCLASS”
+La sezione deve mostrare:
+- una sola cover reale di un corso pubblicato
+- non il placeholder grigio
+- bottone “Scopri tutti i corsi”
+
+5. PAGINA ACADEMY
+La pagina deve mostrare:
+- i corsi pubblicati reali
+- titolo, cover, livello, durata, ecc. se presenti
+- non “Nessun corso disponibile” se nel database esistono corsi pubblicati
+
+==================================================
+3. STESSA FONTE DATI TRA ADMIN E SITO PUBBLICO
+==================================================
+
+Assicurati che:
+- pannello admin
+- homepage
+- Academy
+
+leggano e scrivano sugli stessi dati reali.
+
+Non voglio:
+- dati separati
+- array hardcoded
+- mock diversi tra admin e frontend pubblico
+
+==================================================
+4. CONTROLLO GENERALE DELLE ULTIME MODIFICHE
+==================================================
+
+Probabilmente una modifica recente ha rotto:
+- autenticazione admin
+- filtro/query corsi pubblicati
+
+Quindi fai un controllo reale dei file toccati di recente e correggi:
+- route auth admin
+- sessione auth
+- query corsi pubblici
+- mapping stato corso
+- mapping cover immagini
+
+==================================================
+5. TEST OBBLIGATORI
+==================================================
+
+TEST 1 — LOGIN ADMIN DESKTOP
+- apri /admin
+- inserisci credenziali corrette
+- deve entrare nella dashboard admin
+
+TEST 2 — LOGIN ADMIN MOBILE
+- ripeti lo stesso da telefono
+- deve entrare nella dashboard admin
+
+TEST 3 — HOMEPAGE
+- se esiste almeno un corso pubblicato, nella sezione “Le Masterclass” deve comparire una cover reale
+
+TEST 4 — ACADEMY
+- se esistono corsi pubblicati, devono comparire nella pagina Academy
+
+TEST 5 — STATO VUOTO
+- solo se davvero non esiste nessun corso pubblicato, allora mostra placeholder o messaggio “nessun corso disponibile”
+
+==================================================
+6. IMPORTANTE
+==================================================
+
+- fai modifiche reali al codice esistente
+- non limitarti a spiegare
+- non cambiare il design
+- priorità assoluta:
+  1. ripristinare login admin
+  2. ripristinare visualizzazione corsi pubblicati
+- correggi tutto finché il sistema non torna funzionante davvero

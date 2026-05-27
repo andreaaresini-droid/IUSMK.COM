@@ -1,0 +1,116 @@
+C’è un problema molto grave nel sito IUSMK che va risolto in modo definitivo.
+
+Problema:
+ogni volta che vengono apportate modifiche al sito, le immagini della galleria e i video dei corsi smettono di vedersi oppure vengono persi/non caricati correttamente. Questo non va bene.
+
+Obiettivo principale:
+fare in modo che TUTTI i contenuti caricati dall’admin restino salvati e continuino a funzionare anche dopo modifiche, aggiornamenti, redeploy, restart del progetto o cambiamenti al codice.
+
+Voglio una soluzione stabile e persistente.
+
+Cosa devi fare:
+
+1. ANALIZZARE LA CAUSA REALE
+Controlla perché immagini e video spariscono o non si vedono più dopo le modifiche.
+Verifica in particolare se il problema dipende da:
+- file salvati in cartelle temporanee/locali del progetto
+- file salvati dentro il filesystem del container/repl non persistente
+- path che cambiano ad ogni deploy
+- asset salvati solo in memoria o in modo non permanente
+- record nel database che puntano a file non più esistenti
+- URL generate dinamicamente e non stabili
+- file serviti da percorsi locali che vengono persi con rebuild/restart
+- dati non persistenti tra versioni del progetto
+- problemi di migrazione o reset di dati quando viene aggiornato il codice
+
+2. RENDERE PERSISTENTE TUTTO IL CONTENUTO MEDIA
+Voglio che:
+- le immagini della galleria restino sempre disponibili
+- i video dei corsi restino sempre disponibili
+- i contenuti caricati dall’admin non vengano persi dopo modifiche al sito
+- il sistema sia affidabile nel tempo
+
+Se il progetto attuale salva immagini e video in modo temporaneo o nel filesystem locale del repl, correggilo usando una soluzione persistente vera.
+
+Implementa la soluzione migliore compatibile con il progetto, ad esempio:
+- storage persistente esterno / object storage / bucket
+oppure
+- asset storage realmente persistente supportato dal progetto
+oppure
+- una configurazione stabile che separi i file caricati dal codice del sito
+
+Non voglio più che file importanti dipendano da cartelle locali fragili o da percorsi che si rompono al deploy.
+
+3. SEPARARE CODICE E CONTENUTI CARICATI
+Il codice del sito può essere aggiornato, ma:
+- i media caricati dall’admin devono restare indipendenti
+- immagini e video non devono essere cancellati o invalidati quando si modifica il progetto
+- database e storage devono restare coerenti tra loro
+
+4. CONTROLLARE DATABASE E RIFERIMENTI
+Verifica che per ogni immagine/video vengano salvati correttamente dati stabili, ad esempio:
+- URL pubblica stabile
+- storage key
+- path persistente
+- metadati utili
+- associazione corretta con record di galleria e corsi
+
+Verifica anche che frontend admin e frontend cliente leggano sempre i campi corretti.
+
+5. RETROCOMPATIBILITÀ E RECUPERO
+Molto importante:
+- non rompere ciò che è già presente
+- prova a recuperare e mantenere i contenuti già caricati, se ancora disponibili
+- se il sistema attuale ha dati vecchi con path o formati diversi, gestisci una compatibilità pulita
+- se serve, normalizza i record esistenti
+- evita che da ora in poi futuri aggiornamenti rompano ancora immagini e video
+
+6. GALLERIA
+Controlla tutto il flusso della galleria:
+- upload immagine
+- salvataggio storage
+- salvataggio record database
+- rendering admin
+- rendering lato cliente
+- persistenza dopo modifiche / restart / deploy
+
+7. CORSI E VIDEO
+Controlla tutto il flusso dei video corsi:
+- caricamento o salvataggio URL/file video
+- persistenza della sorgente
+- associazione al corso
+- rendering lato admin
+- rendering lato cliente
+- persistenza dopo modifiche / restart / deploy
+
+8. NO SOLUZIONI TEMPORANEE
+Non voglio fix provvisori.
+Non voglio che funzioni solo fino alla prossima modifica.
+Voglio una struttura definitiva e affidabile per i contenuti media del sito.
+
+9. TEST OBBLIGATORI
+Dopo la correzione testa davvero questi casi:
+- carica una nuova immagine in galleria
+- verifica che si veda in admin e lato cliente
+- carica/collega un video in un corso
+- verifica che si veda in admin e lato cliente
+- apporta una modifica al sito o simula un redeploy/restart
+- verifica che immagine e video continuino a vedersi correttamente
+- verifica che i contenuti già caricati restino disponibili
+
+10. VINCOLI IMPORTANTI
+- non cambiare inutilmente il design
+- non rompere le funzioni già sistemate
+- modifica solo l’architettura necessaria per rendere persistenti i media
+- aggiungi logging chiaro per capire dove vengono salvati file e URL
+- aggiungi gestione errori reale
+- se servono migrazioni o refactor puliti, eseguili bene
+
+Alla fine voglio un riepilogo chiaro con:
+- causa precisa del problema
+- dove venivano salvati prima immagini e video
+- soluzione di persistenza implementata
+- come vengono salvati ora i media
+- come hai garantito che restino dopo modifiche/redeploy
+- quali parti del sito hai aggiornato
+- eventuali limiti residui

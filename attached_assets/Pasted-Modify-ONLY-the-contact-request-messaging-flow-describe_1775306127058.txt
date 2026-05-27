@@ -1,0 +1,161 @@
+Modify ONLY the contact request / messaging flow described below.
+Do NOT change anything else that is already working.
+
+==================================================
+OBJECTIVE 1 — REPLACE “RISPONDI SU WHATSAPP”
+==================================================
+
+In the admin dashboard, inside the “Richieste di Contatto” detail view, replace the button:
+
+“Rispondi su WhatsApp”
+
+with a new button that opens or creates the internal site chat with that specific customer.
+
+New button label:
+“Apri chat”
+
+Required behavior:
+1. When admin clicks “Apri chat” from a contact request:
+   - if an internal chat already exists with that customer, open that exact chat
+   - if no internal chat exists yet, create it automatically and open it immediately
+2. The admin must be redirected directly to the correct conversation in “Chat Clienti”
+3. The correct user/customer must be associated with that conversation
+4. Do NOT create duplicate chats
+5. If the chat already exists, show optional small feedback like:
+   - “Chat esistente aperta”
+6. If a new chat is created, show optional small feedback like:
+   - “Nuova chat creata”
+7. Preserve the current dark UI style and button alignment
+8. Remove WhatsApp-specific behavior only in this button/action, do not affect other parts unless necessary
+
+IMPORTANT:
+- Reuse the existing internal chat system
+- Do not create a parallel contact chat model if an existing conversation model already exists
+- Keep mobile and desktop compatibility
+
+==================================================
+OBJECTIVE 2 — CUSTOMER CAN REQUEST CHAT REOPEN IF CLOSED
+==================================================
+
+On the customer side, in the “Messaggi” section:
+when the customer sees that the chat with Giuseppe/admin is closed,
+add a button that allows the customer to send a reopen request notification to Giuseppe/admin.
+
+New button label:
+“Richiedi apertura chat”
+
+Required behavior:
+1. This button must appear only when:
+   - the conversation exists
+   - the chat is currently marked as closed for customer reply
+2. When customer clicks “Richiedi apertura chat”:
+   - send a notification to Giuseppe/admin
+   - notification meaning: customer is asking to reopen the chat
+3. Admin must receive this as a real notification in the dashboard
+4. The notification should be distinguishable from normal messages, for example type:
+   - “chat_reopen_request”
+5. Clicking that admin notification should open the correct conversation or relevant customer thread
+
+==================================================
+OBJECTIVE 3 — RATE LIMIT: MAX 1 REQUEST PER HOUR
+==================================================
+
+Very important:
+the customer can send ONLY ONE reopen request per hour for the same chat.
+
+Implement this rule:
+1. If customer has not sent a reopen request in the last 60 minutes for that conversation:
+   - allow sending
+2. If customer already sent one within the last 60 minutes:
+   - block the action
+   - do NOT send another notification
+   - show clear feedback in Italian, for example:
+     “Hai già inviato una richiesta di apertura recentemente. Riprova tra un’ora.”
+3. Save enough data to enforce this properly:
+   - conversationId
+   - senderId
+   - notification type or request type
+   - createdAt timestamp
+4. This must be enforced server-side, not only in the UI
+5. Optional: also disable the button visually until allowed again
+6. Optional: show countdown or helper text like:
+   - “Puoi inviare una nuova richiesta tra X minuti”
+
+==================================================
+OBJECTIVE 4 — ADMIN SIDE HANDLING
+==================================================
+
+When admin receives a reopen request notification:
+1. Admin can click it and open the exact chat
+2. Admin can then decide to reopen the conversation
+3. If a chat status model already exists, reuse it
+4. Do not break current chat open/closed behavior
+5. Keep notification + conversation linkage correct
+
+If possible, support this clean flow:
+- customer clicks “Richiedi apertura chat”
+- admin receives notification
+- admin opens the chat
+- admin can reply
+- if your current system requires it, replying can also reopen the chat automatically
+OR provide an explicit reopen action if one already exists in the current logic
+
+==================================================
+OBJECTIVE 5 — TECHNICAL RULES
+==================================================
+
+- DO NOT modify unrelated dashboard pages
+- DO NOT break existing notifications
+- DO NOT break current chat creation logic
+- DO NOT duplicate conversations
+- DO NOT remove read/unread tracking
+- DO NOT change global styles unnecessarily
+- Reuse current conversation/message/notification models wherever possible
+- If new fields are needed, add only the minimum required
+
+Suggested notification metadata for reopen request:
+- type: "chat_reopen_request"
+- conversationId
+- customerId
+- customerName
+- createdAt
+- isRead
+
+==================================================
+OBJECTIVE 6 — UI TEXT IN ITALIAN
+==================================================
+
+Use these labels:
+- “Apri chat”  (admin button replacing WhatsApp)
+- “Richiedi apertura chat”  (customer button in closed chat)
+- Success toast:
+  - “Richiesta inviata”
+- Rate limit message:
+  - “Hai già inviato una richiesta di apertura recentemente. Riprova tra un’ora.”
+- Optional helper:
+  - “La chat è chiusa. Puoi inviare una richiesta a Giuseppe per riaprirla.”
+
+==================================================
+MANDATORY TEST CASES
+==================================================
+
+Test all these cases:
+
+1. Admin opens a contact request and clicks “Apri chat”
+2. If chat exists, correct existing chat opens
+3. If chat does not exist, a new one is created and opened
+4. No duplicate chats are created
+5. Customer sees closed chat in “Messaggi”
+6. Customer clicks “Richiedi apertura chat”
+7. Admin receives the correct notification
+8. Admin opens the related chat from notification
+9. Customer tries again within 1 hour
+10. Second request is blocked correctly
+11. After 1 hour, customer can send a new request again
+12. Mobile behavior remains usable
+
+At the end, show me clearly:
+- which files you changed
+- what logic you added for rate limiting
+- how “Apri chat” links contact requests to internal conversations
+- how reopen request notifications are stored and routed

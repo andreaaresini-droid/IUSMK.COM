@@ -1,0 +1,67 @@
+Modifica SOLO l’animazione intro del sito IUSMK, senza toccare login, corsi, Stripe, notifiche, admin o altre funzioni.
+
+PROBLEMA ATTUALE
+Adesso l’immagine sparisce in due modi:
+- verso l’alto quando passa il rasoio
+- lateralmente come prima
+
+Questo non va bene.
+
+EFFETTO CHE VOGLIO
+Voglio che l’immagine si comporti come un TELO tagliato dal basso verso l’alto.
+
+LOGICA VISIVA CORRETTA
+- il rasoio parte da sotto
+- mentre sale, taglia il telo esattamente lungo il suo percorso verticale
+- il telo NON deve sparire verso l’alto
+- il telo deve aprirsi progressivamente in due metà:
+  - una metà verso sinistra
+  - una metà verso destra
+- l’apertura deve seguire il rasoio in tempo reale
+- solo la parte già tagliata deve aprirsi
+- la parte sopra che il rasoio non ha ancora raggiunto deve restare ancora chiusa/unita
+
+EFFETTO FINALE
+Quando il rasoio arriva in cima e completa il taglio:
+- le due metà del telo devono perdere sostegno
+- devono cadere in modo realistico
+- la caduta deve sembrare naturale, come due lembi di stoffa o materiale leggero tagliato completamente
+- non devono semplicemente dissolversi
+- non devono scorrere verso l’alto
+- devono aprirsi e poi cadere
+
+IMPORTANTE
+Il comportamento corretto è questo:
+1. rasoio sale dal basso
+2. crea una fessura verticale
+3. la fessura si apre dietro la lama verso sinistra e destra
+4. l’apertura segue il rasoio in tempo reale
+5. quando il taglio arriva in cima, i due lembi cadono
+
+DETTAGLI TECNICI DESIDERATI
+- elimina completamente il vecchio effetto di sparizione laterale indipendente
+- elimina completamente l’effetto di immagine che sale verso l’alto
+- crea invece due pannelli/lembi dell’immagine, sinistro e destro, che restano uniti sopra finché il rasoio non passa
+- la separazione deve avanzare in verticale seguendo la posizione della lama
+- sotto il punto già tagliato, i due lembi devono aprirsi gradualmente
+- sopra il punto non ancora tagliato, l’immagine deve restare integra
+- a taglio completato, applica una caduta realistica dei due lembi con lieve fisica/rotazione
+- l’effetto deve essere premium e fluido anche su mobile
+
+STILE VISIVO
+- effetto cinematografico
+- taglio pulito e realistico
+- apertura da telo/stoffa
+- caduta finale credibile
+- niente glitch
+- niente dissolvenza falsa
+- niente sparizione improvvisa
+
+RISULTATO FINALE
+Quando guardo l’intro devo percepire:
+- il rasoio che incide verticalmente il telo
+- il telo che si apre in due parti dietro il rasoio
+- le due parti che poi cadono una volta completato il taglio
+
+NON TOCCARE ALTRO
+Non modificare testi, layout, login, corsi, checkout, notifiche, admin o altre sezioni del sito.

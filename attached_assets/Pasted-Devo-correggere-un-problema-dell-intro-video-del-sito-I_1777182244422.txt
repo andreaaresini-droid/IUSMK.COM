@@ -1,0 +1,81 @@
+Devo correggere un problema dell’intro video del sito IUSMK.
+
+PROBLEMA:
+Dopo che il cliente clicca sulla schermata iniziale, alcune volte il video non parte subito oppure non parte proprio.
+Il video deve partire immediatamente dopo il click/tap e deve essere super fluido, soprattutto da telefono.
+
+OBIETTIVO:
+Rendere l’avvio del video intro immediato, stabile e fluido su iPhone, Android, desktop e PWA.
+
+ISTRUZIONI:
+
+1. PRELOAD VIDEO:
+- Precarica il video già mentre si vede la schermata iniziale con logo e scritta.
+- Il video deve essere già pronto prima del click.
+- Usa preload="auto".
+- Crea il tag video già montato nel DOM anche prima del click, ma nascosto.
+- Non creare il video solo dopo il click, perché questo causa ritardi.
+
+2. AVVIO DOPO CLICK:
+- Al click/tap sulla schermata iniziale:
+  - mostra subito il video;
+  - porta il video a currentTime = 0;
+  - chiama video.play() direttamente dentro l’evento click/tap dell’utente.
+- Non aspettare setTimeout, animazioni o stati React prima di chiamare play().
+- Il play deve essere collegato direttamente al gesto dell’utente per evitare blocchi audio su mobile.
+
+3. AUDIO:
+- Il video deve partire con audio.
+- muted deve essere false.
+- Assicurati che play() venga eseguito dopo il tap/click dell’utente, così Safari/iPhone permette l’audio.
+
+4. GESTIONE PROMISE DI PLAY:
+- Gestisci video.play() con try/catch o .catch().
+- Se play() fallisce:
+  - riprova una seconda volta dopo 200ms;
+  - se fallisce ancora, mostra un piccolo bottone/testo “Tocca per avviare” sopra il video.
+- Non lasciare mai l’utente bloccato su schermo nero.
+
+5. FLUIDITÀ:
+- Usa playsInline.
+- Usa controls={false}.
+- Usa disablePictureInPicture se possibile.
+- Usa object-fit: cover.
+- Usa will-change: opacity, transform.
+- Evita animazioni pesanti mentre il video parte.
+- Evita blur pesanti o filtri complessi durante la riproduzione.
+- Non applicare transform animate sul video durante la riproduzione.
+
+6. PERFORMANCE:
+- Usa un file video ottimizzato per web/mobile:
+  - formato MP4 H.264
+  - audio AAC
+  - durata breve
+  - peso più leggero possibile senza perdere troppa qualità
+- Se possibile, aggiungi una versione compressa del video per mobile.
+- Non caricare immagini o script pesanti insieme all’avvio del video.
+
+7. FALLBACK:
+- Se il video non si carica entro massimo 5 secondi, entra comunque nel sito.
+- Se il video dà errore, entra comunque nel sito.
+- Se il video finisce, entra normalmente nel sito.
+
+8. EVENTI VIDEO:
+- onCanPlayThrough: marca il video come pronto.
+- onLoadedData: marca il video come caricato.
+- onEnded: chiudi intro e mostra sito.
+- onError: chiudi intro e mostra sito dopo fallback.
+
+9. NON MODIFICARE:
+- dimensione logo
+- scritta
+- sfondo intro
+- homepage
+- corsi
+- admin
+- chat
+- login
+- altre funzioni del sito
+
+RISULTATO FINALE:
+Il cliente apre il sito → vede schermata iniziale → tocca/clicca → il video parte immediatamente con audio, senza ritardi, senza blocchi e in modo fluido → finito il video entra nel sito.

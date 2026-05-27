@@ -1,0 +1,181 @@
+Modify ONLY the notification UI and push delivery behavior described below.
+Do NOT change anything else that is already working.
+
+==================================================
+OBJECTIVE 1 — CHAT MESSAGES MUST ALSO TRIGGER REAL PUSH NOTIFICATIONS
+==================================================
+
+Current issue:
+when:
+- admin sends a message to a customer in internal chat
+- customer sends a message to admin in internal chat
+
+the in-app notification may appear, but the real push notification is not always delivered.
+
+Fix this so that push notifications are sent correctly for BOTH directions:
+1. admin -> customer chat message
+2. customer -> admin chat message
+
+Required behavior:
+1. Every new internal chat message must create:
+   - in-app notification
+   - real push notification (if recipient has push enabled on that device)
+2. When admin sends a new chat message to a customer:
+   - the customer must receive push notification
+3. When customer sends a new chat message to admin:
+   - the admin must receive push notification
+4. Clicking the push notification must open the correct conversation/chat
+5. Do not send push for messages sent to self
+6. Do not duplicate push sends for the same message
+7. Preserve read/unread logic
+8. Reuse the existing notification system and push subscription system
+
+Technical requirement:
+Make sure the push send is triggered directly in the internal chat message creation/send flow, not only in generic notification UI rendering.
+If necessary, connect message creation -> notification record creation -> push delivery in the same server-side flow.
+
+Each chat notification should include enough routing metadata:
+- type: "chat_message"
+- conversationId
+- senderId
+- receiverId
+- senderName
+- preview text
+- createdAt
+
+==================================================
+OBJECTIVE 2 — REDUCE THE PUSH ACTIVATION UI
+==================================================
+
+In the customer “Notifiche” page and the admin notifications page (if present), remove the large push activation card/box.
+
+Instead, replace it with a much smaller and cleaner button or compact row.
+
+I want:
+- no big green status block
+- no oversized push card
+- just a small elegant button/status area
+
+Suggested compact behavior:
+1. Show a small row or small button near the notifications page header
+2. Examples:
+   - if inactive: “Attiva push”
+   - if active: “Push attive”
+   - optional secondary button: “Disattiva”
+3. Keep the style minimal and consistent with IUSMK dark design
+4. Do not waste vertical space
+
+You can implement it as:
+- a small outlined button
+or
+- a compact settings row with status badge
+
+==================================================
+OBJECTIVE 3 — ADD DELETE NOTIFICATION ACTIONS
+==================================================
+
+Add the ability to delete notifications:
+- individually
+- all together
+
+This must work for BOTH:
+1. customer side notifications page
+2. admin side notifications page
+
+Required behavior:
+1. Each notification card must have an action to delete that single notification
+   - icon button or text button
+   - for example trash icon or “Elimina”
+2. There must also be a global action to delete all notifications
+   - e.g. “Elimina tutte”
+3. “Segna tutte come lette” must remain if already working
+4. Deleting a notification must remove it from the visible list immediately
+5. Deleting all must remove all notifications from the list immediately
+6. Actions must update unread counters correctly
+7. Do not delete unrelated data like messages/conversations — only the notification record
+8. If the notification is linked to a chat, deleting the notification must NOT delete the chat or the message itself
+9. Keep desktop and mobile usability
+
+==================================================
+OBJECTIVE 4 — DELETE UX / SAFETY
+==================================================
+
+Use a safe UX:
+1. For single delete:
+   - direct delete is okay if simple and clean
+   OR
+   - optional mini confirmation
+2. For “Elimina tutte”:
+   - ask confirmation before deleting all notifications
+   - example confirmation text:
+     “Vuoi eliminare tutte le notifiche?”
+3. Keep styling elegant and compact
+
+Italian labels:
+- “Elimina”
+- “Elimina tutte”
+- “Segna tutte come lette”
+- “Vuoi eliminare tutte le notifiche?”
+- “Annulla”
+- “Conferma”
+
+==================================================
+OBJECTIVE 5 — ADMIN + CUSTOMER PARITY
+==================================================
+
+Make sure the notification page behavior is aligned on both sides:
+- customer
+- admin
+
+Both must support:
+1. real push from chat messages
+2. compact push activation button
+3. delete single notification
+4. delete all notifications
+5. correct unread count updates
+
+==================================================
+OBJECTIVE 6 — IMPORTANT SAFETY RULES
+==================================================
+
+- DO NOT break the current chat system
+- DO NOT break current in-app notifications
+- DO NOT break push subscription logic
+- DO NOT delete actual chat messages when deleting notifications
+- DO NOT break “Apri chat” buttons
+- DO NOT break unread badges in the menu
+- DO NOT change unrelated pages
+- Reuse existing models/routes/components where possible
+
+==================================================
+MANDATORY TESTS
+==================================================
+
+Test all these cases:
+
+CHAT PUSH
+1. Admin sends chat message -> customer receives real push notification
+2. Customer sends chat message -> admin receives real push notification
+3. Clicking push opens the correct chat
+4. No duplicated push notifications for the same message
+
+PUSH UI
+5. Large push activation card is removed
+6. Small compact push button/status is shown instead
+7. Push activation still works correctly
+
+DELETE NOTIFICATIONS
+8. Customer can delete one notification
+9. Customer can delete all notifications
+10. Admin can delete one notification
+11. Admin can delete all notifications
+12. Deleting notifications does not delete chats/messages
+13. Unread counters update correctly after delete
+14. Mobile layout remains clean and usable
+
+At the end, show me clearly:
+- which files you changed
+- where you fixed the chat -> push trigger
+- how single delete works
+- how delete all works
+- how unread counters are updated after deletion

@@ -1,0 +1,122 @@
+La modifica fatta alla sezione Academy non va ancora bene. Devi correggere la struttura senza modificare ciò che funziona.
+
+OBIETTIVO CORRETTO:
+L’Academy deve essere divisa in:
+
+1. CATEGORIE ACADEMY
+Esempio:
+- The Fade Concept
+- Hair Tattoo
+- altri percorsi futuri
+
+2. VIDEO CORSI
+Sono i singoli video acquistabili, ognuno collegato a una categoria Academy.
+
+IMPORTANTE:
+Non deve più esistere il riquadro “The Fade Concept” con prezzo €150 e pulsante “Acquista ora”.
+La categoria “The Fade Concept” NON si acquista.
+Si acquistano solo i singoli video corsi presenti in fondo alla pagina della categoria.
+
+MODIFICA DASHBOARD ADMIN:
+Aggiungi una nuova sezione nella dashboard admin chiamata:
+
+“Academy”
+
+Questa sezione deve stare sopra alla sezione “Corsi”.
+
+Nella nuova sezione “Academy” l’admin deve poter creare/modificare/eliminare le categorie Academy.
+
+Per ogni categoria Academy l’admin deve poter impostare:
+- titolo categoria, esempio “The Fade Concept”
+- immagine/copertina categoria
+- descrizione breve per la pagina Academy principale
+- descrizione completa per la pagina dettaglio categoria
+- trailer video
+- immagini/video dimostrativi
+- sezione “cosa imparerai”
+- ordine di visualizzazione
+- stato attiva/non attiva
+
+LATO CLIENTE - PAGINA ACADEMY:
+La pagina Academy principale deve mostrare solo le categorie Academy create dall’admin.
+
+Ogni categoria deve mostrare:
+- copertina
+- titolo
+- breve descrizione
+- tasto “Scopri il corso” oppure “Scopri i corsi”
+
+NON deve mostrare:
+- prezzo categoria
+- acquista ora
+- attiva con codice
+- pagamento diretto categoria
+
+LATO CLIENTE - PAGINA DETTAGLIO CATEGORIA:
+Quando il cliente clicca “Scopri il corso”, entra nella pagina della categoria.
+
+Questa pagina deve mostrare:
+- titolo categoria
+- copertina
+- trailer
+- descrizione completa
+- cosa imparerai
+- immagini/video dimostrativi apribili
+- in fondo la sezione “Video corsi disponibili”
+
+In fondo devono comparire SOLO i video corsi collegati a quella categoria.
+
+Ogni video corso deve mostrare:
+- titolo video
+- descrizione video
+- prezzo
+- copertina/anteprima
+- tasto “Acquista ora”
+- tasto “Attiva con codice” se previsto
+- se già acquistato/sbloccato, tasto “Guarda il corso”
+
+MODIFICA SEZIONE CORSI ADMIN:
+La sezione “Corsi” deve rimanere, ma deve servire per creare i singoli video corsi acquistabili.
+
+Quando l’admin crea o modifica un corso/video corso, deve poter scegliere a quale categoria Academy associarlo.
+
+Aggiungi quindi nel form corso un campo:
+“Categoria Academy”
+
+Questo campo deve essere una select con tutte le categorie create nella nuova sezione Academy.
+
+Esempio:
+Categoria Academy: The Fade Concept
+
+In questo modo:
+- nella sezione Academy admin creo la categoria “The Fade Concept”
+- nella sezione Corsi admin creo i singoli video corsi
+- ogni video corso viene collegato alla categoria “The Fade Concept”
+- lato cliente, nella pagina “The Fade Concept”, in fondo compaiono quei video corsi acquistabili singolarmente
+
+MIGRAZIONE / COMPATIBILITÀ:
+- Non rompere i corsi già esistenti.
+- Se ci sono corsi già creati, devono continuare a funzionare.
+- Se un corso non ha categoria Academy, non deve causare errori.
+- L’admin deve poter assegnare una categoria Academy anche ai corsi già esistenti.
+- Non eliminare dati esistenti.
+- Non modificare login, notifiche, chat, galleria o altre sezioni.
+
+FIX DEL PROBLEMA ATTUALE:
+Nella pagina dettaglio categoria non deve comparire una card categoria acquistabile con:
+- prezzo €150
+- pulsante “Acquista ora”
+- pulsante “Attiva con codice”
+
+Quella parte va rimossa dalla categoria.
+I pulsanti di acquisto devono stare solo sui singoli video corsi in fondo alla pagina.
+
+RISULTATO FINALE:
+Admin:
+- nuova sezione “Academy” per creare categorie/percorso
+- sezione “Corsi” per creare video corsi e associarli a una categoria Academy
+
+Cliente:
+- pagina Academy = vede categorie
+- pagina categoria = vede trailer, descrizione e cosa imparerà
+- fondo pagina categoria = vede video corsi acquistabili singolarmente con prezzo, descrizione e pulsanti

@@ -1,0 +1,268 @@
+C’è da completare il sistema notifiche del sito/app IUSMK.
+
+SITUAZIONE ATTUALE
+Adesso le notifiche push funzionano correttamente.
+L’admin può inviare notifiche anche con immagine, e il cliente riceve la push.
+
+PROBLEMA RIMASTO
+Quando il cliente riceve la notifica, non riesce ad “aprirla” davvero per vedere bene il contenuto completo.
+Ad esempio:
+- se la notifica contiene un’immagine, il cliente non riesce a entrare in una schermata dettaglio per visualizzarla bene
+- se contiene testo lungo, non c’è una vista completa chiara
+- se contiene video o altri dettagli, manca una pagina/apertura completa della notifica
+
+OBIETTIVO
+Voglio che tutte le notifiche del sito siano apribili in modo completo.
+
+RISULTATO DESIDERATO
+Quando un cliente riceve una notifica:
+1. può cliccare sulla push
+2. si apre il sito/app direttamente nella notifica corretta
+3. vede una vera pagina o modale di dettaglio notifica
+4. può leggere tutto il contenuto completo
+5. può vedere bene l’immagine allegata
+6. se c’è un video, può aprirlo e guardarlo
+7. la notifica viene segnata come letta dopo l’apertura
+8. la stessa cosa deve funzionare anche se l’utente apre la notifica dal centro notifiche interno, non solo dalla push
+
+====================================
+PARTE 1 — PAGINA / MODALE DETTAGLIO NOTIFICA
+====================================
+
+Crea una vera vista dettaglio notifica.
+
+Può essere:
+- una pagina dedicata, ad esempio /notifications/:id
+oppure
+- una modale grande ben fatta
+oppure
+- entrambe, se utile
+
+La soluzione migliore è una pagina dedicata apribile direttamente da URL.
+
+Questa vista deve mostrare:
+- titolo notifica
+- testo completo
+- tipo notifica
+- data e ora
+- mittente, se disponibile
+- immagine allegata grande, se presente
+- video allegato, se presente
+- eventuale link correlato
+- eventuale pulsante per tornare al centro notifiche
+
+Se la notifica ha immagine:
+- l’immagine deve essere visibile bene
+- cliccandola si deve poter aprire ancora meglio a schermo intero o in lightbox
+
+Se la notifica ha video:
+- il video deve essere riproducibile nella pagina dettaglio notifica
+- se non è possibile autoplay va bene, ma deve esserci un player chiaro
+
+====================================
+PARTE 2 — CLICK SULLA PUSH
+====================================
+
+Quando l’utente clicca sulla push notification:
+- non deve aprirsi una pagina generica
+- non deve aprirsi solo la home
+- deve aprirsi direttamente la notifica giusta
+
+Implementa nel payload push i dati necessari:
+- notificationId
+- type
+- linkUrl oppure detailUrl
+- eventuale route precisa
+
+Nel service worker, nel notificationclick:
+- recupera notificationId o URL
+- apri direttamente la pagina dettaglio della notifica corretta
+- se il sito è già aperto, porta l’utente alla notifica corretta senza duplicare schede inutili
+- se il sito è chiuso, aprilo direttamente sulla notifica corretta
+
+Esempio comportamento corretto:
+- push ricevuta
+- utente clicca
+- si apre /notifications/123
+- dentro trova tutto il contenuto della notifica
+
+====================================
+PARTE 3 — CENTRO NOTIFICHE INTERNO
+====================================
+
+Nel centro notifiche del cliente, ogni notifica deve essere cliccabile/apribile.
+
+Attualmente probabilmente viene solo mostrata in elenco.
+Voglio invece che ogni card o riga notifica:
+- sia cliccabile
+- apra il dettaglio completo della notifica
+
+L’elenco notifiche deve mostrare una preview sintetica:
+- titolo
+- estratto testo
+- mini icona o thumbnail se c’è immagine/video
+- data
+- stato letta/non letta
+
+Ma entrando nella notifica si deve vedere tutto.
+
+====================================
+PARTE 4 — SUPPORTO MEDIA COMPLETO
+====================================
+
+Le notifiche admin con allegati devono essere pienamente supportate.
+
+Se la notifica contiene imageUrl:
+- mostra thumbnail nell’elenco notifiche
+- mostra immagine grande nel dettaglio
+- consenti apertura lightbox/fullscreen
+
+Se la notifica contiene videoUrl:
+- mostra indicatore video nell’elenco
+- mostra player video nel dettaglio
+
+Se la notifica contiene solo testo:
+- mostra comunque una schermata pulita e leggibile
+
+====================================
+PARTE 5 — STRUTTURA DATI
+====================================
+
+Assicurati che ogni notifica salvata abbia dati sufficienti per essere aperta bene.
+
+Campi minimi:
+- id
+- recipientUserId
+- title
+- body
+- type
+- imageUrl opzionale
+- videoUrl opzionale
+- linkUrl opzionale
+- createdAt
+- isRead
+- sender info opzionale
+- metadata opzionale
+
+Se mancano dati nel database per le notifiche già esistenti, gestisci fallback senza rompere la UI.
+
+====================================
+PARTE 6 — MARCARE COME LETTA
+====================================
+
+Comportamento richiesto:
+- quando l’utente apre davvero il dettaglio notifica, la notifica viene segnata come letta
+- non segnarla letta troppo presto se non è stata realmente aperta
+- aggiorna badge e contatore non lette
+
+Se l’utente apre una notifica dalla push:
+- appena entra nel dettaglio, segna come letta
+
+Se l’utente apre una notifica dal centro notifiche:
+- stessa cosa
+
+====================================
+PARTE 7 — UX MIGLIORE
+====================================
+
+La schermata dettaglio notifica deve essere bella e leggibile, coerente con il sito.
+
+Voglio:
+- layout pulito
+- spazio corretto per immagine/video
+- testo ben leggibile
+- data visibile
+- eventuale badge tipo notifica
+- pulsante indietro
+- eventuale pulsante “apri contenuto collegato” se c’è linkUrl
+
+Esempi tipo notifica visibili:
+- Nuovo messaggio
+- Notifica amministrativa
+- Aggiornamento
+- Contenuto multimediale
+- Promemoria
+
+====================================
+PARTE 8 — ADMIN
+====================================
+
+Dal lato admin, quando invio una notifica con immagine o video, il sistema deve salvarla in modo che il cliente possa aprirla correttamente nel dettaglio.
+
+Controlla quindi che:
+- upload file corretto
+- URL persistente corretto
+- salvataggio imageUrl/videoUrl nella notifica
+- dettaglio notifica lato cliente in grado di leggere e mostrare questi dati
+
+====================================
+PARTE 9 — SERVICE WORKER
+====================================
+
+Aggiorna il service worker in modo che nel click della notifica:
+- apra l’URL preciso della notifica
+- usi notificationId o detailUrl
+- non mandi l’utente in home generica
+- non perda il contesto
+
+Se esiste già logica che apre solo la chat o la home, estendila anche alle notifiche normali.
+
+====================================
+PARTE 10 — TEST OBBLIGATORI
+====================================
+
+Esegui questi test:
+
+TEST 1
+Admin invia notifica solo testo
+- il cliente riceve push
+- clicca
+- si apre dettaglio notifica corretto
+
+TEST 2
+Admin invia notifica con immagine
+- il cliente riceve push
+- clicca
+- si apre dettaglio notifica
+- l’immagine si vede bene
+- clic sull’immagine = apertura grande/lightbox/fullscreen
+
+TEST 3
+Admin invia notifica con video
+- il cliente riceve push
+- clicca
+- si apre dettaglio notifica
+- il video è visibile/riproducibile
+
+TEST 4
+Apertura dal centro notifiche interno
+- clic su notifica
+- si apre stesso dettaglio completo
+
+TEST 5
+Segna come letta
+- dopo apertura dettaglio, la notifica viene segnata letta
+- il contatore non lette si aggiorna
+
+TEST 6
+App già aperta
+- clic push porta alla notifica corretta senza comportamento errato
+
+TEST 7
+App chiusa
+- clic push apre direttamente la notifica corretta
+
+====================================
+PARTE 11 — OUTPUT FINALE
+====================================
+
+Quando hai finito, dimmi:
+1. quali file hai modificato
+2. come hai implementato il dettaglio notifica
+3. come hai gestito immagini e video
+4. come hai gestito il click sulla push
+5. conferma dei test eseguiti
+
+IMPORTANTE
+Non limitarti a cambiare solo la UI dell’elenco notifiche.
+Voglio una vera apertura completa della notifica, con dettaglio leggibile e media visualizzabili bene.

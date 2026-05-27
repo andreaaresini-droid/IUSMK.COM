@@ -1,0 +1,103 @@
+Voglio sistemare definitivamente l’audio e il timing dell’animazione intro del sito IUSMK.
+
+ATTENZIONE: ti allegherò un file audio (rasoio). NON voglio usare tutto il file, ma SOLO i primi 3 secondi.
+
+--------------------------------------------------
+1. TAGLIARE AUDIO AUTOMATICAMENTE
+--------------------------------------------------
+Prendi il file audio allegato e:
+- usa SOLO i primi 3 secondi
+- se il file è più lungo, taglialo automaticamente lato codice
+- NON voglio creare file manualmente fuori dal progetto
+
+Implementa una soluzione tipo:
+- carica audio
+- imposta currentTime = 0
+- fai partire l’audio
+- ferma l’audio a 3 secondi esatti
+
+Oppure:
+- usa un timer per stoppare a 3000ms
+
+--------------------------------------------------
+2. GESTIONE AUDIO ROBUSTA (SENZA BUG)
+--------------------------------------------------
+- usa HTMLAudioElement (NON AudioContext complesso)
+- preload = auto
+- volume corretto (non troppo alto)
+- resetta currentTime a 0 ad ogni intro
+
+Logica corretta:
+- audio parte quando parte il rasoio
+- audio si ferma ESATTAMENTE a 3 secondi
+- nessun errore console
+
+--------------------------------------------------
+3. RALLENTARE L’ANIMAZIONE
+--------------------------------------------------
+L’animazione attuale è troppo veloce.
+
+Voglio:
+- rallentare leggermente il movimento del rasoio
+- rallentare leggermente anche l’apertura della foto
+- rendere il tutto più leggibile e cinematografico
+
+Indicazioni:
+- aumenta la durata totale dell’intro
+- rendi più chiaro il momento del taglio centrale
+- mantieni fluidità premium (no effetto lento/scattoso)
+
+--------------------------------------------------
+4. SINCRONIZZAZIONE AUDIO + ANIMAZIONE
+--------------------------------------------------
+Molto importante:
+
+- l’animazione deve durare circa quanto l’audio (3 secondi)
+- il rasoio deve partire insieme al suono
+- il taglio deve avvenire nel momento centrale dell’audio
+- la separazione delle due metà deve completarsi verso la fine dell’audio
+
+Deve sembrare un’unica azione sincronizzata.
+
+--------------------------------------------------
+5. ANIMAZIONE SEMPRE ATTIVA
+--------------------------------------------------
+Conferma:
+- l’intro deve partire SEMPRE
+- anche su refresh
+- anche riaprendo la pagina
+
+NON usare localStorage o sessionStorage per bloccarla
+
+--------------------------------------------------
+6. PERFORMANCE E COMPATIBILITÀ
+--------------------------------------------------
+- nessun lag
+- animazioni fluide (usa transform)
+- audio senza delay
+- funziona su desktop e mobile
+
+--------------------------------------------------
+7. NON TOCCARE IL RESTO
+--------------------------------------------------
+- non modificare altre sezioni del sito
+- non cambiare layout
+- lavora solo su intro + audio
+
+--------------------------------------------------
+8. TEST FINALI
+--------------------------------------------------
+Verifica:
+- audio parte davvero
+- audio si ferma a 3 secondi
+- animazione più lenta e leggibile
+- perfetta sincronizzazione
+- nessun errore console
+
+--------------------------------------------------
+9. RIEPILOGO
+--------------------------------------------------
+Alla fine dimmi:
+- come hai tagliato l’audio a 3 secondi
+- nuova durata animazione
+- come hai sincronizzato tutto

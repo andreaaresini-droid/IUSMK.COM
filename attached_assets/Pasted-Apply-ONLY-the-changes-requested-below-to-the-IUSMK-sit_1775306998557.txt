@@ -1,0 +1,255 @@
+Apply ONLY the changes requested below to the IUSMK site and admin dashboard.
+Do NOT modify anything else that is already working.
+
+==================================================
+OBJECTIVE 1 — REMOVE GIUSEPPE PHONE NUMBER FROM CONTACT SECTION
+==================================================
+
+Remove Giuseppe’s phone number from the public “Contatti” section and from any visible customer-facing contact area where that phone number is currently shown.
+
+Requirements:
+1. Remove the phone number from:
+   - contact page / section
+   - contact cards
+   - public profile/contact blocks
+   - any public-facing place where Giuseppe’s phone number is shown
+2. Do NOT remove email or Instagram unless they are explicitly tied to the same field and must be preserved carefully
+3. Do NOT break layout or spacing after removing the phone number
+4. If the admin dashboard has an internal copy of the number for admin-only purposes, leave it only if necessary and not publicly visible
+
+==================================================
+OBJECTIVE 2 — PUSH NOTIFICATIONS MUST WORK FOR BOTH CUSTOMERS AND ADMIN
+==================================================
+
+Push notifications must work correctly for:
+- admin
+- registered customers
+
+and for all important notification types, including at least:
+- new message in chat
+- reply in chat
+- contact request
+- reply / update related to contact request
+- course-related notifications if already supported
+- system notifications already present in the app
+
+Requirements:
+1. Make sure push notifications are actually sent and received, not only stored in the “Notifiche” section
+2. Push must work on:
+   - admin side
+   - customer side
+3. Push must be linked to the correct target user(s)
+4. Notifications must open the correct screen when clicked, for example:
+   - chat message -> open correct conversation
+   - contact request -> open correct request/thread
+   - general admin/customer notification -> open relevant page
+5. If push permission is not granted yet, the app should request permission correctly
+6. If push subscription/token/device registration is incomplete, fix it
+7. Keep the existing in-app notification center working too
+8. Do not duplicate notifications unnecessarily
+9. Preserve read/unread logic
+
+Very important:
+- Use the existing notification system if already present
+- If there is already a push infrastructure/service worker/subscription model, repair and complete it instead of replacing everything unnecessarily
+- Ensure both the notification record and the actual push delivery are triggered
+
+==================================================
+OBJECTIVE 3 — ADMIN BROADCAST SECTION IN DASHBOARD
+==================================================
+
+Add a new section in the admin dashboard where admin can send a notification to selected groups of registered users.
+
+New section name:
+“Invio Notifiche”
+
+This section must allow the admin to send a notification to:
+- all registered users
+- only selected users
+- all users except selected users
+- filtered groups of users based on useful criteria
+
+Minimum required filters:
+1. all registered users
+2. users who purchased at least one course
+3. users who purchased a specific course
+4. users who did NOT purchase a course
+5. manually selected users
+6. exclude manually selected users from the send
+
+Example required use case:
+admin wants to send a notification only to students who purchased a course
+
+==================================================
+OBJECTIVE 4 — BROADCAST NOTIFICATION UI
+==================================================
+
+In the new “Invio Notifiche” admin section, add a clean UI with at least:
+
+1. Recipient mode selector:
+   - Tutti gli utenti
+   - Utenti con corsi acquistati
+   - Utenti con uno specifico corso
+   - Selezione manuale
+2. Exclusion option:
+   - “Escludi utenti selezionati”
+3. Searchable user list
+   - search by name / email
+4. Optional course filter dropdown if courses exist
+5. Notification title field
+6. Notification message field
+7. Optional preview area
+8. Send button
+9. Loading / success / error feedback
+
+Suggested Italian labels:
+- “Invio Notifiche”
+- “Destinatari”
+- “Titolo notifica”
+- “Messaggio”
+- “Seleziona utenti”
+- “Escludi utenti selezionati”
+- “Invia notifica”
+- “Anteprima”
+
+Requirements:
+- Keep the IUSMK admin dark style
+- Mobile-friendly layout
+- Do not break existing menu/sidebar
+
+==================================================
+OBJECTIVE 5 — HOW BROADCAST SEND MUST WORK
+==================================================
+
+When admin sends a broadcast notification:
+
+1. Create a proper notification record for every selected recipient
+2. Also send real push notification to every selected recipient who has push enabled/subscribed
+3. Respect inclusion/exclusion logic exactly
+4. Do not send duplicates to the same user
+5. Show admin a summary like:
+   - total matched
+   - total excluded
+   - total sent
+   - total failed
+6. If some users cannot receive push, still create the in-app notification if appropriate
+7. Keep this secure and admin-only
+
+==================================================
+OBJECTIVE 6 — FIRST-VISIT POPUP FOR “ADD TO HOME SCREEN” + PUSH
+==================================================
+
+For any person who opens the site for the first time only, show a popup/modal explaining:
+
+1. how to add the IUSMK site to the phone home screen like an app
+2. how to activate push notifications
+
+This popup must appear only on the first visit (or until dismissed / completed), not continuously on every page load.
+
+Popup goals:
+- explain that the site can be added to the home screen like an app
+- explain how to enable push notifications
+- show different instructions for iPhone and Android
+- be simple, elegant, and mobile-friendly
+
+==================================================
+OBJECTIVE 7 — POPUP BEHAVIOR
+==================================================
+
+Required behavior:
+1. Show popup only to first-time visitors
+2. Once dismissed, do not show it again immediately
+3. Save a flag locally (and optionally for logged-in users also server-side if needed)
+4. Include:
+   - “Aggiungi alla Home”
+   - “Attiva notifiche”
+   - “Non mostrare più”
+   - “Chiudi”
+5. If the browser/app supports install prompt, use it when available
+6. If not supported, show manual instructions
+
+For iPhone instructions:
+- open Share menu
+- tap “Aggiungi a Home”
+- confirm
+
+For Android instructions:
+- use browser menu
+- tap “Aggiungi a schermata Home” or install app if available
+
+For push instructions:
+- explain that enabling notifications allows receiving updates for messages, requests, and important site notifications
+- add button to request notification permission directly if possible
+
+==================================================
+OBJECTIVE 8 — PWA / INSTALL / PUSH SUPPORT
+==================================================
+
+Check and fix the underlying setup needed so this flow works properly:
+1. web app / PWA manifest if already present
+2. service worker registration
+3. push subscription flow
+4. permission request flow
+5. app icon / installability if already partially implemented
+6. open notification click -> correct target page
+
+Do not redesign the whole app, just make this reliable.
+
+==================================================
+OBJECTIVE 9 — IMPORTANT SAFETY RULES
+==================================================
+
+- DO NOT break chat, contact requests, notifications, or admin dashboard
+- DO NOT remove working features
+- DO NOT change unrelated pages
+- DO NOT expose admin-only data publicly
+- DO NOT create duplicate notifications
+- DO NOT send broadcast notifications to the wrong users
+- DO NOT show the first-visit popup repeatedly after dismissal
+- Reuse existing notification/push infrastructure where possible
+- Add only the minimum necessary new models/fields/routes/components
+
+==================================================
+OBJECTIVE 10 — MENU / DASHBOARD
+==================================================
+
+Add the new admin section “Invio Notifiche” to the admin sidebar/menu in a position consistent with the current dashboard structure.
+
+Keep the same visual style.
+
+==================================================
+MANDATORY TEST CASES
+==================================================
+
+Test all these cases:
+
+PUBLIC / CUSTOMER
+1. Giuseppe phone number is no longer visible in public contact areas
+2. First-time visitor sees popup only once
+3. Popup shows iPhone + Android add-to-home instructions
+4. Popup allows notification permission request
+5. Returning visitor does not keep seeing popup repeatedly
+
+PUSH
+6. Admin receives push for new customer message
+7. Customer receives push for admin message
+8. Admin receives push for contact request
+9. Customer receives push for relevant notifications
+10. Clicking push opens the correct page/chat/thread
+
+ADMIN BROADCAST
+11. Admin sees new “Invio Notifiche” section
+12. Admin can send to all users
+13. Admin can send only to users who bought courses
+14. Admin can send only to users who bought a specific course
+15. Admin can manually exclude users
+16. No duplicate notifications are sent
+17. In-app notifications are created correctly
+18. Push is sent correctly where enabled
+
+At the end, show me clearly:
+- which files you changed
+- what you changed for push delivery
+- how recipient targeting works in “Invio Notifiche”
+- how first-visit popup visibility is stored
+- how notification click routing works

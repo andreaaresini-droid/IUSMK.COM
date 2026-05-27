@@ -1,0 +1,187 @@
+Apporta queste modifiche al progetto esistente IUSMK SENZA cambiare branding, colori, font o stile generale del sito. Voglio migliorare la gestione della galleria nel pannello admin e semplificare la sezione pubblica “Masterclass”.
+
+IMPORTANTE:
+fai modifiche reali al codice esistente, non solo descrittive.
+
+==================================================
+1. GALLERIA ADMIN — NIENTE PIÙ URL MANUALI
+==================================================
+
+PROBLEMA
+Nella dashboard admin, sezione “Galleria”, per aggiungere una foto bisogna inserire un URL immagine. Non lo voglio più.
+
+OBIETTIVO
+L’admin deve poter caricare direttamente le immagini dal dispositivo che sta usando, sia da computer sia da telefono.
+
+DEVI FARE QUESTO:
+- rimuovi il campo “URL immagine”
+- sostituiscilo con un vero upload file
+- il caricamento deve funzionare da:
+  - computer
+  - telefono
+  - tablet
+- accetta almeno:
+  - jpg
+  - jpeg
+  - png
+  - webp
+- mostra anteprima immagine prima del salvataggio
+- salva davvero il file nello storage usato dal progetto
+- salva nel database il path/url finale corretto
+- se l’immagine viene caricata con successo, deve comparire subito nella galleria admin e nella galleria pubblica
+
+UX desiderata:
+- pulsante chiaro tipo “Carica immagine”
+- possibilità di selezionare foto dal dispositivo
+- da telefono deve aprirsi correttamente galleria/file picker
+- eventuale messaggio di errore se formato non valido
+- eventuale loading/upload state
+
+==================================================
+2. GESTIONE COMPLETA CATEGORIE GALLERIA
+==================================================
+
+OBIETTIVO
+L’admin deve poter gestire davvero le categorie della galleria.
+
+Aggiungi una gestione categorie completa, con almeno queste funzioni:
+- vedere tutte le categorie esistenti
+- creare una nuova categoria
+- rinominare una categoria esistente
+- eliminare una categoria
+- opzionale ma utile: riordinare le categorie
+
+REQUISITI:
+- crea una sezione dedicata nella pagina galleria admin oppure un pannello/modal dedicato
+- l’admin deve poter modificare le categorie senza intervenire sul codice
+- quando si aggiunge una foto, la categoria deve essere scelta tra quelle realmente esistenti nel database
+- non usare più categorie hardcoded nel frontend
+
+CASI DA GESTIRE:
+1. Creazione categoria
+- inserimento nome categoria
+- salvataggio reale nel database
+- aggiornamento immediato nell’elenco
+
+2. Rinomina categoria
+- aggiorna il nome ovunque:
+  - filtro admin
+  - filtro pubblico
+  - immagini già associate a quella categoria
+- la rinomina deve riflettersi davvero sui record collegati
+
+3. Eliminazione categoria
+- prima chiedi conferma
+- se la categoria contiene immagini, gestisci in modo robusto:
+  - o chiedi di spostarle in un’altra categoria
+  - oppure imposta una categoria fallback tipo “senza categoria”
+- niente errori server
+- niente immagini orfane
+
+4. Lista categorie
+- mostra tutte le categorie in modo chiaro
+- azioni per ogni categoria:
+  - modifica
+  - elimina
+
+==================================================
+3. GALLERIA ADMIN — GESTIONE ELEMENTI ESISTENTI
+==================================================
+
+Già che ci sei, assicurati che ogni immagine della galleria admin abbia azioni chiare:
+- modifica
+- elimina
+- cambio categoria
+- modifica titolo/didascalia
+
+Se già esistono, verifica che funzionino davvero.
+Se non esistono, aggiungile.
+
+==================================================
+4. SEZIONE PUBBLICA “MASTERCLASS” — SEMPLIFICARLA
+==================================================
+
+PROBLEMA
+Adesso nella sezione pubblica “Masterclass” compaiono più corsi/cards visibili direttamente.
+
+OBIETTIVO
+Voglio che in quella sezione esca:
+- solo una copertina di un corso già esistente
+- e un solo pulsante:
+  “Scopri tutti i corsi”
+
+QUINDI:
+- rimuovi la griglia/lista di più corsi dalla preview homepage/masterclass section
+- lascia una sola immagine copertina in evidenza, presa da uno dei corsi già esistenti
+- scegli in modo intelligente:
+  - il primo corso pubblicato
+  oppure
+  - il corso in evidenza
+  oppure
+  - il più recente pubblicato
+- usa una sola card/cover ben fatta, grande e pulita
+- sotto o accanto deve esserci solo il tasto:
+  “Scopri tutti i corsi”
+
+NON voglio:
+- più cards affiancate
+- più corsi visibili in anteprima
+- pulsanti multipli
+
+==================================================
+5. LOGICA DELLA COPERTINA MASTERCLASS
+==================================================
+
+La copertina mostrata nella sezione “Masterclass” deve provenire davvero da un corso esistente nel database.
+
+REGOLE:
+- usa solo corsi pubblicati
+- se non ci sono corsi pubblicati, mostra placeholder elegante
+- se c’è almeno un corso pubblicato, mostra una sola cover reale
+- il pulsante “Scopri tutti i corsi” deve portare alla pagina Academy / tutti i corsi
+
+Opzionale ma utile:
+- aggiungi un flag admin tipo “corso in evidenza”
+- se esiste, usa quello come cover della sezione Masterclass
+- se non esiste, usa il primo corso pubblicato
+
+==================================================
+6. CONTROLLO FINALE
+==================================================
+
+Verifica davvero che:
+
+TEST 1
+- in admin > galleria non esista più il campo URL immagine
+- si possa caricare una foto dal dispositivo
+
+TEST 2
+- da telefono si possa caricare una foto in galleria
+
+TEST 3
+- le categorie si possano:
+  - creare
+  - rinominare
+  - eliminare
+
+TEST 4
+- la categoria scelta durante upload venga salvata davvero
+
+TEST 5
+- nella sezione pubblica “Masterclass” compaia una sola cover corso
+
+TEST 6
+- ci sia solo il pulsante “Scopri tutti i corsi”
+
+TEST 7
+- il pulsante porti correttamente alla pagina Academy
+
+==================================================
+7. IMPORTANTE
+==================================================
+
+- fai modifiche reali al codice
+- non limitarti a descrivere
+- mantieni il design attuale
+- non usare categorie hardcoded
+- non usare più URL immagine manuali in galleria

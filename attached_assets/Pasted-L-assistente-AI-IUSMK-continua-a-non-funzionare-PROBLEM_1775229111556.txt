@@ -1,0 +1,220 @@
+L’assistente AI IUSMK continua a non funzionare.
+
+PROBLEMA CONFERMATO:
+Anche per domande banalissime come:
+- "come compro un corso?"
+- "come posso prenotare un appuntamento?"
+- "come sblocco il corso?"
+- "come contatto Giuseppe?"
+il sistema va ancora in fallback.
+
+Quindi NON basta ritoccare il matching.
+Voglio che controlli e correggi l’intero flusso end-to-end della chat AI.
+
+IMPORTANTE:
+- Non toccare altre funzioni del sito.
+- Non modificare inutilmente la UI.
+- Concentrati solo sulla logica reale della chat AI e della Knowledge Base.
+- Devi verificare il flusso completo: frontend -> API -> retrieval KB -> costruzione contesto -> risposta AI -> fallback.
+
+OBIETTIVO
+L’assistente deve usare davvero le voci della Knowledge Base già presenti e rispondere correttamente alle domande coperte.
+Il fallback deve attivarsi SOLO quando non esiste davvero nessuna conoscenza utile.
+
+==================================================
+1. DEBUG COMPLETO DEL FLUSSO
+==================================================
+
+Controlla in ordine tutti questi punti:
+
+A) Il widget chat sta davvero chiamando l’endpoint corretto?
+- verifica la route usata dal frontend
+- verifica che il messaggio utente venga inviato correttamente
+- verifica che sessionId e pageUrl arrivino davvero al backend
+
+B) L’endpoint backend riceve davvero il messaggio?
+- aggiungi log server temporanei
+- logga il testo ricevuto
+- logga eventuali errori
+
+C) Il backend interroga davvero la Knowledge Base?
+- verifica la query reale al database
+- verifica che recuperi record con isPublished = true e isActive = true
+- verifica che non ci siano filtri sbagliati che escludono i record
+
+D) I record trovati vengono davvero usati per costruire il contesto?
+- logga i record trovati
+- logga il contesto finale passato al modello
+- verifica che non sia vuoto o nullo
+
+E) Il modello AI riceve davvero il contesto?
+- logga il payload finale inviato al modello
+- verifica che il system prompt e il contesto siano presenti
+- verifica che non venga inviato solo il fallback
+
+F) Il fallback parte per errore?
+- controlla tutta la logica if/else
+- verifica se usedFallback viene attivato anche quando ci sono risultati pertinenti
+- correggi eventuali return anticipati o soglie errate
+
+==================================================
+2. MODALITÀ TEST OBBLIGATORIA
+==================================================
+
+Voglio una modalità di test reale nell’admin AI dashboard.
+
+Aggiungi una sezione o pannello chiamato:
+“Test Assistente AI”
+
+Questa funzione deve permettere all’admin di scrivere una domanda e vedere:
+- domanda originale
+- domanda normalizzata
+- record KB trovati
+- score di ogni record
+- record selezionati
+- contesto finale costruito
+- risposta generata
+- motivo del fallback, se scatta
+
+Questo strumento serve a capire esattamente dove si rompe il flusso.
+
+Non serve che sia bello, basta che funzioni bene.
+
+==================================================
+3. VERIFICA RECORD KB REALI
+==================================================
+
+Controlla che i record visibili nella dashboard:
+- esistano davvero nel database
+- abbiano davvero isPublished = true
+- abbiano davvero isActive = true
+- abbiano title/content/keywords valorizzati
+- siano leggibili dalla funzione di retrieval
+
+Se la dashboard mostra record ma il backend non li legge, correggi subito il problema.
+
+==================================================
+4. BYPASS TEMPORANEO AI PER TEST
+==================================================
+
+Per capire se il problema è il retrieval o il modello AI, implementa un test temporaneo:
+
+Se il sistema trova record KB pertinenti, prima di inviare al modello AI fai una risposta diretta di test del tipo:
+- prendi il contenuto del miglior record
+- restituiscilo come risposta semplice
+
+Se così funziona, allora il problema è nel passaggio al modello AI.
+Se non funziona neanche così, allora il problema è nel retrieval/query DB.
+
+Questo test serve solo per il debug, poi puoi mantenere il comportamento finale corretto.
+
+==================================================
+5. REGOLE DI RISPOSTA MINIME OBBLIGATORIE
+==================================================
+
+Dopo la correzione, queste domande DEVONO funzionare:
+
+DOMANDA:
+"come compro un corso?"
+RISPOSTA ATTESA:
+Deve spiegare che sul sito si possono acquistare videocorsi/masterclass IUSMK.
+
+DOMANDA:
+"come posso prenotare un appuntamento?"
+RISPOSTA ATTESA:
+Deve spiegare che il sito non serve per prenotare appuntamenti o tagli.
+
+DOMANDA:
+"come sblocco il corso?"
+RISPOSTA ATTESA:
+Deve spiegare che il corso si sblocca con un codice ricevuto nelle notifiche dell’account.
+
+DOMANDA:
+"dove trovo il codice?"
+RISPOSTA ATTESA:
+Deve dire che il codice arriva nella sezione notifiche del cliente.
+
+DOMANDA:
+"come faccio per i resi?"
+RISPOSTA ATTESA:
+Deve dire che bisogna contattare direttamente Giuseppe e che decide lui caso per caso.
+
+DOMANDA:
+"come contatto Giuseppe?"
+RISPOSTA ATTESA:
+Deve usare il numero 3393010246.
+
+DOMANDA:
+"non riesco ad entrare"
+RISPOSTA ATTESA:
+Deve parlare di recupero password o problemi di accesso account.
+
+==================================================
+6. CONTROLLA EVENTUALI ERRORI DI STRUTTURA DATI
+==================================================
+
+Verifica se i record KB sono salvati con campi diversi da quelli che usa il motore di retrieval.
+Ad esempio controlla se c’è qualche disallineamento tipo:
+- title vs question
+- content vs answer
+- keywords null
+- category assente
+- published salvato in modo diverso
+- active salvato in modo diverso
+
+Se c’è mismatch tra struttura DB e codice, correggilo.
+
+==================================================
+7. CONTROLLA IL SYSTEM PROMPT
+==================================================
+
+Verifica che il system prompt non stia imponendo fallback anche quando il contesto esiste.
+Il prompt deve dire:
+- non inventare
+- usa solo il contesto
+- ma se il contesto esiste, devi rispondere
+
+Non deve bloccare tutto in modo eccessivo.
+
+==================================================
+8. CONTROLLA ERRORI SILENZIOSI
+==================================================
+
+Se c’è un try/catch che cattura errori e poi restituisce fallback senza mostrare il vero problema, correggilo.
+
+Voglio:
+- log errore lato server
+- motivo preciso del fallback nei log
+- niente fallback generico se c’è un bug tecnico nascosto
+
+==================================================
+9. NON FARE SOLO ANALISI
+==================================================
+
+Non limitarti a controllare.
+Devi correggere davvero il flusso finché la chat risponde.
+
+Alla fine:
+- testa automaticamente le domande sopra
+- verifica che almeno quelle funzionino
+- lascia attiva la modalità test nella dashboard admin
+
+==================================================
+10. RISULTATO FINALE
+==================================================
+
+Voglio che il sistema finale faccia davvero questo:
+- legge la domanda utente
+- cerca le voci KB corrette
+- costruisce il contesto
+- genera una risposta vera basata sulla KB
+- usa fallback solo se non trova niente
+
+Se il problema è nella query DB, correggilo.
+Se il problema è nella route API, correggilo.
+Se il problema è nel contesto passato al modello, correggilo.
+Se il problema è nel fallback troppo aggressivo, correggilo.
+Se il problema è nei campi DB, correggilo.
+
+Non toccare altre sezioni del sito.
+Sistema solo questa funzione finché funziona davvero.

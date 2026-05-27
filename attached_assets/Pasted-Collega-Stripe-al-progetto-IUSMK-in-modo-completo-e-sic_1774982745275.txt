@@ -1,0 +1,162 @@
+Collega Stripe al progetto IUSMK in modo completo e sicuro, SENZA rompere nulla di ciò che già funziona.
+
+OBIETTIVO
+Voglio che il progetto sia collegato a Stripe per permettere il pagamento dei corsi.
+Devi configurare tutto il necessario lato backend e frontend, ma SENZA hardcodare chiavi segrete nel codice.
+Le chiavi devono essere lette solo dalle environment variables / secrets di Replit.
+
+IMPORTANTE
+NON inserire nel codice valori reali di chiavi Stripe.
+USA SOLO queste environment variables:
+- STRIPE_SECRET_KEY
+- STRIPE_PUBLISHABLE_KEY
+- STRIPE_WEBHOOK_SECRET
+- APP_URL
+
+Se mancano, il sistema deve mostrare un errore chiaro in sviluppo.
+
+COSA DEVI FARE
+
+1) CONFIGURAZIONE STRIPE
+- integra Stripe lato server
+- inizializza Stripe usando process.env.STRIPE_SECRET_KEY
+- usa la publishable key lato client tramite process.env.STRIPE_PUBLISHABLE_KEY o equivalente sicuro esposto dal backend
+- non esporre mai la secret key al frontend
+
+2) CHECKOUT CORSI
+Implementa o verifica il flusso di pagamento dei corsi:
+- il cliente autenticato sceglie un corso
+- il backend calcola il prezzo reale del corso
+- applica eventuale sconto del corso
+- applica eventuale coupon valido
+- crea una Stripe Checkout Session in modo sicuro
+- reindirizza il cliente a Stripe Checkout
+- usa currency EUR
+- imposta success_url e cancel_url basate su APP_URL
+
+3) VALIDAZIONE SICURA
+Il prezzo finale deve essere calcolato solo dal backend.
+NON fidarti mai del prezzo passato dal frontend.
+Il backend deve:
+- recuperare il corso dal database
+- verificare se il corso è attivo
+- applicare sconto del corso se presente
+- validare eventuale coupon
+- calcolare il totale finale reale
+- creare la sessione Stripe con l’importo corretto
+
+4) ENDPOINT BACKEND
+Crea o verifica questi endpoint, senza rompere quelli esistenti:
+
+- POST /api/stripe/create-checkout-session
+  Input:
+  - courseId
+  - couponCode opzionale
+  - userId ricavato dalla sessione/login, non fidarti del frontend
+
+  Output:
+  - checkoutUrl oppure sessionId
+
+- POST /api/stripe/webhook
+  Deve ricevere e verificare gli eventi Stripe usando STRIPE_WEBHOOK_SECRET
+
+5) WEBHOOK
+Implementa il webhook Stripe correttamente.
+Usa la verifica firma webhook.
+Gestisci almeno questi eventi:
+- checkout.session.completed
+
+Quando arriva checkout.session.completed:
+- verifica che il pagamento sia completato
+- evita duplicati
+- salva l’acquisto nel database
+- collega l’acquisto all’utente corretto
+- crea la notifica interna con il codice corso
+- aggiorna eventuale uso coupon
+- imposta accessCodeSent = true
+
+IMPORTANTE:
+non basarti solo sul redirect frontend di successo.
+La conferma vera deve avvenire dal webhook.
+
+6) DATABASE / LOGICA
+Verifica che il sistema salvi correttamente:
+- acquisto corso
+- stripeSessionId
+- importo pagato
+- coupon applicato
+- stato pagamento
+- utente proprietario
+- codice corso inviato tramite notifica
+
+Se esiste già la tabella/entity CoursePurchase, riutilizzala.
+Se esiste già Notification, riutilizzala.
+Non duplicare strutture già esistenti se non necessario.
+
+7) FRONTEND
+Nel frontend:
+- quando il cliente clicca “Acquista corso”, chiama il backend
+- il backend restituisce l’URL o sessionId checkout Stripe
+- reindirizza il cliente a Stripe
+- in caso di errore, mostra messaggio chiaro e pulito
+- mantieni lo stile grafico IUSMK esistente
+
+8) PAGINE SUCCESSO / ANNULLAMENTO
+Crea o verifica due pagine pulite:
+- pagamento riuscito
+- pagamento annullato
+
+ATTENZIONE:
+la pagina di successo non deve da sola creare l’acquisto.
+Deve solo informare il cliente che il pagamento è in verifica o completato.
+La logica vera resta nel webhook.
+
+9) ENV VARIABLES / REPLIT SECRETS
+Configura il progetto in modo che funzioni con queste variabili:
+- STRIPE_SECRET_KEY
+- STRIPE_PUBLISHABLE_KEY
+- STRIPE_WEBHOOK_SECRET
+- APP_URL
+
+Se manca una variabile, mostra errore leggibile in console/server.
+
+10) WEBHOOK SETUP HELPER
+Aggiungi nel progetto una breve documentazione tecnica o commento chiaro su come configurare il webhook Stripe Dashboard con URL:
+[APP_URL]/api/stripe/webhook
+
+11) SICUREZZA
+- non esporre mai chiavi segrete
+- non salvare password in chiaro
+- non fidarti di importi passati dal frontend
+- proteggi gli endpoint che richiedono utente autenticato
+- il checkout deve essere disponibile solo a utenti loggati
+
+12) COSA NON DEVI TOCCARE
+NON rompere o modificare inutilmente:
+- login/registrazione già funzionanti
+- dashboard admin
+- corsi
+- coupon
+- notifiche
+- grafica generale
+- altre funzioni già stabili
+
+13) TEST FINALE
+Verifica tutto end-to-end:
+- utente loggato
+- selezione corso
+- eventuale coupon
+- creazione checkout session
+- redirect a Stripe
+- completamento pagamento
+- webhook ricevuto
+- acquisto salvato
+- notifica con codice corso creata
+- visibile in “Notifiche” del cliente
+
+IMPORTANTE FINALE
+Non usare valori finti se il sistema è già pronto.
+Integra Stripe realmente.
+Non hardcodare nessuna chiave nel codice.
+Usa solo Replit Secrets.
+Fai modifiche precise e mirate.

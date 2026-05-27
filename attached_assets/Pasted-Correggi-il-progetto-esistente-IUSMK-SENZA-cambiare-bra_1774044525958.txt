@@ -1,0 +1,172 @@
+Correggi il progetto esistente IUSMK SENZA cambiare branding, colori, font, stile generale o layout principale. Devi sistemare un bug reale nella visualizzazione dei corsi pubblicati.
+
+ATTENZIONE:
+Adesso non si vede più niente né nella sezione homepage “Le Masterclass” né nella pagina “Academy”, anche se i corsi esistono nel pannello admin.
+Voglio una correzione reale della logica dati/frontend, non una soluzione finta.
+
+==================================================
+PROBLEMA REALE DA RISOLVERE
+==================================================
+
+Attualmente succede questo:
+1. nella homepage, sezione “Le Masterclass”, al posto della copertina corso esce un placeholder tipo:
+   “Masterclass in arrivo”
+2. nella pagina Academy compare:
+   “Nessun corso disponibile”
+3. però i corsi nel pannello admin esistono davvero
+
+Quindi il problema è quasi certamente uno di questi:
+- il frontend non sta leggendo correttamente i corsi dal database
+- vengono filtrati male i corsi pubblicati
+- la query usa il campo sbagliato
+- il mapping stato/pubblicato è rotto
+- la homepage e Academy stanno leggendo una fonte dati diversa da quella admin
+- la cover del corso non viene risolta correttamente
+
+==================================================
+OBIETTIVO
+==================================================
+
+Voglio che:
+
+1. nella homepage, sezione “Le Masterclass”:
+- compaia di nuovo UNA sola copertina reale di un corso esistente
+- non il placeholder grigio
+- il pulsante “Scopri tutti i corsi” resti
+
+2. nella pagina Academy:
+- compaiano di nuovo i corsi realmente esistenti
+- non “Nessun corso disponibile”
+- se ci sono corsi pubblicati, devono vedersi
+- se davvero non ce ne sono, solo allora mostrare lo stato vuoto
+
+==================================================
+1. CONTROLLA LA LOGICA CORSI PUBBLICATI
+==================================================
+
+Verifica nel backend/database come viene salvato lo stato corso.
+Controlla i valori reali, ad esempio:
+- pubblicato
+- published
+- bozza
+- draft
+- boolean tipo isPublished
+- status enum
+
+Poi correggi homepage e Academy affinché leggano correttamente i corsi pubblicati reali.
+
+IMPORTANTE:
+- se nel pannello admin un corso risulta “Pubblicato”, allora deve essere visibile in Academy
+- e uno di questi corsi deve comparire nella homepage come cover sezione Masterclass
+
+==================================================
+2. HOMEPAGE — SEZIONE “LE MASTERCLASS”
+==================================================
+
+Voglio questa logica precisa:
+
+- mostra UNA sola cover di un corso esistente
+- usa un corso pubblicato reale preso dal database
+- priorità:
+  1. corso in evidenza, se esiste
+  2. altrimenti il primo corso pubblicato
+  3. altrimenti il più recente pubblicato
+
+Se esiste almeno un corso pubblicato:
+- NON mostrare il placeholder “Masterclass in arrivo”
+- mostra la vera cover del corso
+- mostra i dati coerenti del corso
+- lascia il bottone “Scopri tutti i corsi”
+
+Se non esiste nessun corso pubblicato:
+- solo allora mostra placeholder/stato vuoto
+
+==================================================
+3. PAGINA ACADEMY
+==================================================
+
+Correggi la query/rendering della pagina Academy.
+
+Se esistono corsi pubblicati nel database:
+- mostra le card corso reali
+- con copertina corretta
+- titolo corretto
+- livello corretto
+- durata corretta, se presente
+- descrizione breve, se presente
+
+Non deve comparire:
+- “Nessun corso disponibile”
+se nel database ci sono corsi pubblicati
+
+==================================================
+4. STESSA FONTE DATI TRA ADMIN E SITO PUBBLICO
+==================================================
+
+Assicurati che:
+- il pannello admin
+- la homepage
+- la pagina Academy
+
+leggano tutti gli stessi corsi reali dal database corretto
+
+Non voglio:
+- dati mock
+- dati hardcoded separati
+- array statici diversi da quelli admin
+
+==================================================
+5. COPERTINE CORSI
+==================================================
+
+Verifica anche la logica delle copertine:
+- se un corso ha una cover salvata, deve essere mostrata davvero
+- non deve cadere in placeholder per errore
+- controlla i campi:
+  - coverImage
+  - imageUrl
+  - thumbnail
+  - coverUrl
+  o qualunque nome usi il progetto
+- allinea backend e frontend sul campo reale
+
+==================================================
+6. RESPONSIVE
+==================================================
+
+Quando torni a mostrare i corsi:
+- controlla che si vedano bene sia su telefono sia su desktop
+- niente immagini rotte
+- niente card vuote
+- niente placeholder se il corso esiste davvero
+
+==================================================
+7. TEST OBBLIGATORI
+==================================================
+
+Fai davvero questi controlli:
+
+TEST 1
+- apri admin e verifica che esistano corsi con stato pubblicato
+
+TEST 2
+- apri homepage
+- verifica che nella sezione “Le Masterclass” compaia una cover reale del corso
+- non il placeholder grigio
+
+TEST 3
+- apri Academy
+- verifica che i corsi pubblicati compaiano davvero
+
+TEST 4
+- se imposti tutti i corsi in bozza/non pubblicato, solo allora deve comparire “Nessun corso disponibile”
+
+==================================================
+8. IMPORTANTE
+==================================================
+
+- fai modifiche reali nel codice esistente
+- non limitarti a descrivere cosa faresti
+- non usare dati fake
+- mantieni il design attuale
+- correggi davvero query, mapping stato e rendering corsi fino a far comparire di nuovo i corsi pubblicati

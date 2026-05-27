@@ -1,0 +1,344 @@
+Devi correggere in modo reale e completo il sistema admin + codici + dashboard studente del progetto esistente, SENZA cambiare branding, colori, stile generale o struttura visiva principale del sito IUSMK.
+
+ATTENZIONE:
+Non voglio modifiche solo estetiche o descrittive.
+Voglio che il sistema funzioni davvero end-to-end.
+
+==================================================
+PRIORITÀ 1 — DASHBOARD ADMIN MOBILE DAVVERO USABILE
+==================================================
+
+PROBLEMA ATTUALE
+Da telefono la dashboard admin non è davvero utilizzabile:
+- i blocchi/cards statistiche si vedono ma non sono cliccabili
+- non riesco a navigare bene tra le sezioni
+- non riesco a gestire bene il sito da smartphone
+Il sito/admin sarà usato soprattutto da telefono, quindi la UX mobile è prioritaria.
+
+OBIETTIVO
+Rendere il pannello admin perfetto da smartphone.
+
+MODIFICHE RICHIESTE
+
+1. MENU MOBILE ADMIN
+- Mantieni in alto logo IUSMK
+- Aggiungi un menu hamburger funzionante
+- Quando apro il menu devono comparire chiaramente:
+  - Dashboard
+  - Corsi
+  - Codici di Accesso
+  - Galleria
+  - Richieste di Contatto
+  - Credenziali Admin
+  - Torna al sito
+  - Esci
+- Il menu deve essere realmente cliccabile su telefono
+- Deve aprirsi e chiudersi bene
+
+2. CARD/BLOCCHI DASHBOARD
+- Le card statistiche nella dashboard admin mobile devono essere cliccabili
+- Ogni card deve portare alla sezione giusta:
+  - Studenti Totali → gestione studenti / overview studenti (se esiste, altrimenti pagina codici o dashboard dettagliata)
+  - Codici Attivi → pagina “Codici di Accesso”
+  - Corsi Pubblicati → pagina “Corsi”
+  - Elementi Galleria → pagina “Galleria”
+  - Richieste in Attesa → pagina “Richieste di Contatto”
+- Se una sezione specifica non esiste, collega la card alla pagina più coerente
+- Aggiungi hover/tap feedback mobile chiaro
+
+3. DASHBOARD MOBILE LAYOUT
+- Ottimizza spaziature e header mobile
+- Evita testo tagliato
+- Evita elementi che finiscono sotto la navbar o dietro overlay
+- I pulsanti e link devono essere grandi abbastanza da cliccare bene col dito
+- Nessun blocco deve essere “finto”: tutto ciò che sembra cliccabile deve esserlo davvero
+
+==================================================
+PRIORITÀ 2 — CODICI DI ACCESSO: RIFARE LA LOGICA IN MODO FUNZIONANTE
+==================================================
+
+PROBLEMA ATTUALE
+Adesso non funziona davvero:
+- creo un codice
+- il cliente lo inserisce
+- nella sua dashboard non compare nessun corso
+- il sistema di sblocco è incoerente o rotto
+
+Devi correggere completamente il flusso.
+
+==================================================
+A. CODICI PIÙ CORTI
+==================================================
+
+Voglio che i codici non siano più lunghi alfanumerici complicati.
+
+NUOVA REGOLA:
+- i codici devono essere brevi
+- massimo 6 caratteri
+- solo numeri oppure numeri + lettere maiuscole semplici, ma preferenza: solo numeri
+- meglio se 6 cifre numeriche tipo:
+  482193
+  105874
+
+IMPLEMENTAZIONE:
+- genera codici casuali unici di 6 cifre
+- assicurati che non ci siano duplicati nel database
+- se un codice esiste già, rigeneralo
+- aggiorna sia creazione codice che validazione codice
+
+==================================================
+B. MODIFICA CODICE GIÀ ESISTENTE
+==================================================
+
+Aggiungi nella dashboard admin, nella sezione “Codici di Accesso”, la possibilità di modificare un codice esistente.
+
+Ogni codice deve poter essere modificato almeno nei seguenti campi:
+- nome cliente
+- email cliente
+- corso associato
+- stato (attivo/revocato/disattivato)
+- scadenza (se prevista)
+- note interne opzionali (se esiste questo campo, altrimenti aggiungilo)
+
+IMPORTANTE:
+- il codice stesso può restare invariato di default
+- opzionalmente puoi aggiungere anche “Rigenera codice”
+- la modifica deve salvare davvero nel database
+- dopo il salvataggio, il sistema studente deve leggere i dati aggiornati
+
+Nella tabella/lista admin aggiungi:
+- tasto modifica per ogni codice
+- modal o pagina modifica funzionante
+- salvataggio reale
+- feedback di conferma successo
+
+==================================================
+C. STESSA EMAIL = PIÙ CORSI DIVERSI
+==================================================
+
+QUESTA È UNA REGOLA FONDAMENTALE
+
+Voglio che uno stesso cliente/email possa avere più corsi diversi.
+Esempio:
+andreaaresini118@gmail.com
+può avere:
+- Corso Fade
+- Corso Design
+- Corso Color
+MA
+non deve poter avere due codici attivi per lo stesso identico videocorso, salvo eccezioni deliberate da admin.
+
+NUOVA LOGICA DA IMPLEMENTARE
+
+1. CONSENTITO
+- stessa email
+- più codici
+- purché i codici siano associati a corsi diversi
+
+2. NON CONSENTITO
+- due codici attivi per la stessa email e lo stesso corso
+- se admin prova a creare un secondo codice per la stessa email e stesso corso, mostra errore chiaro tipo:
+  “Esiste già un codice attivo per questo cliente su questo corso”
+
+3. DASHBOARD STUDENTE
+- quando uno studente accede, devono comparire TUTTI i corsi sbloccati associati alla sua email
+- non solo uno
+- se ha 2 o 3 corsi diversi, devono vedersi tutti come card separate
+
+==================================================
+D. FLUSSO CORRETTO DI SBLOCCO CORSI
+==================================================
+
+RIDISEGNA E CORREGGI IL FLUSSO IN QUESTO MODO
+
+1. ADMIN CREA CODICE
+Quando admin genera un codice:
+- seleziona il corso
+- inserisce nome cliente
+- inserisce email cliente
+- salva
+- il codice viene creato nel database
+- stato = attivo
+- quel codice è associato a uno specifico corso e una specifica email
+
+2. CLIENTE INSERISCE CODICE
+Quando il cliente entra nella sua dashboard o nella sezione “Attiva Codice”:
+- inserisce il codice
+- il sistema controlla che il codice esista
+- controlla che sia attivo
+- recupera il corso associato
+- recupera l’email associata
+- se il cliente è loggato con quella stessa email oppure la inserisce correttamente, il corso viene sbloccato
+
+3. RISULTATO
+Dopo attivazione corretta:
+- il corso deve comparire davvero nella dashboard studente
+- non deve uscire “Nessun corso sbloccato”
+- il sistema deve leggere tutti i corsi attivi associati a quell’utente/email
+
+4. SE IL CODICE È GIÀ ATTIVATO
+- se il corso è già sbloccato per quell’utente, non andare in errore
+- mostra messaggio tipo:
+  “Questo corso è già attivo nel tuo account”
+oppure
+  “Corso già sbloccato”
+- non duplicare il corso nella dashboard
+
+==================================================
+E. DASHBOARD STUDENTE: DEVE MOSTRARE DAVVERO I CORSI
+==================================================
+
+PROBLEMA DA RISOLVERE
+Ora la dashboard studente non mostra nulla anche se un codice esiste.
+
+DEVI:
+- correggere endpoint frontend/backend
+- correggere query database
+- correggere relazioni tra:
+  - StudentUser
+  - AccessCode
+  - Course
+  - AccessActivation / CourseAccess / relazione equivalente
+- la dashboard studente deve caricare davvero tutti i corsi associati all’utente/email
+
+CASI DA SUPPORTARE
+- 1 corso sbloccato → mostra 1 card
+- 2 corsi sbloccati → mostra 2 card
+- più corsi → mostra tutte le card
+- nessun corso → mostra stato vuoto con pulsante attiva codice
+
+IMPORTANTE
+Il pulsante “Attiva Codice” non deve più rompere nulla.
+
+==================================================
+F. SISTEMARE IL TASTO “ATTIVA CODICE”
+==================================================
+
+Attualmente dà errore o non serve a nulla.
+
+Correggilo così:
+- deve aprire il form di inserimento codice corretto
+oppure
+- deve portare alla pagina giusta
+- non deve dare errori JS/runtime/404
+- se il cliente ha già dei corsi, il pulsante può restare disponibile per aggiungerne altri
+- quindi:
+  - cliente con 1 corso già attivo può usare “Attiva Codice” per aggiungere un altro corso diverso
+  - ma non per duplicare lo stesso corso
+
+==================================================
+G. DATABASE / LOGICA RELAZIONALE
+==================================================
+
+Adegua il database e la logica in modo coerente.
+
+Serve una struttura che permetta:
+- un utente/email → più corsi
+- ogni corso → molti utenti
+- ogni codice → un corso specifico
+- ogni codice → una email destinataria
+- ogni utente → più attivazioni valide
+
+Se necessario crea o correggi una tabella relazione tipo:
+- StudentCourseAccess
+oppure
+- StudentEnrollments
+con campi tipo:
+- id
+- studentUserId
+- courseId
+- accessCodeId
+- activatedAt
+- status
+
+Questo semplifica il recupero dei corsi nella dashboard studente.
+
+==================================================
+H. CONTROLLI E VALIDAZIONI
+==================================================
+
+Aggiungi queste regole:
+
+1. CREAZIONE CODICE
+- codice unico a 6 cifre
+- corso obbligatorio
+- nome cliente obbligatorio
+- email valida obbligatoria
+
+2. BLOCCO DUPLICATI
+- stessa email + stesso corso + codice attivo già esistente = non creare nuovo codice
+- mostra errore chiaro
+
+3. ATTIVAZIONE CODICE
+- codice inesistente → messaggio chiaro
+- codice revocato → messaggio chiaro
+- codice già usato per lo stesso corso → messaggio chiaro
+- codice valido per un nuovo corso → sblocca il corso
+
+==================================================
+I. ADMIN: CODICI DI ACCESSO UI
+==================================================
+
+Nella sezione admin “Codici di Accesso”:
+- migliora la UX anche su mobile
+- ogni riga/card codice deve avere:
+  - codice breve
+  - nome cliente
+  - email
+  - corso
+  - stato
+  - scadenza
+  - azioni
+- azioni:
+  - modifica
+  - revoca / riattiva
+  - opzionale: rigenera codice
+- da telefono deve essere leggibile e cliccabile bene
+
+==================================================
+L. TEST OBBLIGATORI
+==================================================
+
+Dopo le modifiche testa davvero questi casi:
+
+TEST 1
+- crea un codice a 6 cifre per Andrea Aresini su Corso A
+- attiva il codice
+- verifica che Corso A compaia nella dashboard studente
+
+TEST 2
+- crea un secondo codice per la stessa email ma per Corso B
+- attiva il codice
+- verifica che in dashboard compaiano sia Corso A sia Corso B
+
+TEST 3
+- prova a creare un altro codice per la stessa email e lo stesso Corso A
+- il sistema deve bloccarlo con messaggio chiaro
+
+TEST 4
+- modifica un codice esistente
+- cambia email o corso
+- salva
+- verifica che il comportamento studente si aggiorni correttamente
+
+TEST 5
+- apri admin da telefono
+- verifica che:
+  - card cliccabili
+  - menu funzionante
+  - navigazione semplice
+  - Esci e Torna al sito accessibili
+  - Codici di Accesso gestibili bene
+
+==================================================
+M. IMPORTANTE
+==================================================
+
+- fai modifiche reali nel codice esistente
+- non limitarti a descrivere cosa faresti
+- non lasciare funzioni finte
+- mantieni il design attuale
+- dai priorità assoluta a:
+  1. funzionamento reale dei codici/corsi
+  2. dashboard admin usabile da telefono
+- correggi anche eventuali errori runtime/frontend/backend finché il flusso completo non funziona davvero

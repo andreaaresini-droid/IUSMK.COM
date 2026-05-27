@@ -1,0 +1,102 @@
+La galleria del sito IUSMK ora è peggiorata: si vedono solo i riquadri vuoti/skeleton, ma le immagini e i video non vengono caricati né mostrati.
+
+Devi correggere subito il problema senza modificare altre sezioni del sito.
+
+OBIETTIVO:
+Far tornare visibili tutte le immagini e tutti i video della galleria, mantenendo l’ottimizzazione delle performance ma senza rompere il caricamento.
+
+PROBLEMA ATTUALE:
+- La griglia della galleria mostra i box vuoti.
+- Le immagini/video esistono ma non vengono renderizzati.
+- Probabile problema con optimizedUrl / thumbnailUrl / mobileUrl vuoti, undefined, path sbagliati, lazy loading troppo aggressivo o fallback mancante.
+
+ISTRUZIONI IMPORTANTI:
+
+1. RIPRISTINA VISIBILITÀ IMMEDIATA:
+- Se thumbnailUrl esiste, usa thumbnailUrl.
+- Se thumbnailUrl non esiste, usa optimizedUrl.
+- Se optimizedUrl non esiste, usa mobileUrl.
+- Se mobileUrl non esiste, usa originalUrl.
+- Se nessuna versione ottimizzata esiste, mostra SEMPRE il file originale.
+- Non lasciare mai il box vuoto se originalUrl è disponibile.
+
+2. FALLBACK OBBLIGATORIO IMMAGINI:
+Nel componente della galleria, implementa una funzione tipo:
+
+const getImageSrc = (item) => {
+  return item.thumbnailUrl || item.optimizedUrl || item.mobileUrl || item.originalUrl || item.url || item.imageUrl;
+};
+
+Usa questo src reale nell’immagine.
+
+3. FALLBACK OBBLIGATORIO VIDEO:
+Per i video:
+- se posterUrl esiste, mostra posterUrl;
+- se posterUrl non esiste ma thumbnailUrl esiste, mostra thumbnailUrl;
+- se non esiste nessun poster, mostra comunque un box con icona play e carica il video originale solo al click.
+- Il video non deve restare invisibile.
+
+4. DEBUG PERCORSI:
+Controlla che gli URL salvati nel database siano corretti.
+Verifica se iniziano con:
+- /
+- https://
+- /uploads/
+- /assets/
+
+Se i percorsi sono relativi o sbagliati, correggi la costruzione URL.
+
+5. NON USARE SOLO FILE OTTIMIZZATI:
+Non fare affidamento solo su optimizedUrl.
+L’ottimizzazione può essere pending o fallita.
+La galleria deve funzionare anche con file non ottimizzati.
+
+6. GESTIONE STATI:
+- Se optimizationStatus è pending, mostra originalUrl temporaneamente.
+- Se optimizationStatus è failed, mostra originalUrl.
+- Se optimizationStatus è completed, usa optimizedUrl/thumbnailUrl.
+- Non nascondere i contenuti durante pending.
+
+7. LAZY LOADING:
+- Mantieni lazy loading, ma non deve impedire la visualizzazione.
+- Per i primi 6 elementi della galleria usa loading="eager".
+- Dal settimo elemento in poi usa loading="lazy".
+- Usa decoding="async".
+
+8. CSS:
+Controlla che le immagini non abbiano:
+- opacity: 0
+- visibility: hidden
+- display: none
+- z-index sotto altri overlay
+- height: 0
+- width: 0
+
+Ogni immagine deve riempire il box:
+width: 100%;
+height: 100%;
+object-fit: cover;
+
+9. ERROR HANDLING:
+Aggiungi onError sulle immagini:
+- se fallisce thumbnailUrl, prova optimizedUrl;
+- se fallisce optimizedUrl, prova originalUrl;
+- se fallisce tutto, mostra placeholder elegante “Immagine non disponibile”.
+
+10. ADMIN:
+Non modificare la logica admin adesso se non necessario.
+Prima priorità: far tornare visibile la galleria pubblica.
+
+11. NON MODIFICARE:
+- intro video
+- homepage
+- login
+- corsi
+- chat
+- pagamenti
+- grafica generale del sito
+
+RISULTATO FINALE:
+La galleria deve mostrare subito immagini e video.
+Se i file ottimizzati non sono pronti, deve usare automaticamente gli originali.
+Non devono più comparire riquadri vuoti.

@@ -1,0 +1,105 @@
+Devo correggere il logo 3D del sito IUSMK sia nella schermata intro sia nella home.
+
+PROBLEMI ATTUALI:
+1. Nella schermata intro il logo 3D ora è troppo piccolo.
+2. Il logo 3D deve ruotare lentamente da solo a 360 gradi.
+3. L’utente deve poterlo ruotare manualmente, ma quando smette di toccarlo deve tornare a ruotare automaticamente.
+
+OBIETTIVO:
+Rendere il logo 3D più grande nella intro e aggiungere rotazione automatica continua sia nella intro sia nella home.
+
+ISTRUZIONI:
+
+1. DIMENSIONE LOGO 3D INTRO:
+- Aumenta la dimensione del logo 3D nella schermata intro.
+- Deve essere più grande rispetto ad ora, ma senza essere tagliato.
+- Su desktop deve essere circa 2 volte più grande rispetto alla dimensione attuale.
+- Su mobile deve occupare circa 45%–55% della larghezza dello schermo.
+- Deve rimanere centrato sopra la scritta “TOCCA PER ENTRARE NEL MONDO DI IUSMK”.
+- Non deve coprire la scritta.
+
+2. NON FARLO TAGLIARE:
+- Mantieni il contenitore/Canvas abbastanza grande.
+- Non usare overflow hidden.
+- Il logo deve essere sempre completamente visibile anche mentre ruota.
+- Se aumenti la scala del modello, aumenta anche lo spazio del Canvas.
+
+3. ROTAZIONE AUTOMATICA:
+- Il logo 3D deve ruotare automaticamente e lentamente su se stesso a 360 gradi.
+- La rotazione deve essere continua, fluida e premium.
+- Deve girare sull’asse verticale Y.
+- Velocità consigliata: lenta, circa 1 giro completo ogni 12–18 secondi.
+- La rotazione automatica deve essere attiva sia nella intro sia nella home.
+
+4. INTERAZIONE UTENTE:
+- L’utente può ruotare il logo con dito o mouse.
+- Il logo NON deve spostarsi, deve solo ruotare.
+- Disattiva zoom e pan:
+  enableZoom={false}
+  enablePan={false}
+  enableRotate={true}
+
+5. DOPO IL TOCCO DELL’UTENTE:
+- Quando l’utente ruota manualmente il logo, sospendi temporaneamente la rotazione automatica.
+- Quando l’utente smette di toccare/muovere il logo, dopo circa 1 secondo il logo deve riprendere automaticamente a ruotare lentamente.
+- Non deve rimanere fermo per sempre dopo l’interazione.
+
+6. IMPLEMENTAZIONE CONSIGLIATA:
+- Nel componente Logo3D usa useFrame per la rotazione automatica.
+- Usa uno stato tipo isInteracting.
+- Quando OrbitControls emette start, imposta isInteracting = true.
+- Quando OrbitControls emette end, imposta isInteracting = false dopo un piccolo delay.
+- In useFrame:
+  if (!isInteracting) {
+    modelRef.current.rotation.y += 0.003;
+  }
+
+7. ESEMPIO LOGICA:
+const [isInteracting, setIsInteracting] = useState(false);
+const resumeTimeout = useRef(null);
+
+<OrbitControls
+  enableZoom={false}
+  enablePan={false}
+  enableRotate={true}
+  enableDamping={true}
+  dampingFactor={0.08}
+  rotateSpeed={0.6}
+  onStart={() => {
+    if (resumeTimeout.current) clearTimeout(resumeTimeout.current);
+    setIsInteracting(true);
+  }}
+  onEnd={() => {
+    resumeTimeout.current = setTimeout(() => {
+      setIsInteracting(false);
+    }, 1000);
+  }}
+/>
+
+useFrame(() => {
+  if (modelRef.current && !isInteracting) {
+    modelRef.current.rotation.y += 0.003;
+  }
+});
+
+8. HOME:
+- Applica la stessa rotazione automatica anche al logo 3D nella home.
+- Anche nella home l’utente può ruotarlo manualmente.
+- Anche nella home, quando smette di toccarlo, deve tornare a girare automaticamente.
+
+9. NON MODIFICARE:
+- video intro
+- testo intro
+- comportamento click intro
+- galleria
+- corsi
+- admin
+- chat
+- login
+- pagamenti
+- layout generale del sito
+
+RISULTATO FINALE:
+Nella intro il logo 3D è più grande e ben visibile.
+Sia nella intro sia nella home il logo 3D gira lentamente da solo a 360 gradi.
+Il cliente può ruotarlo manualmente, ma quando smette di toccarlo il logo riprende automaticamente la rotazione.

@@ -1,0 +1,63 @@
+Voglio sostituire SOLO l’immagine usata nell’intro del sito IUSMK con una nuova immagine che ti allegherò.
+
+ATTENZIONE:
+NON devi modificare assolutamente nulla di tutto il resto.
+
+Devi lasciare identici:
+- animazione
+- tempi
+- audio
+- taglio centrale
+- movimento del rasoio
+- overlay
+- testi
+- posizione elementi
+- effetti
+- transizioni
+- logica intro
+- responsive
+
+--------------------------------------------------
+OBIETTIVO
+--------------------------------------------------
+Sostituisci esclusivamente l’immagine attuale dell’intro con la nuova immagine allegata.
+
+--------------------------------------------------
+COSA FARE
+--------------------------------------------------
+1. Trova dove viene caricata l’immagine attuale dell’intro
+2. Sostituiscila con il nuovo file allegato
+3. Mantieni:
+   - stesso contenitore
+   - stesse dimensioni/adattamento
+   - stesso comportamento durante il taglio
+   - stesso posizionamento
+4. Se serve, usa object-fit / object-position solo per far vedere bene la nuova immagine, ma senza alterare il resto dell’animazione
+
+--------------------------------------------------
+IMPORTANTE
+--------------------------------------------------
+- NON toccare il codice dell’animazione
+- NON cambiare i tempi
+- NON cambiare il suono
+- NON cambiare il taglio in due parti
+- NON cambiare l’effetto delle due metà che vanno a destra e sinistra
+- NON cambiare il testo “Tocca per entrare nel mondo di IUSMK”
+- NON cambiare stile, colori o struttura dell’intro
+
+--------------------------------------------------
+TEST FINALI
+--------------------------------------------------
+Verifica che:
+- l’intro funzioni esattamente come prima
+- cambi solo l’immagine
+- il rasoio continui a tagliare correttamente al centro
+- la nuova immagine si veda bene su desktop e mobile
+- il sito sotto si apra come prima
+
+--------------------------------------------------
+OUTPUT
+--------------------------------------------------
+Fammi vedere solo:
+- il punto/file dove hai sostituito l’immagine
+- il nome della nuova immagine usata

@@ -1,0 +1,161 @@
+Aggiorna la sezione “Genera nuovo codice” nella dashboard admin di IUSMK.
+
+OBIETTIVO
+Quando l’admin crea un nuovo codice per un cliente:
+1. non deve più scrivere a mano nome ed email
+2. deve poter selezionare il cliente da un menu a tendina moderno, scorrevole e affidabile
+3. deve avere una barra di ricerca per trovare velocemente gli account registrati
+4. deve poter rimuovere completamente la data di scadenza se l’ha inserita per errore e vuole lasciare il codice senza scadenza
+
+PROBLEMI ATTUALI DA RISOLVERE
+- I campi “Nome cliente” e “Email cliente” sono manuali: voglio sostituirli con selezione account registrato
+- Il menu deve essere realmente funzionante su mobile e desktop, cliccabile, scorrevole e senza bug
+- Il campo “Scade il (opzionale)” non permette di eliminare la data una volta inserita: va corretto
+
+MODIFICA UI RICHIESTA
+
+1. SOSTITUIRE I CAMPI MANUALI CLIENTE
+Nella form “Genera nuovo codice”:
+- rimuovi i campi manuali:
+  - Nome cliente
+  - Email cliente
+- sostituiscili con un unico campo selettore cliente, ad esempio:
+  - “Seleziona account cliente”
+
+2. MENU A TENDINA ACCOUNT REGISTRATI
+Il nuovo campo cliente deve:
+- mostrare tutti gli account registrati
+- essere apribile correttamente sia su mobile sia su desktop
+- essere completamente scorrevole
+- permettere di cliccare senza problemi ogni voce
+- chiudersi correttamente quando si seleziona un cliente
+- non avere problemi di overlay, z-index, scroll bloccato o tap non funzionante
+
+Ogni voce del menu deve mostrare chiaramente:
+- nome completo
+- email
+facoltativo ma utile:
+- data registrazione oppure ruolo, se disponibile
+
+Formato consigliato:
+Andrea Aresini — humoncase@gmail.com
+
+3. BARRA DI RICERCA ACCOUNT
+Nel selettore clienti aggiungi una barra di ricerca interna:
+- ricerca in tempo reale tra gli account registrati
+- cerca sia per nome sia per email
+- filtro immediato mentre l’admin scrive
+- se non trova risultati mostra:
+  - “Nessun account trovato”
+
+4. AUTO-COMPILAZIONE DATI
+Quando l’admin seleziona un account dal menu:
+- il sistema deve collegare automaticamente quel cliente al codice
+- salvare nel record almeno:
+  - userId dell’account selezionato
+  - nome del cliente
+  - email del cliente
+Non voglio errori di disallineamento: il codice deve essere assegnato all’account corretto.
+
+5. MANTENERE COMPATIBILITÀ CON CODICI GIÀ ESISTENTI
+Non rompere la logica esistente dei codici.
+Il nuovo sistema deve continuare a funzionare con:
+- assegnazione corso
+- generazione codice
+- utilizzo codice
+- dashboard admin
+- eventuale revoca codice
+
+6. CORREGGERE CAMPO DATA DI SCADENZA
+Il campo “Scade il (opzionale)” deve essere davvero opzionale.
+
+Problema attuale:
+- se l’admin inserisce una data per sbaglio, poi non riesce più a toglierla
+
+Correzione richiesta:
+- l’admin deve poter cancellare completamente la data
+- il valore deve poter tornare a null / vuoto
+- il codice deve poter essere salvato anche senza scadenza
+- se la data viene rimossa, nel database non deve restare una stringa vuota sbagliata o una data finta
+- salvare proprio null oppure nessun valore, in base alla struttura attuale
+
+7. UX MIGLIORE PER LA DATA
+Per il campo scadenza voglio una di queste soluzioni affidabili:
+- pulsante “X” per cancellare la data selezionata
+oppure
+- toggle “Nessuna scadenza”
+oppure entrambe
+
+Comportamento corretto:
+- nessuna scadenza → campo vuoto e valore null
+- data selezionata → valore salvato correttamente
+- cambio idea → data eliminabile senza bug
+
+8. VALIDAZIONI
+La form deve validare così:
+- corso obbligatorio
+- account cliente obbligatorio
+- max dispositivi obbligatorio
+- data scadenza facoltativa
+- note interne facoltative
+
+9. MOBILE FIRST
+Questa sezione deve funzionare perfettamente anche da telefono.
+Controllare in particolare:
+- apertura menu clienti
+- scroll della lista account
+- tap sulle voci
+- tastiera e barra di ricerca
+- chiusura del menu
+- selezione cliente
+- cancellazione data scadenza
+
+10. DETTAGLI TECNICI IMPORTANTI
+Controlla e correggi eventuali problemi di:
+- z-index
+- overflow hidden nei parent container
+- pointer-events
+- scroll interno del dropdown
+- focus input su mobile
+- click fuori dal menu per chiuderlo
+- sincronizzazione valore selezionato
+- salvataggio di expiresAt = null quando il campo viene svuotato
+
+11. DATI DA USARE
+La lista clienti deve essere popolata dagli account registrati reali del sito.
+Non usare dati statici.
+La ricerca deve lavorare sui dati reali del database utenti.
+
+12. COMPORTAMENTO FINALE DESIDERATO
+Flusso corretto:
+- admin apre “Genera nuovo codice”
+- sceglie il corso
+- clicca sul selettore cliente
+- vede tutti gli account registrati
+- può cercare per nome o email
+- seleziona il cliente
+- il sistema collega automaticamente account, nome ed email
+- può inserire o non inserire una data di scadenza
+- se la inserisce per errore, la può cancellare completamente
+- clicca “Genera”
+- il codice viene creato correttamente per quell’account
+
+13. NON MODIFICARE IL RESTO
+Non cambiare il design generale della dashboard admin.
+Aggiorna solo:
+- selezione cliente nella creazione codice
+- ricerca account
+- gestione data di scadenza
+
+14. TEST FINALI DA FARE
+Verifica questi casi:
+- lista account si apre correttamente
+- lista account è scorrevole
+- ricerca per nome funziona
+- ricerca per email funziona
+- selezione account compila correttamente i dati
+- generazione codice salva userId, nome ed email corretti
+- data di scadenza si può inserire
+- data di scadenza si può eliminare completamente
+- codice senza scadenza si salva senza errori
+- tutto funziona su mobile e desktop

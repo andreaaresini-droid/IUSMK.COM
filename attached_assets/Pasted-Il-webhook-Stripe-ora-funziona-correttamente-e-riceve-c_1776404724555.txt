@@ -1,0 +1,64 @@
+Il webhook Stripe ora funziona correttamente e riceve checkout.session.completed con HTTP 200, ma non vengono eseguite le azioni post-pagamento.
+
+Questo è il problema:
+- nessuna notifica cliente
+- nessuna email cliente
+- nessuna notifica admin
+- nessun codice accesso
+
+Dal payload reale del webhook:
+- payment_status = paid
+- client_reference_id = "3"
+- customer_email = null
+- customer_details.email = andreaaresini@icloud.com
+- payment_link = plink_1TN4hrE4SaTY9UltBkwZhDQ0
+- metadata = {}
+
+Quindi devi correggere il webhook in modo che:
+
+1. Non usi solo session.customer_email
+   Usa come fallback:
+   - session.customer_details.email
+   - session.customer_email
+
+2. Usi client_reference_id per trovare l’utente del sito
+
+3. Trovi il corso tramite payment_link
+   Cioè deve cercare nel database il corso che ha associato quel payment link Stripe
+
+4. Solo se:
+   - event.type === "checkout.session.completed"
+   - session.payment_status === "paid"
+   deve:
+   - creare acquisto completato
+   - assegnare il corso all’utente
+   - generare codice accesso
+   - salvare il codice
+   - inviare notifica interna al cliente
+   - inviare email al cliente
+   - inviare notifica push all’admin
+
+5. Aggiungi log dettagliati:
+   [WEBHOOK] event received
+   [WEBHOOK] payment_status
+   [WEBHOOK] client_reference_id
+   [WEBHOOK] resolved email
+   [WEBHOOK] payment_link
+   [WEBHOOK] user found
+   [WEBHOOK] course found
+   [WEBHOOK] purchase saved
+   [WEBHOOK] access code generated
+   [WEBHOOK] customer notification sent
+   [WEBHOOK] customer email sent
+   [WEBHOOK] admin push sent
+   [WEBHOOK] completed successfully
+
+6. Se non trova il corso dal payment_link, logga chiaramente:
+   [WEBHOOK ERROR] course not found for payment_link
+
+7. Se non trova l’utente dal client_reference_id, logga chiaramente:
+   [WEBHOOK ERROR] user not found for client_reference_id
+
+8. Non rispondere solo "OK" senza aver prima eseguito davvero il fulfillment o almeno loggato dove si blocca
+
+9. Testa il webhook con resend dell’evento reale e dimmi esattamente in quale passaggio si blocca o conferma che tutto funziona

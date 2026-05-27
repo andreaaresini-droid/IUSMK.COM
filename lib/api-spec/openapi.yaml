@@ -1,0 +1,1010 @@
+openapi: 3.1.0
+info:
+  title: Api
+  version: 0.1.0
+  description: Barber Artist API - courses, access codes, admin panel
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: auth
+    description: Authentication operations
+  - name: courses
+    description: Course management
+  - name: access
+    description: Course access and codes
+  - name: gallery
+    description: Gallery management
+  - name: testimonials
+    description: Testimonials
+  - name: contact
+    description: Contact requests
+  - name: admin
+    description: Admin operations
+
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /auth/login:
+    post:
+      operationId: studentLogin
+      tags: [auth]
+      summary: Student login with email and access code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StudentLoginRequest"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/admin/login:
+    post:
+      operationId: adminLogin
+      tags: [auth]
+      summary: Admin login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminLoginRequest"
+      responses:
+        "200":
+          description: Admin login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Logout
+      responses:
+        "200":
+          description: Logged out
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /auth/me:
+    get:
+      operationId: getCurrentUser
+      tags: [auth]
+      summary: Get current user
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CurrentUser"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /access/activate:
+    post:
+      operationId: activateCode
+      tags: [access]
+      summary: Activate an access code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ActivateCodeRequest"
+      responses:
+        "200":
+          description: Code activated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActivateCodeResponse"
+        "400":
+          description: Invalid or expired code
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /courses:
+    get:
+      operationId: listCourses
+      tags: [courses]
+      summary: List all published courses
+      responses:
+        "200":
+          description: List of courses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Course"
+
+  /courses/{courseId}:
+    get:
+      operationId: getCourse
+      tags: [courses]
+      summary: Get course details
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Course details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CourseDetail"
+        "404":
+          description: Course not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /student/courses:
+    get:
+      operationId: getStudentCourses
+      tags: [access]
+      summary: Get courses accessible to the current student
+      responses:
+        "200":
+          description: Student courses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StudentCourse"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /student/courses/{courseId}/modules/{moduleId}/video:
+    get:
+      operationId: getVideoToken
+      tags: [access]
+      summary: Get a signed video token for a module
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: moduleId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Video access token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VideoTokenResponse"
+        "401":
+          description: Not authenticated or no access
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /student/progress:
+    post:
+      operationId: updateProgress
+      tags: [access]
+      summary: Update video progress for a module
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProgressRequest"
+      responses:
+        "200":
+          description: Progress updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /gallery:
+    get:
+      operationId: listGallery
+      tags: [gallery]
+      summary: List gallery items
+      parameters:
+        - name: category
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [fade, design_cut, color, freestyle, transformation, beard, academy]
+      responses:
+        "200":
+          description: Gallery items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GalleryItem"
+
+  /testimonials:
+    get:
+      operationId: listTestimonials
+      tags: [testimonials]
+      summary: List testimonials
+      responses:
+        "200":
+          description: Testimonials
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Testimonial"
+
+  /contact:
+    post:
+      operationId: submitContact
+      tags: [contact]
+      summary: Submit a contact request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContactRequest"
+      responses:
+        "200":
+          description: Contact request submitted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /admin/courses:
+    get:
+      operationId: adminListCourses
+      tags: [admin]
+      summary: Admin - List all courses
+      responses:
+        "200":
+          description: All courses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AdminCourse"
+    post:
+      operationId: adminCreateCourse
+      tags: [admin]
+      summary: Admin - Create a course
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCourseRequest"
+      responses:
+        "201":
+          description: Course created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminCourse"
+
+  /admin/courses/{courseId}:
+    put:
+      operationId: adminUpdateCourse
+      tags: [admin]
+      summary: Admin - Update a course
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCourseRequest"
+      responses:
+        "200":
+          description: Course updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminCourse"
+    delete:
+      operationId: adminDeleteCourse
+      tags: [admin]
+      summary: Admin - Delete a course
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Course deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /admin/access-codes:
+    get:
+      operationId: adminListAccessCodes
+      tags: [admin]
+      summary: Admin - List all access codes
+      responses:
+        "200":
+          description: All access codes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AdminAccessCode"
+    post:
+      operationId: adminCreateAccessCode
+      tags: [admin]
+      summary: Admin - Generate an access code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAccessCodeRequest"
+      responses:
+        "201":
+          description: Access code created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminAccessCode"
+
+  /admin/access-codes/{codeId}/revoke:
+    post:
+      operationId: adminRevokeAccessCode
+      tags: [admin]
+      summary: Admin - Revoke an access code
+      parameters:
+        - name: codeId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Code revoked
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /admin/gallery:
+    get:
+      operationId: adminListGallery
+      tags: [admin]
+      summary: Admin - List gallery items
+      responses:
+        "200":
+          description: Gallery items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GalleryItem"
+    post:
+      operationId: adminAddGalleryItem
+      tags: [admin]
+      summary: Admin - Add gallery item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateGalleryItemRequest"
+      responses:
+        "201":
+          description: Gallery item created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GalleryItem"
+
+  /admin/gallery/{itemId}:
+    delete:
+      operationId: adminDeleteGalleryItem
+      tags: [admin]
+      summary: Admin - Delete gallery item
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Gallery item deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /admin/stats:
+    get:
+      operationId: adminGetStats
+      tags: [admin]
+      summary: Admin - Get dashboard stats
+      responses:
+        "200":
+          description: Dashboard stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminStats"
+
+  /admin/contact-requests:
+    get:
+      operationId: adminListContactRequests
+      tags: [admin]
+      summary: Admin - List contact requests
+      responses:
+        "200":
+          description: Contact requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AdminContactRequest"
+
+  /admin/testimonials:
+    get:
+      operationId: adminListTestimonials
+      tags: [admin]
+      summary: Admin - List testimonials
+      responses:
+        "200":
+          description: Testimonials
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Testimonial"
+    post:
+      operationId: adminCreateTestimonial
+      tags: [admin]
+      summary: Admin - Create testimonial
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTestimonialRequest"
+      responses:
+        "201":
+          description: Testimonial created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Testimonial"
+
+  /admin/testimonials/{testimonialId}:
+    delete:
+      operationId: adminDeleteTestimonial
+      tags: [admin]
+      summary: Admin - Delete testimonial
+      parameters:
+        - name: testimonialId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Testimonial deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required: [status]
+
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+      required: [success]
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+      required: [error]
+
+    StudentLoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        code:
+          type: string
+        fingerprint:
+          type: string
+      required: [email, code]
+
+    AdminLoginRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      required: [username, password]
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        user:
+          $ref: "#/components/schemas/CurrentUser"
+      required: [token, user]
+
+    CurrentUser:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum: [student, admin]
+      required: [id, name, email, role]
+
+    ActivateCodeRequest:
+      type: object
+      properties:
+        code:
+          type: string
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        fingerprint:
+          type: string
+      required: [code, email, name]
+
+    ActivateCodeResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        token:
+          type: string
+        courseId:
+          type: integer
+      required: [success, message]
+
+    Course:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+        shortDescription:
+          type: string
+        level:
+          type: string
+          enum: [beginner, intermediate, advanced]
+        durationHours:
+          type: number
+        thumbnailUrl:
+          type: string
+        price:
+          type: number
+        isPublished:
+          type: boolean
+        whatYouLearn:
+          type: array
+          items:
+            type: string
+        requirements:
+          type: array
+          items:
+            type: string
+      required: [id, title, slug, description, level, isPublished]
+
+    CourseDetail:
+      allOf:
+        - $ref: "#/components/schemas/Course"
+        - type: object
+          properties:
+            modules:
+              type: array
+              items:
+                $ref: "#/components/schemas/CourseModule"
+
+    CourseModule:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        orderIndex:
+          type: integer
+        durationMinutes:
+          type: integer
+        isPreview:
+          type: boolean
+      required: [id, title, orderIndex]
+
+    StudentCourse:
+      allOf:
+        - $ref: "#/components/schemas/Course"
+        - type: object
+          properties:
+            modules:
+              type: array
+              items:
+                $ref: "#/components/schemas/StudentModule"
+            expiresAt:
+              type: string
+              format: date-time
+            progress:
+              type: number
+
+    StudentModule:
+      allOf:
+        - $ref: "#/components/schemas/CourseModule"
+        - type: object
+          properties:
+            completed:
+              type: boolean
+            progressSeconds:
+              type: integer
+
+    VideoTokenResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        videoUrl:
+          type: string
+        watermark:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time
+      required: [token, videoUrl]
+
+    UpdateProgressRequest:
+      type: object
+      properties:
+        moduleId:
+          type: integer
+        progressSeconds:
+          type: integer
+        completed:
+          type: boolean
+      required: [moduleId, progressSeconds]
+
+    GalleryItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        imageUrl:
+          type: string
+        title:
+          type: string
+        category:
+          type: string
+          enum: [fade, design_cut, color, freestyle, transformation, beard, academy]
+        orderIndex:
+          type: integer
+      required: [id, imageUrl, category]
+
+    CreateGalleryItemRequest:
+      type: object
+      properties:
+        imageUrl:
+          type: string
+        title:
+          type: string
+        category:
+          type: string
+          enum: [fade, design_cut, color, freestyle, transformation, beard, academy]
+        orderIndex:
+          type: integer
+      required: [imageUrl, category]
+
+    Testimonial:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        role:
+          type: string
+        content:
+          type: string
+        rating:
+          type: integer
+        avatarUrl:
+          type: string
+        isPublished:
+          type: boolean
+      required: [id, name, content, rating]
+
+    CreateTestimonialRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        role:
+          type: string
+        content:
+          type: string
+        rating:
+          type: integer
+        avatarUrl:
+          type: string
+        isPublished:
+          type: boolean
+      required: [name, content, rating]
+
+    ContactRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        subject:
+          type: string
+          enum: [booking, course_info, collaboration, other]
+        message:
+          type: string
+      required: [name, email, subject, message]
+
+    AdminCourse:
+      allOf:
+        - $ref: "#/components/schemas/Course"
+        - type: object
+          properties:
+            modules:
+              type: array
+              items:
+                $ref: "#/components/schemas/AdminModule"
+            activeCodes:
+              type: integer
+            totalStudents:
+              type: integer
+
+    AdminModule:
+      allOf:
+        - $ref: "#/components/schemas/CourseModule"
+        - type: object
+          properties:
+            videoUrl:
+              type: string
+            videoAssetId:
+              type: string
+
+    CreateCourseRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+        shortDescription:
+          type: string
+        level:
+          type: string
+          enum: [beginner, intermediate, advanced]
+        durationHours:
+          type: number
+        thumbnailUrl:
+          type: string
+        price:
+          type: number
+        isPublished:
+          type: boolean
+        whatYouLearn:
+          type: array
+          items:
+            type: string
+        requirements:
+          type: array
+          items:
+            type: string
+      required: [title, slug, description, level]
+
+    AdminAccessCode:
+      type: object
+      properties:
+        id:
+          type: integer
+        code:
+          type: string
+        courseId:
+          type: integer
+        courseTitle:
+          type: string
+        assignedName:
+          type: string
+        assignedEmail:
+          type: string
+        isActive:
+          type: boolean
+        maxDevices:
+          type: integer
+        maxActivations:
+          type: integer
+        expiresAt:
+          type: string
+          format: date-time
+        activatedAt:
+          type: string
+          format: date-time
+        boundUserEmail:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, code, courseId, isActive, maxDevices, maxActivations]
+
+    CreateAccessCodeRequest:
+      type: object
+      properties:
+        courseId:
+          type: integer
+        assignedName:
+          type: string
+        assignedEmail:
+          type: string
+        maxDevices:
+          type: integer
+        maxActivations:
+          type: integer
+        expiresAt:
+          type: string
+          format: date-time
+      required: [courseId]
+
+    AdminStats:
+      type: object
+      properties:
+        totalStudents:
+          type: integer
+        activeCodes:
+          type: integer
+        totalCourses:
+          type: integer
+        totalGalleryItems:
+          type: integer
+        pendingContacts:
+          type: integer
+      required: [totalStudents, activeCodes, totalCourses, totalGalleryItems, pendingContacts]
+
+    AdminContactRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        subject:
+          type: string
+        message:
+          type: string
+        isRead:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, name, email, subject, message, isRead]

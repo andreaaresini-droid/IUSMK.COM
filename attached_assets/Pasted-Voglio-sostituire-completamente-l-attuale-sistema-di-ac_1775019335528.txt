@@ -1,0 +1,123 @@
+Voglio sostituire completamente l’attuale sistema di accesso/registrazione clienti del sito IUSMK Academy con un sistema uguale, come logica e stabilità, a quello del sito Angelica Beauty.
+
+IMPORTANTE:
+- NON toccare Stripe, corsi, coupon, notifiche admin, dashboard admin o altre funzioni già funzionanti
+- devi intervenire SOLO sul sistema autenticazione clienti corsi
+- elimina il flusso attuale che sta creando problemi
+- voglio un sistema semplice, stabile e definitivo
+
+OBIETTIVO
+Implementa per i clienti dei corsi un sistema di autenticazione classico e robusto, come Angelica Beauty:
+
+1. REGISTRAZIONE
+Pagina registrazione con SOLO questi campi:
+- Nome
+- Cognome
+- E-mail
+- Password
+
+Regole:
+- email univoca
+- password hashata in modo sicuro
+- creazione account customer
+- salvataggio corretto nel database
+- messaggi di errore chiari
+- dopo registrazione, login automatico oppure redirect al login
+
+2. LOGIN
+Pagina login con SOLO:
+- E-mail
+- Password
+
+Funzioni:
+- autenticazione stabile
+- gestione sessione corretta
+- utente resta loggato
+- redirect corretto alla propria area corsi
+
+3. PASSWORD DIMENTICATA
+Mantieni il recupero password, ma collegalo al nuovo sistema utenti.
+Deve funzionare solo sul nuovo modello utenti clienti.
+
+4. AREA CLIENTE
+Dopo login il cliente deve avere:
+- I miei corsi
+- Notifiche
+- Logout
+
+5. MENU PUBBLICO
+Quando l’utente non è autenticato:
+- mostra “Accedi ai corsi”
+- da lì deve andare a login
+- nella login deve esserci il link “Non hai un account? Registrati”
+- nella registrazione il link “Hai già un account? Accedi”
+
+6. ACQUISTO CORSI
+Solo utenti loggati possono acquistare corsi.
+Se un utente non loggato clicca acquista:
+- redirect a login/registrazione
+- dopo login può procedere al checkout
+
+7. DATABASE
+Usa un solo sistema utenti chiaro e coerente per i clienti corsi.
+Evita duplicati, tabelle inutili o logiche miste.
+Se esistono vecchie strutture rotte, semplificale.
+Campi minimi utente:
+- id
+- firstName
+- lastName
+- fullName
+- email
+- passwordHash
+- role = customer
+- createdAt
+- updatedAt
+
+8. STABILITÀ
+Voglio un sistema stabile come quello di Angelica Beauty:
+- nessun flusso strano con codici iniziali
+- nessuna logica mista
+- nessuna registrazione parziale
+- nessun comportamento incoerente tra login, registrazione e reset password
+
+9. GRAFICA
+Mantieni lo stile IUSMK:
+- dark theme
+- pulsanti rossi
+- mobile responsive
+- UI pulita
+
+10. PULIZIA
+Rimuovi o disattiva il vecchio flusso che sta creando problemi:
+- vecchio sistema accesso corsi
+- vecchie logiche ibride
+- eventuali pagine inutili o duplicate
+- qualsiasi dipendenza dal vecchio sistema se non più necessaria
+
+11. COMPATIBILITÀ
+Il nuovo sistema deve restare compatibile con:
+- acquisto corsi
+- notifiche cliente
+- reset password
+- futura consegna codici corsi dopo pagamento
+
+12. LOG E DEBUG
+Aggiungi log chiari lato backend per:
+- registrazione utente
+- login riuscito/fallito
+- logout
+- forgot password
+- reset password
+
+13. RISULTATO FINALE
+Il flusso corretto deve essere:
+- utente apre “Accedi ai corsi”
+- se non ha account si registra con nome, cognome, email, password
+- poi accede
+- vede area cliente
+- acquista i corsi
+- riceve notifiche e codici nel profilo
+
+IMPORTANTE FINALE
+Non fare patch sopra il sistema attuale.
+Ricostruisci questa parte in modo pulito e stabile, prendendo come riferimento il comportamento del login di Angelica Beauty.

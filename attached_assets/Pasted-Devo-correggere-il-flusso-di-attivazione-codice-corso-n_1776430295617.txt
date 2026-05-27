@@ -1,0 +1,79 @@
+Devo correggere il flusso di attivazione codice corso nel sito IUSMK senza rompere il resto.
+
+PROBLEMI ATTUALI
+1. Quando l’admin crea un codice per un cliente, la notifica arriva al cliente correttamente.
+2. Però nella notifica voglio due pulsanti in più:
+   - pulsante "Copia codice"
+   - pulsante "Vai al corso" che porta direttamente alla pagina del corso per cui il codice è valido
+3. Quando il cliente inserisce il codice e il sito dice che il corso è attivato, poi nella sezione “I miei corsi” non compare nulla
+4. Dopo l’attivazione del codice il sito inizia a rallentare e a bloccarsi, soprattutto lato cliente
+
+OBIETTIVI
+A. Migliorare la notifica del codice
+Quando viene inviata la notifica al cliente con il codice corso:
+- aggiungi un pulsante "Copia codice"
+- aggiungi un pulsante "Vai al corso"
+- il pulsante "Vai al corso" deve portare direttamente alla pagina del corso corretto / academy / dettaglio corso corretto
+- mantieni il layout bello anche su mobile
+
+B. Correggere davvero l’attivazione del codice
+Quando il cliente inserisce un codice valido:
+1. il backend deve:
+   - validare il codice
+   - trovare il corso associato
+   - trovare il cliente corretto
+   - segnare il codice come usato/attivato correttamente
+   - assegnare il corso all’account del cliente
+   - creare o aggiornare il record di acquisto/accesso in modo che il corso compaia in “I miei corsi”
+2. il frontend deve mostrare successo SOLO se tutta l’operazione è stata completata davvero
+3. dopo l’attivazione, il corso deve comparire subito in “I miei corsi” senza bisogno di refresh manuali strani
+4. se serve, invalida cache / refetch dati / aggiorna lo stato client
+
+C. Correggere il bug di performance / rallentamento
+Dopo l’attivazione del codice il sito rallenta o si blocca:
+- controlla se ci sono loop di refetch
+- controlla se ci sono richieste duplicate o ricorsive
+- controlla se la pagina “I miei corsi” o le notifiche stanno facendo polling o refresh continuo
+- controlla se l’attivazione del codice scatena render infiniti o fetch multipli
+- ottimizza il flusso per evitare lag, blocchi e freeze su mobile
+
+D. Controlli logici obbligatori
+- un codice non deve poter attivare il corso più volte per lo stesso cliente
+- se il corso è già attivo, non creare duplicati
+- se il codice è valido ma il corso è già assegnato, mostra messaggio corretto e non duplicare record
+- se l’assegnazione fallisce, non mostrare successo finto
+- se il codice viene attivato, lo stato deve essere coerente sia in admin sia lato cliente
+
+E. Debug preciso
+Aggiungi log chiari per capire il flusso:
+- [CODE] activation requested
+- [CODE] code found
+- [CODE] user found
+- [CODE] course found
+- [CODE] code marked as used
+- [CODE] course assigned to user
+- [CODE] my courses updated
+- [CODE] activation completed
+- [CODE ERROR] ...
+e controlla dove si blocca o dove fallisce
+
+F. UX finale
+Dopo attivazione corretta:
+- mostra messaggio di successo reale
+- mostra pulsante "Vai ai miei corsi"
+- il corso deve essere subito visibile in elenco
+- nessun rallentamento del sito
+
+IMPORTANTISSIMO
+Non rompere:
+- notifiche esistenti
+- sistema codici admin
+- sistema corsi
+- dashboard admin
+- layout mobile
+
+Alla fine dimmi:
+1. quali file hai modificato
+2. qual era il bug per cui il corso non appariva in “I miei corsi”
+3. qual era il bug che causava i rallentamenti
+4. come hai aggiunto i pulsanti “Copia codice” e “Vai al corso” nella notifica

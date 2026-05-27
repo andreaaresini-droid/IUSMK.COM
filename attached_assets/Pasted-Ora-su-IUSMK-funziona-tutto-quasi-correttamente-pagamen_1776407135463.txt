@@ -1,0 +1,74 @@
+Ora su IUSMK funziona tutto quasi correttamente:
+
+- pagamento completato
+- acquisto salvato
+- codice accesso generato
+- notifica admin push funzionante
+- corso visibile al cliente
+
+Resta da correggere e aggiungere queste cose:
+
+1. EMAIL CLIENTE NON FUNZIONA
+Correggi l’invio email al cliente dopo pagamento completato.
+Nel webhook Stripe, dopo checkout.session.completed e payment_status=paid:
+- recupera email cliente da:
+  - session.customer_details.email
+  - fallback session.customer_email
+- invia email conferma acquisto corso in italiano
+- se l’email fallisce, logga errore preciso
+- aggiungi log:
+  [EMAIL] preparing customer confirmation
+  [EMAIL] recipient resolved: ...
+  [EMAIL] sent successfully
+  [EMAIL ERROR] ...
+
+Contenuto email:
+Oggetto: Conferma acquisto corso IUSMK
+
+Corpo:
+- ringraziamento
+- conferma pagamento riuscito
+- nome corso acquistato
+- importo pagato
+- codice accesso
+- istruzioni: entra in "I miei corsi" o "Accedi ai corsi" e usa il codice per attivare il corso
+
+2. NUOVA SEZIONE ADMIN: “LINK PAGAMENTI”
+Aggiungi nella dashboard admin una sezione chiamata “Link pagamenti”.
+
+Questa sezione deve permettere di:
+- visualizzare tutti i link Stripe salvati
+- aggiungere un nuovo link pagamento
+- modificare un link salvato
+- eliminare un link salvato
+
+Ogni link salvato deve avere questi campi:
+- id interno
+- nome identificativo (es. Tagl 1€, Corso Base 29€)
+- paymentLinkUrl completo
+- paymentLinkId estratto automaticamente dal link (plink_...)
+- eventuale importo/nota facoltativa
+- data creazione
+
+3. CREAZIONE CORSO: SCELTA LINK ESISTENTE
+Quando l’admin crea o modifica un corso:
+- non deve essere obbligato a incollare ogni volta il payment link manualmente
+- deve poter selezionare da un menu/lista uno dei link già salvati nella sezione “Link pagamenti”
+- quando seleziona il link, il corso salva:
+  - paymentLinkUrl
+  - paymentLinkId
+
+4. WEBHOOK
+Nel webhook continua a usare payment_link ricevuto da Stripe per trovare il corso corretto.
+Se utile:
+- cerca prima il corso tramite paymentLinkId
+- fallback su paymentLinkUrl
+
+5. UI
+La sezione “Link pagamenti” deve essere elegante e semplice da usare anche da telefono.
+
+Alla fine dimmi:
+- quali file hai modificato
+- perché l’email cliente non partiva
+- come hai implementato la sezione “Link pagamenti”
+- come hai collegato la scelta del link durante la creazione del corso

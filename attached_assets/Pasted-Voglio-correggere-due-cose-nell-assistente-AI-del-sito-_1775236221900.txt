@@ -1,0 +1,118 @@
+Voglio correggere due cose nell’assistente AI del sito IUSMK, senza modificare ciò che già funziona nel resto del sito.
+
+OBIETTIVO 1
+L’assistente AI deve usare automaticamente la stessa lingua attiva del sito.
+Quindi:
+- se il sito è impostato in italiano, l’assistente deve parlare in italiano
+- se il sito è impostato in inglese, l’assistente deve parlare in inglese
+- se l’utente cambia lingua dal selettore del sito, anche l’assistente deve aggiornarsi subito a quella lingua
+- questo vale sia per:
+  - messaggio iniziale dell’assistente
+  - placeholder input
+  - eventuali messaggi di errore/fallback
+  - risposte dell’AI
+  - etichette fisse della chat
+
+OBIETTIVO 2
+Voglio eliminare completamente le domande rapide / quick questions / suggested questions che compaiono dentro l’assistente appena si apre.
+Non devono più comparire né in italiano né in inglese.
+
+MODIFICHE RICHIESTE
+
+1) SINCRONIZZAZIONE LINGUA SITO / ASSISTENTE
+Collega il widget dell’assistente AI allo stesso stato di lingua usato dal sito.
+L’assistente non deve avere una lingua separata o fissa.
+Deve leggere sempre la lingua corrente del sito.
+
+Se il sito usa un sistema i18n o uno state globale della lingua:
+- riusa quello stesso valore
+- non creare una seconda logica scollegata
+
+Quando la lingua del sito cambia:
+- aggiorna immediatamente anche la chat aperta
+- aggiorna il messaggio iniziale
+- aggiorna il placeholder dell’input
+- aggiorna le label statiche
+- aggiorna il system prompt per forzare la risposta nella lingua corrente del sito
+
+2) RISPOSTE AI NELLA LINGUA CORRETTA
+Aggiorna la logica backend/API della chat in modo che venga sempre passata la lingua corrente del sito, ad esempio:
+- language = "it"
+- language = "en"
+
+Poi aggiorna il system prompt dell’assistente con questa regola forte:
+- rispondi sempre e solo nella lingua attualmente attiva del sito
+- se language = it, rispondi in italiano
+- se language = en, rispondi in inglese
+- non mischiare le lingue
+- mantieni la risposta nella stessa lingua anche se la knowledge base contiene dati in un’altra lingua
+- se il contenuto della knowledge base è in italiano ma il sito è in inglese, traduci la risposta finale in inglese senza inventare nulla
+- se il contenuto della knowledge base è in inglese ma il sito è in italiano, traduci la risposta finale in italiano senza inventare nulla
+
+3) TESTI STATICI LOCALIZZATI
+Localizza correttamente tutti i testi statici della chat.
+
+ITALIANO:
+- Titolo: Assistente IUSMK
+- Stato: Online
+- Messaggio iniziale: Ciao! Sono l'assistente IUSMK. Posso aiutarti con informazioni presenti sul sito.
+- Placeholder input: Scrivi una domanda...
+- Fallback: Al momento non sono in grado di darti questa informazione con certezza. Ho segnalato la tua richiesta al team.
+- Nota sotto risposta: Risposta basata sulle informazioni attualmente disponibili.
+
+INGLESE:
+- Titolo: IUSMK Assistant
+- Stato: Online
+- Messaggio iniziale: Hi! I'm the IUSMK assistant. I can help you with information available on the site.
+- Placeholder input: Write a question...
+- Fallback: At the moment I’m not able to provide this information with certainty. I’ve forwarded your request to the team.
+- Nota sotto risposta: Answer based on the information currently available.
+
+4) RIMOZIONE DOMANDE RAPIDE
+Elimina completamente le domande rapide / quick suggestions / suggested prompts che appaiono all’apertura della chat.
+Non devono essere più renderizzate nel frontend.
+Se esiste un array tipo:
+- quickQuestions
+- suggestedQuestions
+- starterPrompts
+- predefinedPrompts
+rimuovilo dalla UI della chat o disattivalo.
+La chat, appena aperta, deve mostrare solo:
+- header
+- messaggio iniziale dell’assistente
+- campo input
+- pulsante invio
+
+5) AGGIORNAMENTO LIVE QUANDO CAMBIA LINGUA
+Se l’utente ha già la chat aperta e cambia lingua del sito:
+- il widget deve aggiornare subito i testi statici
+- le prossime risposte AI devono uscire nella nuova lingua
+- non serve tradurre retroattivamente i messaggi vecchi già inviati
+- basta che tutto ciò che viene mostrato da quel momento in poi segua la nuova lingua
+
+6) KNOWLEDGE BASE E LINGUA
+Non duplicare per forza tutte le voci della knowledge base in due lingue se non serve.
+Puoi mantenere la KB come fonte unica, ma la risposta finale deve essere restituita nella lingua attiva del sito.
+L’importante è che:
+- non venga persa informazione
+- non vengano inventati dettagli
+- non venga mostrata una risposta in italiano quando il sito è in inglese, e viceversa
+
+7) CONTROLLO FINALE
+Dopo la modifica verifica questi casi:
+- sito in italiano → chat in italiano
+- sito in inglese → chat in inglese
+- cambio lingua mentre la chat è aperta → testi aggiornati subito
+- domanda fatta in inglese con sito in inglese → risposta in inglese
+- domanda fatta in italiano con sito in italiano → risposta in italiano
+- nessuna domanda rapida visibile all’apertura
+
+8) IMPORTANTE
+Non modificare il design generale del sito se non serve.
+Non rompere la logica già esistente della chat.
+Non toccare la dashboard admin.
+Correggi solo:
+- sincronizzazione lingua
+- localizzazione testi assistente
+- lingua risposte AI
+- rimozione domande rapide

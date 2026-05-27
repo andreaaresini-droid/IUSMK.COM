@@ -1,0 +1,148 @@
+È rimasto un ultimo problema responsive nella dashboard admin di IUSMK, nella sezione:
+
+LOG CONVERSAZIONI AI
+
+Tutto il resto è stato sistemato, ma questa pagina su iPhone / Safari / PWA da schermata Home ancora non si vede perfettamente bene.
+
+OBIETTIVO
+Voglio che la sezione “Log Conversazioni AI” sia completamente ottimizzata per:
+- desktop
+- Safari mobile
+- Chrome mobile
+- PWA iPhone da schermata Home
+
+e che ogni card/conversazione entri perfettamente nello schermo, senza effetti di compressione sbagliata, overflow o layout troppo pesante.
+
+PROBLEMA ATTUALE
+Dallo screenshot si vede che:
+- la card principale è ancora troppo densa su mobile
+- i blocchi interni (messaggio utente, risposta AI, sessione, confidence, KB IDs, pagina) occupano troppo spazio e non respirano bene
+- alcuni contenuti sembrano ancora troppo larghi o comunque poco ottimizzati per schermi stretti
+- la pagina deve essere rifinita meglio lato mobile/PWA
+
+COSA DEVI FARE
+
+1. Ottimizza davvero il layout mobile della card log
+Ogni conversazione su mobile deve diventare una card verticale molto pulita, con questa struttura:
+
+- riga top: icona stato + titolo/preview + data
+- blocco messaggio utente
+- blocco risposta AI
+- blocco metadati finale
+
+Ma i metadati NON devono essere una riga lunga o un layout pesante.
+Devono essere organizzati bene per mobile.
+
+2. Riorganizza i metadati per mobile
+I blocchi:
+- Sessione
+- Confidence
+- KB IDs
+- Pagina
+
+su mobile devono avere un layout leggero e ordinato.
+
+Possibili soluzioni corrette:
+- stack verticale pulito
+oppure
+- griglia 2 colonne se entra bene
+oppure
+- blocchi compatti con wrap corretto
+
+IMPORTANTE
+I KB IDs non devono mai allargare la card.
+Se la lista è lunga:
+- deve andare a capo
+- oppure essere troncata elegantemente con “mostra di più”
+- oppure essere spezzata in righe
+
+3. Riduci densità visiva su mobile
+La card attuale è ancora troppo pesante per iPhone.
+Migliora:
+- padding
+- spaziature
+- gerarchia visiva
+- dimensione dei testi secondari
+- distanza tra i blocchi
+
+Voglio che sia leggibile e pulita, non solo “tecnicamente dentro lo schermo”.
+
+4. Testi lunghi
+Assicurati che:
+- il messaggio utente vada a capo bene
+- la risposta AI vada a capo bene
+- session ID faccia wrap o venga troncato bene
+- KB IDs non rompano mai il layout
+- nessun testo allarghi il contenitore
+
+Usa dove serve:
+- min-width: 0
+- overflow-wrap: anywhere
+- word-break corretto
+- flex-wrap
+- container fluidi
+
+5. Tabs filtro in alto
+Le tabs:
+- Tutte
+- Risposte AI
+- Fallback
+
+devono restare responsive perfette su mobile.
+Se necessario:
+- wrap su due righe
+oppure
+- scroll orizzontale solo nella barra tabs
+ma senza rompere il resto della pagina
+
+6. Card espanse e collassate
+Se la card aperta è troppo pesante su mobile, migliora il comportamento:
+- versione compatta di default
+- dettaglio espandibile più pulito
+oppure
+- layout interno più ordinato quando aperta
+
+Se utile, puoi mostrare in modo compatto i metadati e aprirli meglio solo nel dettaglio.
+
+7. Contenitore principale della pagina
+Controlla anche:
+- wrapper pagina
+- container sezione
+- padding laterali
+- larghezza massima
+- eventuali flex/grid parent che comprimono male la card
+
+Il problema potrebbe non essere solo nella card, ma anche nel wrapper che la contiene.
+
+8. Floating buttons
+Controlla che il pulsante chat rosso e la maniglia laterale non disturbino la leggibilità della sezione su mobile.
+Non devono coprire contenuti importanti.
+
+9. Non usare solo overflow hidden
+Non voglio una toppa.
+Correggi realmente la struttura responsive della sezione Log Conversazioni AI.
+
+10. Test obbligatori
+Verifica la pagina:
+- desktop
+- Safari iPhone
+- Chrome mobile
+- PWA iPhone da schermata Home
+
+Con queste condizioni:
+- nessun taglio laterale
+- nessuna card troppo compressa
+- metadati leggibili
+- testi che vanno a capo bene
+- layout pulito e ordinato
+
+11. Output finale
+Quando hai finito dimmi:
+1. cosa causava ancora il problema in Log Conversazioni AI
+2. quali file/componenti hai modificato
+3. come hai migliorato il layout mobile della card
+4. come hai sistemato metadati e testi lunghi
+5. conferma che ora la sezione si vede bene su desktop, browser mobile e PWA iPhone
+
+IMPORTANTE
+Concentrati solo su questa pagina e rifiniscila bene fino a renderla veramente adatta al telefono.

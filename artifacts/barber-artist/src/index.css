@@ -1,0 +1,205 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme inline {
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-sans: 'Inter', sans-serif;
+
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  
+  --color-card: hsl(var(--card));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+}
+
+:root {
+  /* Premium Dark Editorial Theme */
+  --background: 60 6.5% 12.2%;    /* Charcoal #21211D */
+  --foreground: 0 0% 98%;         /* White-ish */
+  
+  --primary: 50 100% 50%;          /* Brand yellow #FFD600 */
+  --primary-foreground: 0 0% 5%;
+  
+  --secondary: 237 25.1% 63.7%;   /* Lavender #8D8FB8 */
+  --secondary-foreground: 60 6.5% 12.2%;
+  
+  --accent: 46 100% 50%;           /* Hover yellow #FFC400 */
+  --accent-foreground: 0 0% 5%;
+  
+  --muted: 60 6.5% 18%;           /* Slightly lighter charcoal */
+  --muted-foreground: 60 5% 65%;
+  
+  --card: 60 6.5% 14%;            /* Elevated charcoal */
+  --border: 60 6.5% 22%;
+  --input: 60 6.5% 20%;
+  --ring: 50 100% 50%;             /* Brand yellow ring */
+  
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 98%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground selection:bg-primary selection:text-white;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    @apply font-semibold tracking-tight;
+  }
+}
+
+/* Custom Utilities for Premium Vibe */
+@layer utilities {
+  .text-glow {
+    text-shadow: 0 0 20px rgba(255, 214, 0, 0.55);
+  }
+
+  .glass-panel {
+    @apply bg-card/60 backdrop-blur-md border border-white/5;
+  }
+  
+  .hover-lift {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/10;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: hsl(var(--background)); 
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted)); 
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary)); 
+}
+
+/* ─── Responsive & PWA fixes ─────────────────────────────────────────────── */
+
+@layer base {
+  /* Box sizing globale */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  /* Immagini di contenuto non escono dal contenitore.
+     Dentro @layer base così le utility Tailwind (h-*, w-*) le sovrascrivono. */
+  img, video, canvas {
+    max-width: 100%;
+  }
+
+  /* Assicura che nessun margine/padding rompa il fullscreen dell'intro su iPhone */
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100%;
+    overflow-x: hidden;
+  }
+  /* Garantisce scroll verticale anche con overflow-x: hidden su body */
+  html {
+    overflow-y: auto;
+    height: auto;
+  }
+}
+
+/* Logo navbar: protezione esplicita contro qualsiasi regola generica */
+.navbar-logo {
+  height: 2.25rem;   /* = h-9 */
+  width: auto;
+  max-width: none;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+/* Safe area per iPhone X+ / notch / Dynamic Island in modalità PWA standalone.
+   Aggiunge spazio per l'home indicator in basso e il notch ai lati. */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  body {
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+/* Utility: padding-bottom safe per elementi fixed in basso */
+.safe-bottom {
+  padding-bottom: max(8px, env(safe-area-inset-bottom));
+}
+
+/* Utility: nasconde scrollbar visiva ma mantiene funzionalità scroll */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* ─── Intro Overlay — Animazioni e fix fullscreen mobile ─────────────────── */
+
+/* Logo entry animation */
+@keyframes iusmk-logo-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Testo pulsante — pulsazione continua senza lineette */
+@keyframes iusmk-pulse {
+  0%, 100% { opacity: 0.55; }
+  50%       { opacity: 1; }
+}
+
+/* Loader spinner tra click e avvio video */
+@keyframes iusmk-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Rimozione esplicita di qualsiasi decorazione su elementi cliccabili dell'intro */
+[data-intro-enter] {
+  text-decoration: none !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+[data-intro-enter]::before,
+[data-intro-enter]::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* Third hero slide — responsive object-position */
+.hero-slide-third {
+  object-position: 40% center; /* mobile: soggetto centrato */
+}
+@media (min-width: 768px) {
+  .hero-slide-third {
+    object-position: 58% center; /* desktop: aggiustamento lieve */
+  }
+}

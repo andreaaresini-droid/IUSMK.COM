@@ -1,0 +1,145 @@
+Devi ottimizzare SOLO la velocità di caricamento nella dashboard admin (sezioni Academy e Corsi).
+
+PROBLEMA:
+Quando l’admin crea o modifica:
+- corsi
+- categorie Academy
+
+il caricamento di:
+- immagini di copertina
+- video
+- media dimostrativi
+
+è TROPPO lento.
+
+OBIETTIVO:
+- Rendere il caricamento molto più veloce
+- NON rompere nulla
+- NON perdere media
+- mantenere qualità e visualizzazione perfetta lato cliente
+
+---
+
+1. NON RICARICARE FILE GIÀ ESISTENTI
+
+Se l’admin modifica solo:
+- titolo
+- descrizione
+- prezzo
+- categoria
+- ordine
+
+NON devi:
+- ricaricare immagini già salvate
+- ricaricare video già salvati
+
+Controlla:
+- se il media ha già un URL → NON fare upload di nuovo
+- carica SOLO nuovi file o file sostituiti
+
+---
+
+2. UPLOAD PARALLELO (PIÙ VELOCE)
+
+Quando l’admin carica più file:
+- usa Promise.all per upload parallelo
+
+ESEMPIO:
+await Promise.all(files.map(uploadFile))
+
+MA:
+- solo per file nuovi
+- non includere quelli già esistenti
+
+---
+
+3. COMPRESSIONE IMMAGINI AUTOMATICA
+
+Prima dell’upload:
+- comprimi immagini lato client
+
+Target:
+- max width: 1200px
+- qualità: 0.7 / 0.8
+
+Usa:
+canvas oppure libreria tipo browser-image-compression
+
+RISULTATO:
+- upload molto più veloce
+- qualità ancora ottima
+
+---
+
+4. VIDEO: NON CARICARE TUTTO SUBITO
+
+Per i video:
+- NON caricare file intero nella preview
+- usa:
+preload="metadata"
+
+Preview:
+- mostra solo anteprima
+- NON bloccare il form
+
+---
+
+5. SALVATAGGIO PIÙ VELOCE
+
+Attualmente:
+- upload + save = lento
+
+Correggi:
+- prima upload solo file nuovi
+- poi salva solo URL finali nel database
+- non salvare blob o file temporanei
+
+---
+
+6. UI PIÙ REATTIVA
+
+Migliora esperienza admin:
+
+- mostra subito preview locale (prima dell’upload)
+- mostra loading solo sui file nuovi
+- NON bloccare tutto il form
+- mostra stato:
+  "Caricamento immagini..."
+  "Caricamento video..."
+  "Salvataggio..."
+
+---
+
+7. CACHE MEDIA
+
+Se l’admin rientra nella pagina:
+- NON ricaricare da zero i media
+- usa cache (stato locale o query caching)
+
+---
+
+8. BACKEND (IMPORTANTE)
+
+- assicurati che gli upload endpoint non siano lenti
+- evita doppie richieste
+- salva direttamente URL finali
+- NON fare resize lato server se già fatto lato client
+
+---
+
+9. NON ROMPERE NULLA
+
+IMPORTANTE:
+- NON modificare struttura media
+- NON cambiare formato dati esistenti
+- NON perdere immagini già caricate
+- NON rompere visualizzazione lato cliente
+- NON modificare Academy, corsi, pagamenti o login
+
+---
+
+RISULTATO FINALE:
+- Creazione/modifica corsi molto più veloce
+- Upload rapido anche con molte immagini
+- Video non bloccano il sistema
+- Tutti i media continuano a vedersi perfettamente

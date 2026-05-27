@@ -1,0 +1,98 @@
+Ci sono ancora 2 bug da correggere. Devi intervenire SOLO su questi punti.
+
+NON modificare altre sezioni.
+
+BUG 1 — IMMAGINI GALLERY CATEGORIA ACADEMY ANCORA NON VISIBILI
+Nella gallery della categoria Academy:
+- i video si vedono
+- alcune immagini invece appaiono nere con icona rotta
+- questo NON deve succedere
+
+Devi risolvere definitivamente.
+
+Controlla soprattutto questi punti:
+1. Le immagini non devono essere interpretate come video.
+   Se il file è .jpg, .jpeg, .png, .webp deve essere SEMPRE type: image.
+
+2. Il componente gallery deve normalizzare tutti i media prima di renderizzarli.
+   Deve supportare questi formati:
+   - stringa URL semplice
+   - oggetto con url
+   - oggetto con src
+   - oggetto con fileUrl
+   - oggetto con publicUrl
+   - oggetto con type/mimeType/poster
+
+3. Crea una funzione unica tipo normalizeAcademyMedia(media):
+   - recupera l’URL reale da media.url || media.src || media.fileUrl || media.publicUrl
+   - se non esiste URL valido, allora mostra fallback
+   - se esiste URL valido, NON mostrare “Media non disponibile”
+   - rileva type da mimeType o estensione file
+   - jpg/jpeg/png/webp = image
+   - mp4/mov/webm = video
+
+4. Rendering:
+   - se type === image usa solo <img>
+   - se type === video usa solo <video>
+   - non usare componenti video per immagini
+   - non usare poster inesistenti sulle immagini
+   - non usare src vuoto
+
+5. Upload/salvataggio:
+   - quando l’admin carica immagini in Academy, salva sempre un URL definitivo stabile
+   - non salvare blob:
+   - non salvare preview temporanee
+   - non salvare oggetti incompleti
+   - dopo upload, salva nel database un oggetto simile:
+     { url: "...", type: "image", mimeType: "image/jpeg" }
+
+6. Aggiornamento categoria:
+   - quando aggiorno testo, descrizione, cosa imparerai o ordine, non devi toccare i media già salvati
+   - non sovrascrivere media con array vuoto
+   - non eliminare immagini già presenti
+   - non cambiare type ai media già presenti
+
+7. Se il problema dipende da vecchi dati già salvati male:
+   - aggiungi compatibilità per leggerli comunque
+   - non obbligarmi a ricaricare tutto
+
+BUG 2 — TASTO “VAI AL CORSO” NELLA PAGINA SINGOLO CORSO
+Il tasto “Vai al corso” non funziona bene.
+
+Comportamento corretto:
+- deve comparire quando il cliente è nella parte superiore della pagina del singolo corso
+- deve rimanere visibile mentre guarda titolo, descrizione, informazioni aggiuntive, immagine e gallery
+- deve scomparire SOLO quando il cliente arriva alla card/sezione dove ci sono:
+  - prezzo
+  - “Acquista ora”
+  - “Attiva con codice”
+- quando viene cliccato, deve portare esattamente alla card del corso con prezzo e pulsanti, non ad altre sezioni
+- dopo il click deve scomparire
+
+Implementazione:
+1. Metti un id/ref sulla card acquisto del singolo corso, ad esempio:
+   id="course-purchase-section"
+
+2. Il bottone deve fare:
+   document.getElementById("course-purchase-section").scrollIntoView({
+     behavior: "smooth",
+     block: "center"
+   })
+
+3. Usa IntersectionObserver per nascondere il bottone SOLO quando #course-purchase-section entra nel viewport.
+   Non nasconderlo al primo scroll.
+   Non nasconderlo quando entra nella gallery.
+   Non nasconderlo quando entra nelle informazioni aggiuntive.
+
+4. Il bottone deve essere fisso in basso, ma non deve coprire i pulsanti acquista/attiva quando si arriva lì.
+   Appena la card acquisto entra nel viewport, il bottone deve sparire.
+
+IMPORTANTE:
+- Non modificare il tasto “Scopri tutti i corsi” della categoria, se funziona.
+- Non modificare login, pagamento, notifiche, chat o dashboard.
+- Non modificare galleria principale.
+- Correggi solo gallery Academy e bottone “Vai al corso” nella pagina singolo corso.
+
+RISULTATO FINALE:
+- Le immagini della gallery categoria Academy si vedono sempre, come i video.
+- Il tasto “Vai al corso” porta alla card con prezzo/acquisto/attivazione e scompare solo quando il cliente arriva lì.

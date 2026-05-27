@@ -1,0 +1,103 @@
+Devo correggere il logo 3D del sito IUSMK perché viene tagliato/crop nei bordi del suo contenitore.
+
+PROBLEMA:
+Il logo 3D funziona e ruota bene, però sia nella schermata intro sia nella home sembra dentro un rettangolo trasparente troppo piccolo.
+Quando il logo ruota, alcune parti vengono coperte/tagliate ai bordi del contenitore/canvas.
+
+OBIETTIVO:
+Il logo 3D deve ruotare liberamente senza essere mai tagliato.
+Il Canvas/contenitore deve essere più grande e non deve avere overflow nascosto.
+
+ISTRUZIONI:
+
+1. CONTENITORE LOGO 3D:
+- Trova il wrapper del logo 3D nella intro e nella home.
+- Aumenta larghezza e altezza del contenitore.
+- Il contenitore deve dare spazio al logo anche durante la rotazione.
+- Non deve tagliare il modello.
+
+2. OVERFLOW:
+- Rimuovi qualsiasi:
+  overflow: hidden;
+  clip-path;
+  mask;
+  max-height troppo piccolo;
+  max-width troppo piccolo;
+sul wrapper del logo 3D, sul Canvas e sui parent diretti.
+
+Imposta:
+overflow: visible;
+
+3. CANVAS:
+- Il Canvas del logo 3D deve essere più grande del logo visibile.
+- Deve avere spazio extra intorno.
+
+Esempio:
+.logo3d-wrapper {
+  width: clamp(260px, 45vw, 520px);
+  height: clamp(160px, 28vw, 320px);
+  overflow: visible;
+}
+
+.logo3d-wrapper canvas {
+  overflow: visible;
+}
+
+4. SCALA MODELLO:
+- Riduci leggermente la scala del modello 3D invece di restringere il Canvas.
+- Il modello deve stare completamente dentro il Canvas anche quando ruota.
+
+Esempio:
+scale={0.38} per intro
+scale={0.45} per home
+oppure usa una scala responsive.
+
+5. CAMERA:
+- Allontana leggermente la camera per evitare clipping.
+- Aumenta il campo visivo se necessario.
+
+Esempio:
+camera={{ position: [0, 0, 5], fov: 35, near: 0.1, far: 100 }}
+
+Se viene ancora tagliato:
+camera position z = 6 o 7
+oppure riduci scale.
+
+6. ORBIT CONTROLS:
+- Mantieni la rotazione attiva.
+- Disattiva sempre pan e zoom.
+
+enableZoom={false}
+enablePan={false}
+enableRotate={true}
+
+7. INTRO:
+- Nella intro il logo 3D deve restare centrato sopra la scritta.
+- Deve essere interamente visibile, senza crop.
+- Non deve uscire dallo schermo mobile.
+
+8. HOME:
+- Nella home il logo 3D deve restare centrale.
+- Quando viene ruotato, nessuna parte deve essere tagliata.
+- Deve ruotare nello spazio libero senza essere coperto dai bordi del Canvas.
+
+9. SFONDO:
+- Il Canvas deve rimanere trasparente.
+- Non deve comparire nessun rettangolo visibile.
+
+10. NON MODIFICARE:
+- modello 3D
+- file .glb
+- intro video
+- testo intro
+- galleria
+- homepage layout generale
+- login
+- corsi
+- admin
+- chat
+- pagamenti
+
+RISULTATO FINALE:
+Il logo 3D resta centrato, ruota bene e non viene mai tagliato ai bordi.
+Non deve sembrare dentro un rettangolo trasparente che lo copre.

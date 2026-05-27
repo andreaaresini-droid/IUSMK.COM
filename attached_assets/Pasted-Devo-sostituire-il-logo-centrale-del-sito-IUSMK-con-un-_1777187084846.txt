@@ -1,0 +1,87 @@
+Devo sostituire il logo centrale del sito IUSMK con un logo 3D (.glb) che ho caricato.
+
+OBIETTIVO:
+Mostrare il logo 3D al centro dello schermo al posto del logo attuale.
+Il logo deve rimanere SEMPRE centrato e fermo, ma l’utente deve poterlo ruotare con il dito (mobile) o mouse (desktop).
+
+ISTRUZIONI:
+
+1. FILE LOGO 3D:
+- Ho caricato un file .glb negli assets del progetto.
+- Usa questo file come nuovo logo:
+  const MODEL_SRC = "/logo-3d.glb"
+
+2. LIBRERIA:
+- Usa @react-three/fiber + @react-three/drei (se il progetto è React su Replit).
+- Se non sono installate, installale.
+
+3. COMPONENTE:
+Crea un componente tipo:
+<Logo3D />
+
+Dentro:
+- Canvas full responsive
+- ambiente leggero (no roba pesante)
+
+4. POSIZIONE:
+- Il logo deve essere perfettamente centrato nello schermo (come prima il logo 2D).
+- NON deve muoversi nello spazio.
+- NON deve traslare.
+- NON deve uscire dal centro.
+
+5. INTERAZIONE:
+- L’utente può SOLO ruotare il logo.
+- Usa OrbitControls ma limita i movimenti:
+
+Impostazioni:
+- enableZoom = false
+- enablePan = false
+- enableDamping = true
+- dampingFactor leggero
+- rotateSpeed fluido
+
+IMPORTANTE:
+- La rotazione deve avvenire attorno al centro del logo.
+- Nessuno spostamento laterale.
+
+6. CAMERA:
+- Posiziona la camera frontalmente.
+- Il logo deve essere sempre ben visibile.
+- Adatta automaticamente la scala del modello se troppo grande o piccolo.
+
+7. LUCI:
+- Aggiungi luci soft per valorizzare il logo:
+  - ambientLight
+  - directionalLight
+  - eventualmente una light frontale soft
+- Nessuna luce troppo forte o bruciata.
+
+8. SFONDO:
+- Mantieni lo sfondo attuale del sito.
+- Il canvas deve essere trasparente (alpha: true).
+
+9. PERFORMANCE:
+- Usa dpr={[1, 2]}
+- Evita effetti pesanti.
+- Deve essere fluido su mobile.
+
+10. RESPONSIVE:
+- Il logo deve adattarsi a tutte le dimensioni schermo.
+- Su mobile deve essere perfettamente centrato e proporzionato.
+
+11. NON MODIFICARE:
+- intro video
+- scritta “tocca per entrare”
+- galleria
+- homepage
+- login
+- corsi
+- admin
+- chat
+- pagamenti
+
+RISULTATO FINALE:
+Quando apro il sito vedo il logo 3D al centro, perfettamente fermo.
+Posso ruotarlo con il dito o mouse.
+Non si sposta mai dal centro.
+Esperienza fluida e premium.

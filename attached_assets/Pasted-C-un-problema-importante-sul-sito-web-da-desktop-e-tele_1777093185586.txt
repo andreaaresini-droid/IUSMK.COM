@@ -1,0 +1,89 @@
+C’è un problema importante: sul sito web da desktop e telefono browser, dopo un po’ la copertina del corso scompare o non viene più caricata.
+Sull’app/PWA invece si vede ancora.
+
+Devi risolvere il problema senza modificare ciò che ora funziona.
+
+Obiettivo
+
+Tutte le immagini e video caricati dall’admin devono:
+
+vedersi sempre
+non scomparire dopo un po’
+funzionare su desktop
+funzionare su mobile browser
+funzionare su PWA/app
+restare persistenti anche dopo refresh, deploy, cache o riapertura sito
+Controlli da fare
+1. Verifica URL immagini e video
+
+Controlla che copertine e media non usino:
+
+blob URL temporanei
+object URL tipo blob:
+base64 temporanei
+path locali non pubblici
+URL firmati scaduti
+file salvati solo in memoria/cache
+
+Devono usare URL persistenti e accessibili.
+
+2. Controlla storage
+
+Verifica che tutti i media vengano salvati in uno storage permanente, non in cartelle temporanee che Replit può cancellare o non servire correttamente.
+
+Se ora vengono salvati in una cartella non persistente, spostali in storage permanente.
+
+3. Fallback immagini
+
+Se un’immagine non carica:
+
+non mostrare riquadro rotto
+prova a ricaricare il media
+usa fallback solo se il file è davvero assente
+mostra log chiaro in console
+4. Cache e PWA
+
+Dato che sull’app si vede ma sul browser no, controlla:
+
+service worker
+cache PWA
+cache browser
+manifest
+strategie cache immagini/video
+
+Non deve succedere che la PWA mostri una vecchia immagine in cache mentre il browser non riesce a recuperarla.
+
+5. Non rompere nulla
+
+NON modificare:
+
+grafica attuale
+layout
+slideshow
+galleria che ora funziona
+player video
+login
+corsi
+academy
+dashboard admin
+
+Devi correggere solo la gestione/persistenza/caricamento dei media.
+
+6. Test obbligatori
+
+Dopo la correzione verifica:
+
+desktop browser: copertina visibile dopo refresh
+mobile browser: copertina visibile dopo refresh
+PWA/app: copertina visibile
+dopo logout/login
+dopo riapertura sito
+dopo svuotamento cache
+immagini galleria ancora visibili
+video ancora funzionanti
+Importante
+
+Il problema sembra legato a URL temporanei/cache/storage non persistente.
+Devi rendere tutti i media caricati dall’admin persistenti e sempre caricabili.
+
+Non modificare nulla di quello che funziona ora.

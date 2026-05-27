@@ -1,0 +1,97 @@
+Devi correggere SOLO questi problemi nella sezione Academy/Corsi IUSMK.
+
+NON modificare altro.
+
+1. BUG TASTO “VAI AL CORSO”
+Nella pagina dettaglio del singolo corso, il tasto “Vai al corso” ora porta alla sezione “Programma del corso” sopra la gallery.
+
+È sbagliato.
+
+Deve portare alla card di acquisto che si trova:
+- sotto la gallery
+- sotto le informazioni aggiuntive
+- dove ci sono prezzo, “Acquista ora” e “Attiva con codice”
+
+Correzione:
+- metti l’id/ref SOLO sulla card acquisto finale, esempio:
+  id="course-purchase-section"
+- NON mettere questo id su “Programma del corso”
+- NON mettere questo id sopra la gallery
+- il bottone deve fare scroll verso `course-purchase-section`
+- il bottone deve scomparire solo quando quella card acquisto entra nel viewport
+
+2. PAGINA CORSO DEVE APRIRSI DALL’INIZIO
+Quando clicco “Scopri il corso” dalla card Academy, la pagina del singolo corso deve aprirsi sempre dall’inizio, sopra a tutto.
+
+Correzione:
+- al mount/cambio route della pagina corso fai `window.scrollTo(0, 0)`
+- evita che il browser mantenga la posizione precedente dello scroll
+
+3. TASTO FLOTTANTE SUBITO VISIBILE
+Nella pagina del singolo corso voglio che il tasto fluttuante esca subito appena si apre la pagina.
+
+Testo:
+“Acquista / Attiva corso ↓↓”
+
+Funzionamento:
+- deve comparire immediatamente appena si apre la pagina
+- non deve comparire solo dopo che il cliente scorre
+- cliccandolo deve portare alla card acquisto finale
+- scompare solo quando il cliente arriva alla card acquisto finale
+
+4. BUG PAGAMENTI / EMAIL ACCOUNT SBAGLIATA
+C’è un problema grave:
+Ho acquistato un corso con l’account loggato `iusmkbarber@gmail.com`, però all’admin è arrivata notifica che l’acquisto è stato fatto da `andreaaresini@icloud.com`.
+Poi il codice è arrivato sull’account `iusmkbarber@gmail.com`, ma quando provo ad attivarlo dice che il codice è registrato a un altro account.
+
+Devi correggere la logica di associazione pagamento/codice/account.
+
+Regola corretta:
+- il corso acquistato deve essere associato SEMPRE all’utente loggato nel sito al momento in cui clicca “Acquista ora”
+- l’email usata nella notifica admin deve essere l’email dell’utente loggato nel sito, non una vecchia email salvata, non email Stripe precedente, non email del browser, non email cache
+- il codice generato deve essere assegnato allo stesso userId/email dell’utente loggato
+- quando l’utente inserisce il codice, il controllo deve confrontare con quello stesso userId/email
+
+Prima di aprire Stripe:
+- salva una pending purchase con:
+  - userId loggato
+  - userEmail loggato
+  - courseId
+  - paymentLinkId/session reference se disponibile
+- passa a Stripe metadata/client_reference_id:
+  - userId
+  - userEmail
+  - courseId
+
+Nel webhook/success payment:
+- recupera userId e courseId dai metadata/client_reference_id/pending purchase
+- NON usare email casuale di Stripe come fonte principale se esiste userId loggato
+- genera il codice per quel userId
+- manda notifica codice a quel userId
+- manda notifica admin con quell’email utente corretta
+
+5. ATTIVAZIONE CODICE
+Quando il cliente clicca “Accedi al corso” dalla notifica:
+- deve aprire la pagina attivazione codice del corso corretto
+- se possibile precompila il codice
+- il codice deve risultare valido per l’account che ha acquistato
+
+Se il codice risulta “registrato a un altro account” quando invece è stato generato per quell’account, correggi il confronto:
+- usa userId come riferimento principale
+- usa email solo come fallback
+- normalizza email lowercase e trim
+- non confrontare con email sbagliate da Stripe/cache
+
+IMPORTANTE:
+- Non permettere acquisti anonimi.
+- Se utente non loggato clicca acquista, mandalo a login/registrazione.
+- Dopo login deve tornare al corso.
+- Non rompere Payment Link esistenti.
+- Non rompere codici esistenti: aggiungi compatibilità.
+- Non modificare chat, galleria, homepage, notifiche non collegate ai corsi.
+
+RISULTATO FINALE:
+- “Vai al corso / Acquista-Attiva corso” porta alla card acquisto finale sotto gallery/info.
+- La pagina corso si apre sempre dall’inizio.
+- Il tasto fluttuante appare subito.
+- Pagamento, codice e notifica admin usano sempre lo stesso account loggato.

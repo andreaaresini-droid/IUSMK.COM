@@ -1,0 +1,212 @@
+Fix ONLY the AI assistant knowledge base for these missing answers.
+Do NOT change anything else in the site or assistant UI.
+
+==================================================
+PROBLEM TO FIX
+==================================================
+
+The AI assistant is STILL not answering correctly to questions like:
+- come aggiungo il sito alla home del telefono?
+- come installo l’applicazione di giuseppe?
+- come attivo le notifiche?
+- come attivo le notifiche push?
+
+Right now the assistant says things like:
+- “Non sono presenti istruzioni…”
+- “Non ho informazioni…”
+This is wrong.
+
+You must ADD REAL ENTRIES to the AI KNOWLEDGE BASE and make sure the assistant uses them.
+
+This is not only a prompt/instruction problem:
+I need actual knowledge base entries saved in the AI Knowledge Base / FAQ / training source used by the assistant.
+
+==================================================
+OBJECTIVE 1 — ADD REAL KNOWLEDGE BASE ENTRIES
+==================================================
+
+Add real AI Knowledge Base entries for these topics:
+
+--------------------------------------------------
+ENTRY 1 — ATTIVARE LE NOTIFICHE PUSH
+--------------------------------------------------
+
+Title:
+Come attivare le notifiche push
+
+Question variations / triggers:
+- come attivo le notifiche?
+- come attivo le notifiche push?
+- come posso attivare le notifiche?
+- come faccio ad attivare le notifiche?
+- come ricevo le notifiche?
+- dove attivo le notifiche?
+- come abilito le notifiche push?
+
+Answer content:
+Per attivare le notifiche push devi:
+1. accedere al tuo account sul sito IUSMK
+2. aprire il menu del sito
+3. entrare nella sezione “Notifiche”
+4. premere il tasto per attivare le notifiche push
+
+Dopo l’attivazione, potrai ricevere notifiche su messaggi, corsi e aggiornamenti del sito.
+
+--------------------------------------------------
+ENTRY 2 — AGGIUNGERE IL SITO ALLA HOME SU IPHONE
+--------------------------------------------------
+
+Title:
+Come aggiungere IUSMK alla schermata Home su iPhone
+
+Question variations / triggers:
+- come aggiungo il sito alla home del telefono?
+- come metto il sito sulla home?
+- come aggiungo iusmk alla schermata home?
+- come uso il sito come app?
+- come installo il sito sul telefono?
+- come aggiungo il sito alla schermata iniziale?
+- come creo l’icona del sito sul telefono?
+- come metto iusmk come applicazione?
+
+Answer content:
+Su iPhone puoi aggiungere IUSMK alla schermata Home così:
+1. apri il sito con Safari
+2. premi il tasto Condividi
+3. scorri e seleziona “Aggiungi a Home”
+4. conferma
+
+Dopo averlo aggiunto, potrai aprire IUSMK dalla schermata Home come se fosse un’app.
+
+--------------------------------------------------
+ENTRY 3 — AGGIUNGERE IL SITO ALLA HOME SU ANDROID
+--------------------------------------------------
+
+Title:
+Come aggiungere IUSMK alla schermata Home su Android
+
+Question variations / triggers:
+- come aggiungo il sito alla home su android?
+- come installo il sito sul telefono?
+- come metto il sito come app?
+- come aggiungo il sito alla schermata home?
+- come installo iusmk?
+- come aggiungo l’app sul telefono?
+
+Answer content:
+Su Android puoi aggiungere IUSMK alla schermata Home così:
+1. apri il sito con Chrome
+2. premi il menu del browser
+3. seleziona “Aggiungi a schermata Home” oppure “Installa app” se disponibile
+4. conferma
+
+Dopo averlo aggiunto, potrai aprire IUSMK dalla schermata Home come se fosse un’app.
+
+--------------------------------------------------
+ENTRY 4 — RISPOSTA COMBINATA HOME + NOTIFICHE
+--------------------------------------------------
+
+Title:
+Come aggiungere IUSMK alla Home e attivare le notifiche
+
+Question variations / triggers:
+- come faccio ad aggiungere il sito e attivare le notifiche?
+- come metto il sito come app e attivo le notifiche?
+- come installo iusmk e attivo le notifiche push?
+- come faccio entrambe le cose?
+
+Answer content:
+Per usare IUSMK come un’app e attivare le notifiche:
+1. aggiungi prima il sito alla schermata Home del telefono
+2. aprilo dalla schermata Home
+3. accedi al tuo account
+4. apri il menu
+5. entra nella sezione “Notifiche”
+6. premi il tasto per attivare le notifiche push
+
+Su iPhone devi usare Safari e il tasto “Aggiungi a Home”.
+Su Android devi usare Chrome e il menu “Aggiungi a schermata Home” o “Installa app”.
+
+==================================================
+OBJECTIVE 2 — FORCE THE ASSISTANT TO USE THESE ENTRIES
+==================================================
+
+Make sure the assistant:
+1. searches these new knowledge base entries first for related questions
+2. does NOT answer with “non ho informazioni” for these intents anymore
+3. matches similar phrases and paraphrases, not only exact wording
+4. responds in Italian
+5. gives short but complete instructions
+
+==================================================
+OBJECTIVE 3 — ADD INTENT MATCHING / SYNONYMS
+==================================================
+
+For these concepts, add strong matching/synonyms in the AI knowledge routing:
+
+For push notifications:
+- attivare notifiche
+- attivare notifiche push
+- ricevere notifiche
+- abilitare notifiche
+- notifiche sito
+
+For install/add to home:
+- aggiungere alla home
+- schermata home
+- schermata iniziale
+- installare il sito
+- usare il sito come app
+- applicazione
+- icona sul telefono
+- aggiungere al telefono
+
+==================================================
+OBJECTIVE 4 — DO NOT FALL BACK TO CONTACT ANSWERS
+==================================================
+
+For these questions, the assistant must NOT redirect users to:
+- sezione contatto
+- email
+- Instagram
+
+unless the user is asking for actual contact help.
+These questions already have answers and must be answered directly.
+
+==================================================
+OBJECTIVE 5 — TEST THE REAL KNOWLEDGE BASE
+==================================================
+
+After adding the entries, test the assistant with these exact questions and verify it answers correctly from the knowledge base:
+
+1. “come aggiungo il sito alla home del telefono?”
+2. “come installo l’applicazione di giuseppe?”
+3. “come attivo le notifiche?”
+4. “come attivo le notifiche push?”
+5. “come faccio ad aggiungere il sito alla home e poi attivare le notifiche?”
+
+For each of these, the assistant must provide a correct answer and must NOT say:
+- “non ho informazioni”
+- “non sono presenti istruzioni”
+- “contatta Giuseppe”
+
+==================================================
+IMPORTANT RULES
+==================================================
+
+- DO NOT just change the fallback prompt
+- DO add real entries into the actual AI Knowledge Base source
+- DO make sure these entries are saved in the same place used by the assistant for answers
+- DO keep answers in Italian
+- DO NOT change unrelated AI knowledge entries
+- DO NOT break other assistant answers
+
+==================================================
+WHAT TO SHOW ME AT THE END
+==================================================
+
+At the end show me clearly:
+1. the exact knowledge base entries you added
+2. the exact trigger phrases/synonyms you linked to each one
+3. 5 successful test outputs from the assistant using these new entries
+4. where these entries were saved in the AI knowledge base

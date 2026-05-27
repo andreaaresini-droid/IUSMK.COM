@@ -1,0 +1,96 @@
+Voglio migliorare la gestione dei corsi nel pannello admin del sito IUSMK.
+
+Nuova funzione richiesta:
+quando l’admin crea un nuovo corso, deve poter aggiungere PIÙ DI UN VIDEO nello stesso corso, e per ogni video deve poter impostare dati separati.
+
+Obiettivo:
+trasformare ogni corso in una struttura che supporti una lista di video, non un solo video.
+
+Cosa voglio esattamente:
+
+1. PIÙ VIDEO PER OGNI CORSO
+Nella creazione e modifica di un corso, l’admin deve poter:
+- aggiungere più video allo stesso corso
+- rimuovere un video dalla lista
+- modificare un video già inserito
+- riordinare i video se possibile
+- vedere chiaramente tutti i video associati a quel corso
+
+2. DATI SEPARATI PER OGNI VIDEO
+Ogni video deve avere i propri campi indipendenti, almeno:
+- titolo video
+- descrizione video
+- URL video oppure file/video source già usato dal progetto
+- eventuale ordine / posizione nel corso
+
+Quindi NON voglio un solo titolo e una sola descrizione per tutto il corso riferiti a un solo video.
+Voglio che ogni corso contenga una raccolta di lezioni/video, e ogni lezione/video abbia:
+- titolo proprio
+- descrizione propria
+- sorgente video propria
+
+3. STRUTTURA ADMIN CHIARA
+Nel form admin per creare/modificare un corso:
+- aggiungi un bottone tipo “Aggiungi video”
+- ogni volta che l’admin lo preme deve comparire un nuovo blocco video
+- ogni blocco video deve avere i suoi campi:
+  - Titolo video
+  - Descrizione video
+  - URL o sorgente video
+- ogni blocco deve avere anche il pulsante per eliminarlo
+- se possibile aggiungi anche il drag & drop o pulsanti su/giù per cambiare l’ordine dei video
+- il layout deve restare ordinato, leggibile e coerente con il design admin già esistente
+- deve funzionare bene anche da telefono
+
+4. SALVATAGGIO DATI
+Controlla e aggiorna backend/database affinché ogni corso possa salvare una lista di video invece di un singolo video.
+Se la struttura attuale salva un solo video, trasformala correttamente.
+
+Il sistema deve:
+- salvare tutti i video del corso
+- recuperare correttamente tutti i video in modifica
+- mostrare correttamente tutti i video già esistenti quando l’admin modifica un corso
+- non perdere i corsi già creati
+
+5. COMPATIBILITÀ CON I CORSI GIÀ ESISTENTI
+Molto importante:
+- non rompere i corsi già presenti
+- se i vecchi corsi hanno una struttura con un solo video, gestisci la retrocompatibilità
+- se serve, crea una migrazione o una normalizzazione dati pulita
+- i corsi vecchi devono continuare a vedersi correttamente
+
+6. FRONTEND CLIENTE / UTENTE
+Aggiorna anche la parte visibile all’utente finale in modo che, entrando in un corso, possa vedere tutti i video associati al corso.
+
+Comportamento desiderato:
+- il corso deve mostrare una lista o sequenza di video/lezioni
+- ogni video deve mostrare il proprio titolo e la propria descrizione
+- se possibile, layout ordinato tipo elenco lezioni o playlist
+- mantieni coerente il design attuale del sito
+- non cambiare inutilmente grafica e colori
+
+7. CONTROLLI IMPORTANTI
+Verifica questi punti:
+- creazione nuovo corso con più video
+- modifica corso esistente con più video
+- eliminazione singolo video dentro un corso
+- visualizzazione corretta lato admin
+- visualizzazione corretta lato cliente
+- salvataggio e recupero corretti dal database
+- retrocompatibilità con i corsi già creati
+
+8. VINCOLI
+- non stravolgere il design attuale
+- modifica solo ciò che serve
+- mantieni UX pulita e professionale
+- aggiungi validazioni utili
+- gestisci errori reali
+- se mancano campi obbligatori per un video, mostra messaggi chiari
+- testa bene tutto end-to-end
+
+Alla fine fammi un riepilogo chiaro con:
+- come hai cambiato la struttura dei corsi
+- come hai gestito i video multipli
+- come hai mantenuto compatibilità con i corsi vecchi
+- quali parti admin e frontend hai aggiornato
+- eventuali limiti residui

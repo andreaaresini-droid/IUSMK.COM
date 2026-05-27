@@ -1,0 +1,142 @@
+Voglio aggiungere una funzione di ricerca nella dashboard admin del sito IUSMK, precisamente nelle sezioni:
+
+- Corsi
+- Codici di Accesso
+- Richieste di Contatto
+
+OBIETTIVO
+L’admin deve poter cercare rapidamente elementi in queste tre pagine tramite una barra di ricerca chiara, semplice e coerente con il design attuale.
+
+IMPORTANTE:
+- non voglio cambiare inutilmente lo stile della dashboard
+- mantieni colori, font, layout e look attuale
+- aggiungi solo la funzione di ricerca in modo pulito e professionale
+- deve funzionare bene sia da desktop che da telefono
+
+--------------------------------------------------
+1. PAGINA CORSI
+--------------------------------------------------
+Aggiungi una barra di ricerca nella sezione Corsi.
+
+La ricerca deve filtrare almeno per:
+- titolo corso
+- descrizione corso
+- eventuale livello/categoria se presente
+- eventuali titoli dei moduli/video se già disponibili nella struttura
+
+Comportamento:
+- mentre l’admin scrive, la lista si aggiorna
+- ricerca case-insensitive
+- se non ci sono risultati, mostra un messaggio chiaro tipo:
+  “Nessun corso trovato”
+
+--------------------------------------------------
+2. PAGINA CODICI DI ACCESSO
+--------------------------------------------------
+Aggiungi una barra di ricerca nella sezione Codici di Accesso.
+
+La ricerca deve filtrare almeno per:
+- codice
+- nome corso associato
+- email utente associata se presente
+- stato del codice (attivo/usato/scaduto) se presente
+
+Comportamento:
+- filtro in tempo reale mentre l’admin scrive
+- ricerca case-insensitive
+- se nessun risultato, mostra:
+  “Nessun codice trovato”
+
+--------------------------------------------------
+3. PAGINA RICHIESTE DI CONTATTO
+--------------------------------------------------
+Aggiungi una barra di ricerca nella sezione Richieste di Contatto.
+
+La ricerca deve filtrare almeno per:
+- nome
+- email
+- telefono
+- oggetto
+- contenuto del messaggio
+
+Comportamento:
+- filtro in tempo reale mentre l’admin scrive
+- ricerca case-insensitive
+- se nessun risultato, mostra:
+  “Nessuna richiesta trovata”
+
+--------------------------------------------------
+4. UI / DESIGN
+--------------------------------------------------
+La barra di ricerca deve:
+- essere coerente con il design admin esistente
+- avere stile pulito e premium
+- stare bene sopra la lista/tabella degli elementi
+- avere placeholder chiari, ad esempio:
+  - “Cerca corso...”
+  - “Cerca codice...”
+  - “Cerca richiesta...”
+
+Se utile, aggiungi:
+- icona lente
+- pulsante reset/svuota
+ma senza appesantire il layout
+
+--------------------------------------------------
+5. LOGICA
+--------------------------------------------------
+Implementa la ricerca nel modo migliore in base alla struttura attuale del progetto:
+
+Se i dati sono già caricati lato client:
+- usa filtro frontend efficiente
+
+Se le liste sono molto grandi o già supportano query:
+- valuta una ricerca lato backend/API
+
+Scegli la soluzione più pulita e robusta.
+
+--------------------------------------------------
+6. PERFORMANCE E UX
+--------------------------------------------------
+- ricerca fluida
+- nessun lag
+- nessun refresh completo inutile della pagina
+- mantieni scroll, selezioni e layout stabili dove possibile
+
+--------------------------------------------------
+7. RESPONSIVE
+--------------------------------------------------
+Controlla bene:
+- desktop
+- mobile
+
+La barra di ricerca deve:
+- vedersi bene
+- non uscire dai margini
+- non rompere il layout
+
+--------------------------------------------------
+8. NON TOCCARE ALTRO
+--------------------------------------------------
+- non modificare altre sezioni della dashboard
+- non cambiare funzioni già esistenti
+- aggiungi solo la ricerca nelle 3 sezioni richieste
+
+--------------------------------------------------
+9. TEST FINALI
+--------------------------------------------------
+Verifica davvero:
+- ricerca corsi funzionante
+- ricerca codici funzionante
+- ricerca richieste contatto funzionante
+- messaggi “nessun risultato” corretti
+- compatibilità desktop/mobile
+
+--------------------------------------------------
+10. RIEPILOGO FINALE
+--------------------------------------------------
+Alla fine voglio un riepilogo con:
+- file/componenti aggiornati
+- campi inclusi nella ricerca per ogni sezione
+- se la ricerca è frontend o backend
+- eventuali piccoli adattamenti UI fatti

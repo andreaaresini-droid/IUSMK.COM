@@ -1,0 +1,91 @@
+Ora dobbiamo modificare SOLO la sezione admin “Corsi”.
+
+NON modificare tutto ciò che funziona già.
+
+OBIETTIVO:
+I “Corsi” non devono essere categorie, ma singoli video corsi a pagamento da collegare alle categorie Academy.
+
+Quindi:
+- “Academy” = categorie/percorso, esempio The Fade Concept
+- “Corsi” = singoli video a pagamento dentro una categoria Academy
+
+MODIFICA FORM CREAZIONE/MODIFICA CORSO:
+Quando l’admin crea o modifica un corso, deve poter inserire:
+
+1. Categoria Academy
+- select obbligatoria con le categorie create nella sezione Academy
+- esempio: The Fade Concept
+
+2. Titolo video corso
+- nome del singolo video acquistabile
+
+3. Descrizione video corso
+- descrizione completa del video
+
+4. Suggerimenti / informazioni aggiuntive
+- campo testo libero dove l’admin può scrivere consigli, materiale necessario, indicazioni, note importanti ecc.
+
+5. Video principale del corso
+- upload da dispositivo, non URL
+- deve funzionare come gli altri upload già presenti nel sito
+- deve supportare video pesanti
+- deve avere anteprima/copertina funzionante
+- se possibile, primi 2 secondi in loop come preview
+- lato cliente, quando acquistato/sbloccato, deve essere riproducibile con controlli
+
+6. Media aggiuntivi del corso
+- immagini e video dimostrativi collegati a quel singolo video corso
+- caricamento da dispositivo, non URL
+- immagini compresse/ottimizzate se pesanti
+- video gestiti come gli altri video del sito
+- ogni media deve avere:
+  - type image/video
+  - url valido
+  - anteprima visibile
+  - possibilità di eliminare
+  - possibilità di sostituire
+- i video devono mostrare copertina/preview con primi 2 secondi in loop
+- niente box nero o icone rotte
+
+7. Prezzo del corso
+- prezzo unico per quel singolo video corso
+- non servono più prezzi multipli o pacchetti categoria
+
+8. Link pagamento
+- serve una sezione semplice dove l’admin sceglie il link di pagamento Stripe/Payment Link associato a quel corso
+- deve usare la logica già esistente dei link pagamento, se presente
+- l’admin deve selezionare un solo link pagamento per ogni corso
+- il tasto “Acquista ora” lato cliente deve usare quel link
+
+9. Codice/accesso
+- mantieni il sistema già esistente di attivazione con codice, se funziona
+- il codice deve sbloccare quel singolo video corso, non tutta la categoria
+
+LATO CLIENTE:
+Nella pagina dettaglio categoria Academy, in fondo devono comparire i corsi collegati a quella categoria.
+
+Ogni video corso deve mostrare:
+- titolo
+- descrizione breve
+- prezzo
+- copertina/anteprima
+- tasto “Acquista ora”
+- tasto “Attiva con codice”
+- se già acquistato/sbloccato, tasto “Guarda corso”
+
+Quando il cliente entra nel singolo corso acquistato/sbloccato deve vedere:
+- video principale
+- descrizione
+- suggerimenti / informazioni aggiuntive
+- media aggiuntivi
+- controlli video completi
+
+IMPORTANTE:
+- Non cambiare la nuova sezione Academy categorie.
+- Non creare acquisto sulla categoria Academy.
+- L’acquisto deve essere solo sui singoli corsi/video.
+- Non rompere corsi già creati.
+- Se ci sono corsi vecchi, renderli compatibili e permettere all’admin di assegnarli a una categoria Academy.
+- Non modificare login, chat, notifiche, galleria, homepage o intro.
+- Riutilizza il sistema upload già funzionante del sito.
+- Evita caricamenti lenti: non ricaricare media già salvati quando l’admin modifica solo testo/prezzo/categoria.

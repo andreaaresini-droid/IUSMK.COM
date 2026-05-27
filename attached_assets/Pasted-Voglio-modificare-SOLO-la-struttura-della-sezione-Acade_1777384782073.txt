@@ -1,0 +1,92 @@
+Voglio modificare SOLO la struttura della sezione “Academy” di IUSMK.
+
+NON MODIFICARE NULLA DI TUTTO QUELLO CHE FUNZIONA GIÀ.
+
+OBIETTIVO:
+La sezione Academy non deve più far acquistare subito il corso dalla lista principale.
+Nella lista Academy il cliente deve vedere solo le “schede corso”, ad esempio:
+- The Fade Concept
+- altri corsi
+
+Su ogni scheda deve esserci solo il tasto:
+“Scopri il corso”
+
+Quando il cliente clicca “Scopri il corso”, deve entrare in una pagina dedicata del corso dove vede:
+- anteprima del corso
+- descrizione del corso
+- cosa imparerà
+- immagini/video dimostrativi
+- e solo in fondo tutti i video acquistabili del corso, ognuno con:
+  - nome video
+  - descrizione
+  - prezzo
+  - tasto acquista/sblocca
+  - eventuale stato se già acquistato
+
+STRUTTURA LATO CLIENTE:
+1. Pagina Academy principale:
+   - Mostra solo le schede dei corsi principali.
+   - Ogni scheda deve avere immagine/copertina, nome corso, breve descrizione e tasto “Scopri il corso”.
+   - Non mostrare pulsanti acquista nella pagina principale Academy.
+   - Non mostrare direttamente i singoli video acquistabili nella pagina principale.
+
+2. Pagina dettaglio corso:
+   - Deve aprirsi cliccando su “Scopri il corso”.
+   - Deve mostrare la parte informativa del corso:
+     - titolo
+     - copertina
+     - trailer/anteprima se presente
+     - descrizione
+     - cosa imparerai
+     - foto/video caricati nei dettagli corso
+   - In fondo alla pagina deve esserci una sezione tipo “Video del corso” o “Lezioni disponibili”.
+   - Ogni video/lezione deve avere:
+     - titolo
+     - descrizione
+     - prezzo
+     - copertina/anteprima
+     - tasto acquista/sblocca
+   - Se il cliente ha già acquistato/sbloccato quel video, deve vedere il tasto per guardarlo/accesso al contenuto invece di acquistarlo di nuovo.
+
+STRUTTURA LATO ADMIN:
+Devi modificare la creazione/modifica dei corsi per permettere questa nuova struttura.
+
+L’admin deve poter creare un “corso contenitore”, ad esempio:
+“The Fade Concept”
+
+Dentro questo corso contenitore deve poter aggiungere/modificare:
+- titolo corso
+- copertina corso
+- descrizione breve per la pagina Academy
+- descrizione completa per la pagina dettaglio
+- sezione “cosa imparerai”
+- trailer o video anteprima
+- immagini/video dimostrativi per i dettagli corso
+- elenco dei video/lezioni acquistabili
+
+Per ogni video/lezione acquistabile l’admin deve poter impostare:
+- nome video
+- descrizione video
+- prezzo
+- copertina o anteprima video
+- file video/contenuto
+- eventuale codice/accesso collegato
+- eventuale Payment Link Stripe collegato, se già esiste questa logica
+- ordine di visualizzazione
+
+IMPORTANTE:
+- Non rompere il sistema di acquisto già esistente.
+- Non rompere i codici di accesso già esistenti.
+- Non rompere i corsi già pubblicati.
+- Se ora i corsi esistenti sono trattati come singoli prodotti/video, crea una migrazione o compatibilità:
+  - i corsi esistenti devono continuare a funzionare
+  - devono poter essere associati a un corso contenitore
+  - se non sono associati, continuano a comparire senza errori
+- Non modificare login, dashboard, galleria, notifiche o altre sezioni non richieste.
+- Mantieni lo stile grafico attuale IUSMK.
+- Verifica desktop e mobile.
+
+RISULTATO FINALE:
+La pagina Academy mostra solo i corsi principali con tasto “Scopri il corso”.
+Il cliente entra nella pagina del corso, legge cosa imparerà e vede le anteprime.
+Solo in fondo trova i video/lezioni acquistabili con prezzo, nome, descrizione e tasto acquista/sblocca.

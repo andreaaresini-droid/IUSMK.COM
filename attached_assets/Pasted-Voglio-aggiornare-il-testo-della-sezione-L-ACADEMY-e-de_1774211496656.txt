@@ -1,0 +1,56 @@
+Voglio aggiornare il testo della sezione “L’ACADEMY” e della sezione “GALLERIA” del sito IUSMK, riformulandolo in uno stile coerente con il PDF/brand book che ti ho allegato: tono premium, diretto, minimale, identitario, professionale, con frasi pulite e impattanti.
+
+IMPORTANTE:
+- non cambiare inutilmente layout, immagini, pulsanti, filtri o struttura delle sezioni
+- modifica solo i testi
+- mantieni lo stile grafico attuale del sito
+- assicurati che i nuovi testi siano ben leggibili sia da desktop che da mobile
+- non usare un tono generico: il copy deve sembrare parte dello stesso universo stilistico del PDF IUSMK
+
+1) SEZIONE “L’ACADEMY”
+Sostituisci il testo attuale della sezione Academy con questo:
+
+Titolo:
+L’ACADEMY
+
+Testo principale:
+Formazione d’élite per barber che vogliono distinguersi.
+
+Accedi a tecniche avanzate, visione artistica e metodo professionale.
+Ogni corso è progettato per portare il tuo livello oltre lo standard.
+
+Non è per tutti. È per chi vuole diventare riferimento.
+
+Testo badge / info sotto il titolo (o nel box informativo relativo ai codici di accesso):
+Accesso riservato tramite codici privati.
+
+2) SEZIONE “GALLERIA”
+Sostituisci il testo attuale della sezione Galleria con questo:
+
+Titolo:
+GALLERIA
+
+Testo principale:
+Una selezione di lavori che rappresentano identità, precisione e stile.
+
+Tagli, colore e concept visivi che definiscono un’estetica riconoscibile.
+Ogni immagine racconta un risultato reale.
+
+3) STILE E IMPAGINAZIONE
+- mantieni una gerarchia tipografica forte
+- rispetta il look premium del sito
+- conserva eventuali interruzioni di riga sensate per dare respiro al testo
+- se serve, adatta leggermente larghezze o spaziature del testo per migliorare la leggibilità
+- non stravolgere nulla: solo piccoli aggiustamenti se necessari
+
+4) CONTROLLI FINALI
+Verifica che:
+- i nuovi testi compaiano correttamente nelle due sezioni
+- non ci siano tagli o problemi di responsive
+- il badge/informazione sui codici in Academy sia aggiornato con il nuovo testo
+- la Galleria mantenga i filtri e la struttura attuale
+
+Alla fine fammi un breve riepilogo con:
+- testi sostituiti
+- sezioni aggiornate
+- eventuali piccoli adattamenti fatti alla spaziatura o impaginazione

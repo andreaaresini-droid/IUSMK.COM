@@ -1,0 +1,148 @@
+Voglio aggiungere un’animazione iniziale (intro) al sito IUSMK quando un utente apre la homepage.
+
+OBIETTIVO
+Quando il sito si apre:
+1. compare una schermata iniziale (overlay fullscreen)
+2. si vede un’immagine (che allegherò su Replit)
+3. una forbice animata entra dal basso verso l’alto
+4. la forbice “taglia” l’immagine in due
+5. le due parti dell’immagine si separano (una verso l’alto, una verso il basso)
+6. sotto viene rivelata la home del sito
+7. l’animazione deve essere fluida, veloce e premium
+
+---
+
+## 1. STRUTTURA
+- crea un overlay fullscreen sopra tutto il sito:
+  - position: fixed
+  - top: 0
+  - left: 0
+  - width: 100%
+  - height: 100%
+  - z-index molto alto (es. 9999)
+- questo overlay deve bloccare la visualizzazione del sito finché l’animazione non è finita
+
+---
+
+## 2. ELEMENTI DA USARE
+Dentro l’overlay inserisci:
+
+1. immagine principale (che ti fornirò)
+2. forbici (puoi usare:
+   - immagine PNG/SVG forbici
+   oppure creare una forma stilizzata)
+
+Struttura esempio:
+- container overlay
+  - immagine divisa in due layer (top + bottom)
+  - elemento forbici
+
+---
+
+## 3. EFFETTO TAGLIO
+Devi simulare il taglio così:
+
+- l’immagine è divisa in 2 parti:
+  - parte superiore
+  - parte inferiore
+
+Tecnica consigliata:
+- usa clip-path oppure due div con overflow hidden
+
+Animazione:
+- la forbice sale dal basso verso il centro
+- nel momento in cui passa:
+  - attiva separazione delle due parti
+
+Movimento:
+- parte sopra → sale verso l’alto
+- parte sotto → scende verso il basso
+
+---
+
+## 4. ANIMAZIONE FORBICI
+- la forbice entra dal basso (translateY)
+- movimento fluido (ease-in-out)
+- durata: circa 1–1.5 secondi
+- mentre sale, può avere:
+  - leggera rotazione realistica
+  - effetto apertura/chiusura (facoltativo)
+
+---
+
+## 5. TRANSIZIONE ALLA HOME
+Dopo il taglio:
+- le due parti dell’immagine escono dallo schermo
+- overlay scompare con fade-out
+
+Importantissimo:
+- il sito sotto deve essere già caricato
+- niente lag
+
+---
+
+## 6. DURATA TOTALE
+- animazione completa: 2 – 3 secondi max
+- non deve risultare lenta o fastidiosa
+
+---
+
+## 7. RESPONSIVE
+- su mobile:
+  - animazione deve funzionare perfettamente
+  - dimensioni adattate
+  - forbici non troppo grandi
+- niente glitch o elementi fuori schermo
+
+---
+
+## 8. OTTIMIZZAZIONE (IMPORTANTISSIMO)
+- usa transform e opacity (no animazioni pesanti)
+- niente lag
+- deve essere fluido anche su telefoni
+
+---
+
+## 9. MOSTRA SOLO UNA VOLTA
+Molto importante:
+- l’animazione deve partire solo al primo accesso
+
+usa:
+- localStorage o sessionStorage
+
+logica:
+- se intro già vista → non mostrarla più
+- se prima visita → mostra animazione
+
+---
+
+## 10. NON ROMPERE IL SITO
+- non modificare layout esistente
+- non toccare navbar
+- non toccare sezioni
+- aggiungi solo overlay sopra
+
+---
+
+## 11. MIGLIORIA PREMIUM (FACOLTATIVA)
+Se possibile:
+- aggiungi leggero suono di “taglio” (opzionale)
+- aggiungi micro vibrazione visiva quando avviene il taglio
+
+---
+
+## TEST FINALI
+Verifica:
+- desktop
+- mobile
+- animazione fluida
+- nessun bug
+- nessun blocco del sito
+- overlay scompare correttamente
+
+---
+
+Alla fine fammi un riepilogo con:
+- come hai implementato l’overlay
+- come funziona il taglio
+- come hai gestito la prima visita

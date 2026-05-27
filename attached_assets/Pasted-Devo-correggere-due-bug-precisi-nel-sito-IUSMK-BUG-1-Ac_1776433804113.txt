@@ -1,0 +1,79 @@
+Devo correggere due bug precisi nel sito IUSMK.
+
+BUG 1 — “Accedi al corso” apre ancora la pagina di sblocco
+Situazione attuale:
+- prima dello sblocco il corso non compare in “I miei corsi” e va bene
+- dopo lo sblocco il corso compare in “I miei corsi”
+- però quando clicco “Accedi al corso” mi riporta ancora alla pagina per inserire il codice
+- invece dovrebbe aprire direttamente la pagina con i contenuti reali del corso (video/foto/moduli)
+
+Comportamento corretto richiesto:
+1. Se un corso è già sbloccato e attivo per quel cliente:
+   - il bottone “Accedi al corso” deve aprire direttamente la pagina contenuti del corso
+   - NON deve aprire la pagina di sblocco codice
+2. La pagina di sblocco codice deve essere usata solo in Academy per i corsi non ancora sbloccati
+3. “I miei corsi” deve contenere solo corsi già sbloccati
+4. Ogni card in “I miei corsi” deve linkare alla route/pagina contenuti corretta del corso
+5. Se esiste una route tipo /academy/:slug/access o /academy/:slug/unlock, non usarla per il bottone dei corsi già attivi
+6. Usa invece una route separata per vedere i contenuti del corso già sbloccato, ad esempio:
+   - /my-courses/:courseId
+   - oppure la route contenuti già esistente se c’è
+7. Controlla che il gating/access control distingua correttamente:
+   - corso locked
+   - corso unlocked
+   - pagina unlock
+   - pagina contenuti
+
+Aggiungi log chiari:
+- [COURSE ACCESS] user clicked access
+- [COURSE ACCESS] course unlocked = true
+- [COURSE ACCESS] redirecting to content page
+- [COURSE ACCESS ERROR] ...
+
+BUG 2 — Tasto admin “Elimina” non funziona
+Situazione attuale:
+- nella dashboard admin ci sono i pulsanti per eliminare codici o corsi dai clienti
+- ma il tasto “Elimina” non funziona davvero
+
+Comportamento corretto richiesto:
+1. Il tasto “Elimina” per i codici deve eliminare definitivamente il codice dal database
+2. Il tasto “Elimina” per i corsi assegnati/rimossi ai clienti deve funzionare davvero
+3. Dopo l’eliminazione:
+   - aggiorna subito l’interfaccia admin
+   - mostra conferma success/error reale
+   - rimuovi il record dalla UI senza refresh rotto
+4. Se il codice eliminato era ancora inutilizzato:
+   - non deve più essere assegnabile/usabile
+5. Se il codice eliminato era già stato usato:
+   - applica la logica corretta che avete deciso, ma deve essere coerente
+6. Se il corso viene rimosso dal cliente:
+   - non deve più comparire in “I miei corsi”
+   - se necessario rimuovi anche i record associati
+7. Aggiungi log:
+   - [ADMIN DELETE] code delete requested
+   - [ADMIN DELETE] course delete requested
+   - [ADMIN DELETE] success
+   - [ADMIN DELETE ERROR] ...
+
+Verifiche obbligatorie:
+- controlla che i pulsanti chiamino davvero la route giusta
+- controlla che la route backend esista
+- controlla che i permessi admin siano corretti
+- controlla che dopo l’azione venga aggiornato correttamente il frontend
+- controlla che non ci siano errori silenziosi
+
+IMPORTANTISSIMO
+Non rompere:
+- sblocco corsi
+- notifiche codici
+- Academy
+- I miei corsi
+- contenuti già caricati
+- dashboard admin
+
+Alla fine dimmi:
+1. quali file hai modificato
+2. perché “Accedi al corso” puntava alla pagina di sblocco invece che ai contenuti
+3. come hai corretto il link/route dei corsi sbloccati
+4. perché il tasto Elimina non funzionava
+5. come hai corretto le eliminazioni lato admin

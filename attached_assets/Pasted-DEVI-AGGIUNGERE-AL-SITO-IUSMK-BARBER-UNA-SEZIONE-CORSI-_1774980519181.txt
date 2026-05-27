@@ -1,0 +1,298 @@
+DEVI AGGIUNGERE AL SITO IUSMK BARBER UNA SEZIONE CORSI CON PAGAMENTO ONLINE TRAMITE STRIPE, SENZA TOCCARE O ROMPERE NULLA DI CIÒ CHE GIÀ FUNZIONA NEL SITO (prenotazioni, area admin, login, notifiche esistenti, grafica generale, ecc.). 
+IMPLEMENTA SOLO LE NUOVE FUNZIONI RELATIVE AI CORSI.
+
+OBIETTIVO
+Voglio vendere corsi direttamente dal sito.
+L’admin deve poter creare e gestire i corsi dalla dashboard.
+I clienti devono poter vedere i corsi disponibili, acquistarli online con Stripe e ricevere il codice di accesso al corso tramite una notifica interna nel sito.
+
+FUNZIONI DA AGGIUNGERE
+
+1) AREA ADMIN – GESTIONE CORSI
+Nella dashboard admin aggiungi una nuova sezione chiamata:
+“Corsi”
+
+Dentro questa sezione l’admin deve poter:
+
+- creare un nuovo corso
+- modificare un corso esistente
+- eliminare un corso
+- attivare/disattivare un corso
+- vedere chi ha acquistato ogni corso
+- generare o impostare il codice di accesso al corso
+- impostare prezzo normale
+- impostare sconto
+- impostare prezzo finale automatico
+- associare immagini copertina al corso
+- inserire descrizione breve e descrizione completa
+- inserire eventuale durata del corso
+- inserire eventuale categoria
+- scegliere se il corso è in evidenza
+
+CAMPI CORSO
+Ogni corso deve avere questi campi:
+
+- id
+- title
+- slug
+- shortDescription
+- fullDescription
+- coverImage
+- galleryImages (opzionale)
+- price
+- discountType (“percent” oppure “fixed” oppure null)
+- discountValue
+- discountedPrice (calcolato automaticamente)
+- accessCode
+- isActive
+- isFeatured
+- category
+- duration
+- createdAt
+- updatedAt
+
+REGOLE PREZZO E SCONTO
+- Se non c’è sconto, mostra solo il prezzo normale
+- Se c’è sconto percentuale, calcola il prezzo finale in automatico
+- Se c’è sconto fisso, calcola il prezzo finale in automatico
+- Non permettere prezzi finali negativi
+- L’admin deve poter impostare lo sconto sia in fase di creazione sia in fase di modifica
+- Nella dashboard admin mostra sempre:
+  prezzo originale / sconto / prezzo finale
+
+2) AREA ADMIN – CODICI SCONTO
+Aggiungi una sezione nuova chiamata:
+“Codici sconto”
+
+L’admin deve poter creare, modificare, attivare/disattivare ed eliminare codici sconto utilizzabili dai clienti al checkout.
+
+CAMPI CODICE SCONTO
+- id
+- code
+- description
+- discountType (“percent” oppure “fixed”)
+- discountValue
+- isActive
+- validFrom
+- validUntil
+- usageLimit (opzionale)
+- usedCount
+- applicableCourseIds (array opzionale: se vuoto vale per tutti i corsi)
+- createdAt
+- updatedAt
+
+REGOLE CODICI SCONTO
+- il codice deve essere unico
+- deve essere validato al checkout
+- non deve funzionare se disattivato
+- non deve funzionare se scaduto
+- non deve funzionare se ha superato usageLimit
+- se applicableCourseIds è valorizzato, il codice deve funzionare solo per quei corsi
+- mostrare errore chiaro se il codice non è valido
+
+3) AREA CLIENTE – PAGINA CORSI
+Aggiungi nel sito lato cliente una nuova voce menu:
+“Corsi”
+
+In questa pagina il cliente deve poter vedere solo i corsi attivi.
+Per ogni corso mostra:
+- immagine copertina
+- titolo
+- descrizione breve
+- eventuale durata
+- prezzo originale
+- eventuale sconto
+- prezzo finale
+- pulsante “Acquista corso”
+
+Aggiungi anche una pagina dettaglio corso con:
+- copertina
+- galleria immagini se presente
+- titolo
+- descrizione completa
+- prezzo
+- sconto
+- prezzo finale
+- pulsante acquista
+
+4) CHECKOUT CON STRIPE
+Quando il cliente clicca “Acquista corso”:
+- deve partire un checkout con Stripe
+- il sistema deve usare il prezzo finale corretto
+- deve essere possibile inserire un codice sconto prima del pagamento
+- il totale deve aggiornarsi correttamente
+- dopo il pagamento riuscito, salva l’acquisto nel database
+
+CREA UNA LOGICA SICURA:
+- il prezzo finale non deve essere deciso dal frontend
+- il backend deve ricalcolare sempre il totale reale
+- il backend deve validare il codice sconto
+- il backend deve creare la sessione Stripe in modo sicuro
+
+ENTITÀ ACQUISTI CORSI
+Crea una nuova entità tipo:
+CoursePurchase
+
+Campi:
+- id
+- userId
+- courseId
+- originalPrice
+- appliedDiscountCode
+- appliedDiscountType
+- appliedDiscountValue
+- finalPricePaid
+- stripeSessionId
+- paymentStatus
+- accessCodeSent (boolean)
+- createdAt
+- updatedAt
+
+REGOLE ACQUISTO
+- salva acquisto solo dopo conferma pagamento riuscito
+- evita doppio salvataggio in caso di refresh o doppio callback
+- collega acquisto al cliente loggato
+- un cliente deve poter vedere i corsi acquistati nella sua area personale
+
+5) INVIO CODICE ACCESSO AL CLIENTE
+Dopo il pagamento confermato:
+- il cliente deve ricevere il codice per accedere al corso tramite NOTIFICA INTERNA SUL SITO
+- il codice non deve essere mostrato prima del pagamento riuscito
+- la notifica deve restare salvata nell’area notifiche del cliente
+
+Crea una nuova entità notifiche se non esiste già una compatibile con questo flusso.
+Se esiste già un sistema notifiche funzionante, RIUTILIZZALO senza rompere nulla.
+
+Ogni notifica corso deve contenere:
+- id
+- userId
+- type = “course_access”
+- title
+- message
+- courseId
+- accessCode
+- isRead
+- createdAt
+
+TESTO NOTIFICA ESEMPIO:
+Titolo: “Acquisto corso completato”
+Messaggio: “Il pagamento è stato completato con successo. Il tuo codice di accesso al corso [NOME CORSO] è: [CODICE]. Conserva questo codice.”
+
+6) AREA CLIENTE – NOTIFICHE
+Aggiungi nella dashboard cliente una sezione chiamata:
+“Notifiche”
+
+Il cliente deve poter:
+- vedere tutte le notifiche ricevute
+- distinguere lette/non lette
+- aprire la notifica e vedere il contenuto completo
+- visualizzare facilmente i codici ricevuti per i corsi acquistati
+
+Nell’area cliente aggiungi anche una sezione:
+“I miei corsi”
+
+Dove il cliente vede:
+- corsi acquistati
+- data acquisto
+- stato pagamento
+- codice accesso
+- eventuale pulsante “Vedi notifica”
+
+7) DASHBOARD ADMIN – ACQUISTI CORSI
+L’admin deve avere una sezione:
+“Acquisti corsi”
+
+Dove può vedere:
+- lista clienti che hanno acquistato
+- nome cliente
+- email cliente
+- corso acquistato
+- importo pagato
+- sconto applicato
+- data acquisto
+- stato pagamento
+- codice accesso inviato o meno
+
+Aggiungi filtri utili:
+- per corso
+- per cliente
+- per data
+- per stato pagamento
+
+8) GENERAZIONE / GESTIONE CODICE ACCESSO
+Per ogni corso l’admin deve poter:
+- inserire manualmente un codice accesso
+oppure
+- generarlo automaticamente
+
+Se viene generato automaticamente, usa un formato leggibile tipo:
+IUSMK-XXXXXX
+
+L’access code associato al corso deve essere quello inviato ai clienti che acquistano quel corso.
+Se necessario, permetti anche codici diversi per acquisti diversi, ma fallo solo se la struttura lo richiede.
+Se non è necessario, usa il codice del corso.
+
+9) INTERFACCIA
+Mantieni lo stile grafico già esistente del sito IUSMK.
+Le nuove sezioni devono integrarsi con il design già presente.
+Non creare pagine con stile diverso dal resto del sito.
+Usa componenti responsive e ordinati.
+
+10) SICUREZZA E PERMESSI
+- Solo admin può creare/modificare/eliminare corsi
+- Solo admin può creare/modificare/eliminare codici sconto
+- Solo admin può vedere tutti gli acquisti
+- Solo il cliente proprietario può vedere le proprie notifiche e i propri corsi acquistati
+- Nessun cliente può vedere codici di altri utenti
+- Proteggi tutte le route backend relative a corsi, sconti, acquisti e notifiche
+
+11) WEBHOOK STRIPE
+Implementa il flusso corretto con webhook Stripe per confermare il pagamento.
+Non basarti solo sul redirect frontend.
+Usa il webhook per:
+- confermare pagamento riuscito
+- salvare acquisto
+- creare notifica
+- segnare accessCodeSent = true
+
+Gestisci bene eventuali duplicati webhook.
+
+12) COSA NON DEVI TOCCARE
+NON modificare o rompere:
+- sistema prenotazioni esistente
+- login/registrazione esistenti
+- area admin esistente
+- notifiche già funzionanti
+- email già funzionanti
+- pagine esistenti non legate ai corsi
+- qualsiasi altra funzione già stabile nel sito
+
+13) MIGRAZIONE DATABASE
+Se servono nuove tabelle/collezioni, creale senza alterare o rompere i dati esistenti.
+Aggiungi in modo pulito:
+- Course
+- DiscountCode
+- CoursePurchase
+- Notification (solo se non esiste già un modello riutilizzabile)
+
+14) OUTPUT FINALE RICHIESTO
+Implementa tutto in modo completo e funzionante.
+Alla fine verifica:
+- creazione corso da admin
+- modifica corso con sconto
+- creazione codice sconto admin
+- visualizzazione corsi lato cliente
+- checkout Stripe
+- applicazione coupon valida
+- registrazione acquisto
+- creazione notifica con codice accesso
+- visualizzazione nella sezione notifiche cliente
+- visualizzazione in “I miei corsi”
+- visualizzazione in dashboard admin acquisti corsi
+
+IMPORTANTE
+Fai modifiche precise e mirate.
+Non semplificare il flusso.
+Non lasciare parti finte o placeholder.
+Tutto deve essere realmente collegato e funzionante.
+Se Stripe richiede chiavi o env variables, prepara il codice per usare variabili ambiente, senza hardcodarle.

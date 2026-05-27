@@ -1,0 +1,182 @@
+C’è un problema di layout mobile/PWA nel sito IUSMK.
+
+PROBLEMA
+Quando il sito viene aggiunto alla schermata Home su iPhone e aperto come app/PWA, diverse pagine risultano tagliate lateralmente, soprattutto sul lato destro.
+Il contenuto non entra correttamente nello schermo e alcune sezioni si vedono “zoomate/tagliate”, come se ci fosse overflow orizzontale o una larghezza troppo grande.
+
+Dalle schermate il problema è evidente in varie pagine del pannello/admin/mobile, ad esempio:
+- Corsi
+- Codici sconto
+- Log conversazioni AI
+- Test assistente
+- Galleria
+e probabilmente anche in altre sezioni.
+
+OBIETTIVO
+Voglio che tutto il sito, soprattutto quando viene aperto da iPhone come app dalla schermata Home, sia perfettamente responsive e non abbia più tagli laterali.
+Ogni pagina deve entrare completamente nello schermo, senza elementi fuori viewport e senza obbligare a scroll orizzontale.
+
+COSA DEVI FARE
+
+1. Trova la vera causa del taglio laterale
+Controlla tutto il layout mobile/PWA e individua quali elementi stanno causando overflow orizzontale, ad esempio:
+- container con width fissa
+- tabelle troppo larghe
+- card con min-width eccessivo
+- griglie non responsive
+- padding/margin eccessivi
+- elementi con position fixed/absolute che escono fuori dallo schermo
+- utilizzo errato di 100vw
+- componenti che non rispettano il box sizing
+- floating buttons, side handles o pannelli laterali che alterano il viewport
+
+2. Correzione globale responsive
+Fai in modo che su mobile e PWA iPhone:
+- il layout usi sempre larghezze fluide
+- nessuna sezione superi la larghezza del viewport
+- non esista overflow orizzontale indesiderato
+- i contenitori principali abbiano max-width: 100%
+- gli elementi interni possano restringersi correttamente
+- eventuali tabelle siano adattate a mobile
+
+3. Verifica meta viewport e safe area iPhone
+Controlla che il progetto gestisca bene iPhone e PWA:
+- meta viewport corretto
+- supporto safe area
+- gestione notch / dynamic island / bottom safe area
+- niente calcoli errati con 100vh / 100vw che in modalità standalone PWA causano tagli
+
+Se necessario, usa una gestione più sicura per:
+- width: 100%
+- max-width: 100%
+- min-width: 0
+- overflow-x: hidden solo dove ha senso, non come toppa cieca
+
+4. Contenitore principale app
+Controlla il layout root dell’app:
+- wrapper principale
+- layout mobile
+- sidebar/menu mobile
+- content area
+- header
+- floating chat button
+- eventuali drawer laterali
+
+Probabilmente c’è un contenitore che in modalità PWA mantiene una larghezza superiore allo schermo o non si restringe correttamente.
+Correggilo alla radice.
+
+5. Tabelle e liste stile desktop
+Nelle pagine come:
+- corsi
+- codici sconto
+- log conversazioni AI
+ci sono strutture tabellari o pseudo-tabellari che su iPhone sembrano troppo larghe.
+
+Su mobile voglio una di queste due soluzioni, scegli la migliore:
+A) trasformare le tabelle in card responsive
+oppure
+B) mantenere la tabella ma con layout mobile ottimizzato, senza rompere lo schermo
+
+IMPORTANTE
+Non voglio sezioni tagliate.
+Se una tabella è troppo grande, meglio convertirla in card verticali su mobile.
+
+6. Galleria e cards
+Nella pagina galleria vedo card affiancate che sembrano troppo grandi o troppo vicine ai margini.
+Sistemale in modo che su mobile/PWA:
+- le card rientrino perfettamente nel viewport
+- il numero di colonne sia corretto
+- nessuna card venga tagliata
+- bottoni e immagini restino ben visibili
+- il pulsante chat flottante non copra contenuti importanti
+
+7. Pagina “Test assistente”
+Dallo screenshot questa pagina sembra particolarmente rotta/tagliata a destra.
+Controlla:
+- larghezza del box centrale
+- allineamento del contenuto
+- eventuali transform/translate
+- padding e margini
+- eventuali contenitori con width fissa
+
+Questa pagina deve essere completamente visibile su iPhone senza tagli.
+
+8. Log conversazioni AI
+La pagina log conversazioni AI contiene contenuti lunghi.
+Assicurati che:
+- testi lunghi vadano a capo
+- righe, tag e metadati non allarghino il contenitore
+- eventuali chip/tab siano responsive
+- il box del dettaglio non esca dalla viewport
+
+Usa ad esempio:
+- word-break corretto
+- overflow-wrap
+- min-width: 0 nei flex items
+- layout stack su mobile
+
+9. Floating elements
+Controlla elementi flottanti come:
+- bottone chat rosso
+- maniglia laterale/destra
+- eventuali pulsanti fixed
+- drawer/menu
+
+Devono:
+- non spingere il layout fuori schermo
+- non coprire zone importanti
+- rispettare safe area e viewport mobile
+- avere dimensioni e posizionamento adatti al mobile
+
+10. CSS da controllare in tutto il progetto
+Verifica ed eventualmente correggi:
+- box-sizing: border-box
+- img, video { max-width: 100%; height: auto; }
+- flex items con min-width: 0
+- grid con colonne responsive
+- width: 100vw sostituito dove crea problemi
+- padding laterali eccessivi
+- elementi con position absolute/fixed fuori dal parent
+- modali, card, pannelli, tabelle, chip, tag, bottoni
+
+11. Non usare solo overflow-x:hidden come toppa
+Se c’è un elemento che rompe il layout, correggi davvero il componente che causa il problema.
+Puoi usare overflow-x hidden sul body/app solo se serve come protezione finale, ma non deve essere l’unica “soluzione”.
+Voglio la causa risolta davvero.
+
+12. Ottimizzazione specifica per iPhone PWA
+Testa e correggi il comportamento in modalità:
+- Safari normale
+- sito aggiunto alla Home
+- standalone PWA su iPhone
+
+Perché il problema sembra emergere soprattutto quando il sito è aperto come app dalla schermata Home.
+
+13. Test obbligatori
+Dopo le modifiche, verifica tutte queste pagine in viewport mobile iPhone:
+- Corsi
+- Codici sconto
+- Log conversazioni AI
+- Test assistente
+- Galleria
+- eventuali altre pagine admin/client con tabelle o card
+
+Per ogni pagina verifica:
+- nessun taglio laterale
+- nessuno scroll orizzontale indesiderato
+- contenuto perfettamente leggibile
+- bottoni visibili
+- header/menu corretti
+- floating button non invasivo
+
+14. Output finale
+Quando hai finito voglio:
+1. elenco preciso dei problemi trovati
+2. componenti/file modificati
+3. spiegazione breve di cosa causava il taglio
+4. conferma che il layout è stato testato in modalità mobile/PWA iPhone
+5. conferma che ora le pagine entrano correttamente nello schermo senza essere tagliate
+
+IMPORTANTE
+Non fare una correzione superficiale.
+Sistema il layout in modo strutturale e responsive, specialmente per iPhone aperto come app dalla schermata Home.

@@ -1,0 +1,40 @@
+C’è un problema nella sezione admin “Galleria” del sito IUSMK, soprattutto da telefono.
+
+Problema attuale:
+quando l’admin preme su “Tocca o clicca per caricare” per aggiungere un’immagine, sul telefono si apre direttamente la fotocamera per scattare una foto. Questo non va bene.
+
+Voglio che l’admin possa:
+- scegliere una foto dall’album/galleria del telefono
+- scegliere un file dai file del dispositivo
+- eventualmente anche usare la fotocamera, ma NON come unica opzione predefinita
+
+Obiettivo:
+correggere il campo upload in modo che su mobile non forzi l’apertura della fotocamera, ma permetta la scelta normale del file dal selettore del dispositivo.
+
+Cose da controllare e correggere:
+1. Verifica se nell’input file è presente l’attributo `capture` o altre configurazioni che forzano la fotocamera su mobile
+2. Rimuovi qualsiasi comportamento che apra direttamente la fotocamera come scelta obbligata
+3. Mantieni l’upload compatibile sia con:
+   - iPhone / Safari
+   - Android / Chrome
+   - desktop
+4. Il pulsante/area “Tocca o clicca per caricare” deve aprire il selettore file standard del dispositivo
+5. Accetta correttamente immagini JPG, PNG e WebP come già previsto
+6. Non cambiare inutilmente il design della sezione
+7. Mantieni la stessa grafica drag-and-drop / upload box già esistente
+8. Controlla che dopo la selezione da album o file l’immagine venga caricata correttamente come prima
+
+Importante:
+- non voglio che venga forzata la fotocamera
+- voglio che da telefono si possa scegliere normalmente tra foto già presenti e file
+- se possibile, usa la soluzione più compatibile con i browser mobile moderni
+
+Dopo la modifica:
+- testa il comportamento su mobile
+- verifica che cliccando sull’area upload non si apra più solo la fotocamera
+- verifica che l’admin possa selezionare immagini dalla galleria/album o dai file
+
+Fammi poi un breve riepilogo finale con:
+- causa del problema
+- cosa hai corretto
+- come si comporta ora l’upload su telefono

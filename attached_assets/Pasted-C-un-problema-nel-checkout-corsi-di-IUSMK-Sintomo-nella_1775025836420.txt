@@ -1,0 +1,68 @@
+C’è un problema nel checkout corsi di IUSMK.
+
+Sintomo:
+nella pagina checkout compare il messaggio:
+“Errore durante la creazione del checkout. Riprova tra qualche istante.”
+Quindi il backend non riesce a creare la Stripe Checkout Session.
+
+Controlla e correggi SOLO questa parte, senza toccare login, reset password, notifiche, admin o altre funzioni già sistemate.
+
+OBIETTIVO
+Il pulsante “Paga con Stripe” deve creare correttamente una checkout session e reindirizzare il cliente a Stripe.
+
+CONTROLLI OBBLIGATORI
+
+1. verifica che il backend legga correttamente questi secrets:
+- STRIPE_SECRET_KEY
+- STRIPE_PUBLISHABLE_KEY
+- STRIPE_WEBHOOK_SECRET
+- APP_URL
+
+2. aggiungi log backend chiari:
+- [STRIPE_CHECKOUT] richiesta ricevuta
+- [STRIPE_CHECKOUT] userId
+- [STRIPE_CHECKOUT] courseId
+- [STRIPE_CHECKOUT] couponCode
+- [STRIPE_CHECKOUT] corso trovato sì/no
+- [STRIPE_CHECKOUT] prezzo originale
+- [STRIPE_CHECKOUT] prezzo finale
+- [STRIPE_CHECKOUT] tentativo creazione sessione Stripe
+- [STRIPE_CHECKOUT] sessione creata con successo
+- [STRIPE_CHECKOUT] errore completo Stripe
+
+3. verifica che courseId venga passato correttamente dal frontend
+4. verifica che l’utente autenticato venga letto correttamente
+5. verifica che il corso sia attivo e abbia prezzo valido
+6. verifica che l’importo inviato a Stripe sia in centesimi e numerico
+7. verifica che APP_URL venga usato correttamente per success_url e cancel_url
+8. verifica che non ci siano errori se il coupon è vuoto
+9. se il coupon non è valido, restituisci errore chiaro
+10. se Stripe restituisce errore, logga il messaggio completo e non solo errore generico
+11. non far crashare il server
+
+IMPLEMENTAZIONE CORRETTA
+La checkout session deve usare:
+- mode: payment
+- line_items con prezzo in centesimi
+- currency: eur
+- success_url basata su APP_URL
+- cancel_url basata su APP_URL
+- metadata con userId e courseId
+
+Esempio logico:
+- recupera corso dal DB
+- valida corso attivo
+- applica eventuale sconto/coupon
+- calcola totalAmount
+- crea sessione Stripe
+- restituisce checkout URL al frontend
+
+FRONTEND
+- quando clicco “Paga con Stripe”, il frontend deve chiamare il backend
+- se il backend restituisce checkoutUrl, deve fare redirect immediato
+- se c’è errore, mostra messaggio ma logga anche il dettaglio in console
+
+IMPORTANTE
+Non toccare il webhook se non serve.
+Non modificare altre aree del progetto.
+Correggi solo il flusso di creazione checkout session.

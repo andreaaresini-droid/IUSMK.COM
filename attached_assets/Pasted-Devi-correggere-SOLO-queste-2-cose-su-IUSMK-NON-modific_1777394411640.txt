@@ -1,0 +1,98 @@
+Devi correggere SOLO queste 2 cose su IUSMK.
+
+NON modificare sezioni che funzionano già.
+
+PROBLEMA 1 — PAGINA DETTAGLIO SINGOLO CORSO
+Quando il cliente clicca “Scopri il corso” e apre la pagina del singolo video corso, voglio due modifiche.
+
+A) Foto di sfondo sotto titolo/descrizione
+Nella sezione admin “Corsi”, quando l’admin crea o modifica un corso, aggiungi un campo upload:
+
+“Immagine di sfondo pagina corso”
+
+- deve essere caricata dal dispositivo, non tramite URL
+- deve usare lo stesso sistema upload stabile già usato nel sito
+- deve essere ottimizzata/compressa se pesante
+- deve salvarsi con URL definitivo stabile, non blob temporaneo
+- deve poter essere eliminata o sostituita
+
+Lato cliente:
+- nella pagina dettaglio del singolo corso, sotto titolo e descrizione, mostra questa immagine come immagine/hero di sfondo o banner.
+- deve adattarsi bene da mobile e desktop.
+- se l’admin non carica l’immagine, non mostrare spazio vuoto.
+
+B) Tasto fluttuante “Vai al corso”
+Nella pagina dettaglio del singolo corso aggiungi un tasto fluttuante in basso:
+
+“Vai al corso ↓↓”
+
+Funzionamento:
+- compare quando il cliente entra nella pagina corso
+- resta visibile mentre il cliente guarda titolo, descrizione, immagine di sfondo, info e gallery
+- quando il cliente clicca, fa scroll fluido fino alla sezione dove c’è il video/corso da guardare
+- il tasto scompare dopo il click
+- se il cliente scorre manualmente, il tasto scompare SOLO quando arriva alla sezione del corso/video
+- usa IntersectionObserver, non nasconderlo al primo scroll generico
+- deve funzionare solo nella pagina dettaglio singolo corso
+
+Aggiungi un id/ref alla sezione video del corso, ad esempio:
+id="single-course-content"
+
+PROBLEMA 2 — IMMAGINI CHE SCOMPAIONO NELLA CATEGORIA ACADEMY
+Nella pagina dettaglio categoria Academy, nella gallery:
+- i video si vedono
+- le immagini invece scompaiono e mostrano “Media non disponibile”
+
+RISOLVI DEFINITIVAMENTE QUESTO PROBLEMA.
+
+Controlli richiesti:
+1. Verifica che le immagini Academy vengano salvate con URL definitivo stabile.
+   - niente blob:
+   - niente URL temporanei
+   - niente preview locali
+   - niente campi vuoti
+
+2. Verifica il formato dei media salvati.
+   La gallery deve supportare sia:
+   - media salvati come stringa URL
+   - media salvati come oggetto { url, type, mimeType, poster }
+
+3. Rilevamento tipo file:
+   - se type manca, rilevalo da mimeType o estensione
+   - .jpg, .jpeg, .png, .webp = image
+   - .mp4, .mov, .webm = video
+
+4. Rendering corretto:
+   - immagini sempre con img
+   - video sempre con video preview
+   - non renderizzare immagini come video
+   - non renderizzare video come immagini
+
+5. Quando l’admin aggiorna una categoria:
+   - non cancellare immagini già presenti
+   - non sovrascrivere media dimostrativi con array vuoti
+   - non ricaricare media già salvati
+   - se modifica solo testo/descrizione/ordine, i media devono restare identici
+
+6. Performance:
+   - immagini compresse/ottimizzate
+   - lazy loading
+   - caricamento veloce
+   - fallback solo se il file è davvero irraggiungibile
+
+7. Debug:
+   - controlla perché le immagini diventano “Media non disponibile”
+   - probabilmente viene salvato un campo sbagliato o il type viene interpretato male
+   - correggi la mappatura upload immagini nella sezione Academy
+
+IMPORTANTE:
+- Non modificare la galleria principale.
+- Non modificare i video corsi se funzionano.
+- Non rompere Academy, login, chat, notifiche o acquisti.
+- Mantieni stile IUSMK.
+- Testa da mobile.
+
+RISULTATO FINALE:
+- Nel dettaglio del singolo corso l’admin può aggiungere un’immagine di sfondo sotto titolo/descrizione.
+- Nella pagina singolo corso appare il tasto fluttuante “Vai al corso” e scompare solo quando si arriva alla sezione video.
+- Nella categoria Academy le immagini della gallery non scompaiono più e restano sempre visibili come i video.

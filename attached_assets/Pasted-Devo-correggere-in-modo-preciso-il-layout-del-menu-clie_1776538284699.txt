@@ -1,0 +1,149 @@
+Devo correggere in modo preciso il layout del menu cliente e della dashboard admin del sito IUSMK.
+
+PROBLEMA 1 — Menu cliente mobile
+Il menu cliente NON va bene così com’è adesso.
+
+Voglio questa struttura ESATTA:
+
+A. Parte superiore del menu
+Da:
+- Home
+- Chi è IUSMK
+- Galleria
+- Academy
+- Contatto
+- selettore lingua IT / EN
+
+questa parte deve stare:
+- tutta allineata a SINISTRA
+- come prima
+- senza elementi centrati
+- con spaziature ordinate ma allineamento a sinistra
+- il selettore lingua deve rimanere coerente con questa sezione superiore
+
+B. Parte inferiore del menu
+Da:
+- Notifiche
+- I miei corsi
+- Messaggi
+- Logout
+
+questa parte invece la voglio:
+- CENTRATA
+- con layout ordinato e coerente
+- bottoni belli centrali
+- testo e icone ben allineati
+- stessa logica sia da mobile che da schermi piccoli
+
+Quindi:
+- sezione superiore = allineata a sinistra
+- sezione inferiore = centrata
+
+Non voglio più il layout attuale misto/sfalsato.
+
+---
+
+PROBLEMA 2 — Dashboard admin desktop, sidebar sinistra non scorrevole
+Nella dashboard admin da desktop, la colonna sinistra con:
+- Dashboard
+- Account Registrati
+- Chat Clienti
+- Corsi
+- Codici di Accesso
+- Codici Sconto
+- Acquisti
+- Link Pagamenti
+- Galleria
+- Richieste di Contatto
+- Notifiche
+- Assistente AI
+- Invio Notifiche
+- Credenziali Admin
+ecc.
+
+NON è scorrevole correttamente.
+
+Problema attuale:
+- non riesco a vedere oltre “Invio notifiche”
+- la sidebar sinistra non scrolla bene
+
+Correzione richiesta:
+1. La sidebar admin sinistra deve essere completamente scrollabile da desktop
+2. Deve restare usabile sempre
+3. Se il contenuto è più lungo dell’altezza viewport, deve scrollare internamente bene
+4. Nessuna voce del menu admin deve rimanere irraggiungibile
+5. Mantieni il layout elegante e stabile
+6. Non rompere la struttura desktop della dashboard
+
+Controlla:
+- height
+- overflow-y
+- sticky/fixed wrappers
+- container annidati che bloccano lo scroll
+- eventuali max-height errate
+
+---
+
+PROBLEMA 3 — Sezione “Account registrati” non si vede bene
+La sezione “Account registrati” non è ancora sistemata bene, soprattutto da mobile ma controlla anche desktop/tablet.
+
+Correzione richiesta:
+1. Tutto deve vedersi bene
+2. Contenuto ben centrato
+3. Card account pulite e leggibili
+4. Contatori sopra ben proporzionati
+5. Barra ricerca e filtri ben disposti
+6. Nessun elemento troppo stretto, tagliato o fuori asse
+7. Ottimizza bene:
+   - mobile
+   - tablet
+   - desktop
+
+---
+
+OBIETTIVO FINALE
+1. Menu cliente:
+   - parte alta a sinistra
+   - parte bassa centrale
+2. Sidebar admin desktop:
+   - completamente scrollabile
+3. Account registrati:
+   - perfettamente leggibile e ben impaginata su tutti i dispositivi
+
+---
+
+UI/UX
+- mantieni lo stile IUSMK
+- niente elementi sfalsati
+- niente overflow rotti
+- niente testo tagliato
+- tutto ordinato e professionale
+- mobile e desktop entrambi perfetti
+
+---
+
+DEBUG
+Aggiungi controlli/log dove serve per verificare:
+- rendering menu cliente mobile
+- scroll sidebar admin
+- layout account registrati su breakpoints diversi
+
+---
+
+IMPORTANTISSIMO
+Non rompere:
+- dashboard admin
+- menu cliente
+- notifiche
+- chat
+- account registrati
+- dettagli account
+- layout generale del sito
+
+---
+
+Alla fine dimmi:
+1. quali file hai modificato
+2. come hai separato il menu cliente in parte alta a sinistra e parte bassa centrale
+3. come hai corretto lo scroll della sidebar admin
+4. come hai sistemato la pagina account registrati

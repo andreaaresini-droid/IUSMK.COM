@@ -1,0 +1,191 @@
+Voglio correggere due problemi importanti nel sito IUSMK senza modificare ciò che già funziona.
+
+==================================================
+PROBLEMA 1 — “I MIEI CORSI” MOSTRA TUTTI I CORSI
+==================================================
+
+Attualmente quando un cliente clicca su “I miei corsi” vede tutti i corsi disponibili nel sito.
+
+QUESTO È SBAGLIATO.
+
+“I miei corsi” deve mostrare SOLO:
+- i corsi acquistati dal cliente
+- oppure i corsi sbloccati tramite codice
+
+==================================================
+MODIFICA RICHIESTA
+==================================================
+
+1) LOGICA BACKEND
+
+Modifica la query dei corsi in “I miei corsi”:
+
+- recupera solo i corsi associati all’utente loggato
+- associazione possibile tramite:
+  - acquisto (orders / purchases)
+  - codice assegnato o utilizzato (course_codes / redemptions)
+
+NON mostrare:
+- corsi non acquistati
+- corsi non sbloccati
+- corsi pubblici generici
+
+Se il cliente non ha corsi:
+- mostra un messaggio tipo:
+  “Non hai ancora accesso a nessun corso.”
+
+2) SICUREZZA
+
+Verifica che:
+- un utente non possa vedere corsi di altri utenti
+- accesso ai contenuti dei corsi solo se autorizzato
+
+3) UI
+
+Se possibile, aggiungi:
+- titolo: “I miei corsi”
+- lista pulita dei corsi sbloccati
+- stato: attivo / completato (se previsto)
+- bottone “Accedi al corso”
+
+==================================================
+PROBLEMA 2 — MESSAGGI NON INTERATTIVI
+==================================================
+
+Attualmente:
+- l’admin può inviare messaggi al cliente
+- il cliente può solo leggerli
+- NON può rispondere
+
+Voglio trasformare questo sistema in una vera chat bidirezionale.
+
+==================================================
+MODIFICA RICHIESTA — CHAT CLIENTE/ADMIN
+==================================================
+
+1) STRUTTURA CHAT
+
+Crea un sistema di conversazioni reale:
+
+Entità:
+- Conversations
+  - id
+  - userId
+  - adminId (Giuseppe)
+  - status (open / closed)
+  - createdAt
+  - updatedAt
+
+- Messages
+  - id
+  - conversationId
+  - senderId
+  - senderType (admin / user)
+  - message
+  - createdAt
+  - readAt
+
+==================================================
+2) COMPORTAMENTO
+
+Quando:
+- l’admin invia un messaggio ad un cliente
+- oppure il cliente riceve un messaggio
+
+Deve essere creata (o riutilizzata) una conversazione.
+
+Il cliente deve poter:
+- aprire la chat
+- leggere i messaggi
+- rispondere direttamente
+
+L’admin deve poter:
+- rispondere nella stessa chat
+- vedere lo storico completo
+
+==================================================
+3) INTERFACCIA CLIENTE
+
+Nell’area cliente aggiungi:
+
+Sezione:
+- “Messaggi” oppure “Chat”
+
+Dentro:
+- lista conversazioni
+- preview ultimo messaggio
+- stato (aperta/chiusa)
+
+Aprendo una conversazione:
+- chat stile WhatsApp / Messenger
+- messaggi admin e utente distinti visivamente
+- input per scrivere
+- invio messaggio
+- scroll automatico
+
+==================================================
+4) INTERFACCIA ADMIN
+
+Nella dashboard admin:
+
+Sezione:
+- “Chat Clienti” oppure integra dentro “Account Registrati”
+
+Per ogni cliente:
+- vedi se ha chat attiva
+- apri conversazione
+- rispondi
+- storico completo
+
+==================================================
+5) CHIUSURA CHAT
+
+Entrambi (admin e cliente) possono:
+- chiudere la chat
+
+Se chat = closed:
+- non si possono inviare nuovi messaggi
+- ma lo storico resta visibile
+
+Possibilità:
+- riaprire chat se necessario (admin)
+
+==================================================
+6) NOTIFICHE
+
+Quando arriva un nuovo messaggio:
+- il cliente lo vede nella sua area notifiche
+- badge messaggi non letti
+
+Se esiste già sistema notifiche:
+- riusalo
+- non crearne uno nuovo parallelo
+
+==================================================
+7) SICUREZZA
+
+- ogni utente vede SOLO le proprie chat
+- nessun accesso ai messaggi di altri utenti
+- tutte le azioni protette lato backend
+
+==================================================
+8) UX
+
+- mobile friendly
+- input sempre visibile
+- invio veloce
+- messaggi non duplicati
+- gestione stato “letto”
+
+==================================================
+9) IMPORTANTE
+
+NON:
+- rompere il sistema notifiche esistente
+- modificare altre aree del sito
+- cambiare design globale
+
+DEVI:
+- correggere “I miei corsi”
+- trasformare i messaggi in chat reale
+- mantenere tutto coerente con il sistema esistente

@@ -1,0 +1,129 @@
+Devi modificare l’intro del sito IUSMK già esistente senza cambiare altre funzionalità del sito.
+
+PROBLEMI DA RISOLVERE
+1. Il video intro attualmente non riempie bene tutta la pagina su mobile/iPhone: voglio che occupi SEMPRE tutto lo schermo, senza bande nere, senza spazi vuoti sopra o sotto.
+2. Il video deve partire IMMEDIATAMENTE appena l’utente clicca/tocca il pulsante o la schermata iniziale.
+3. Appena il video finisce, il sito deve comparire SUBITO con una dissolvenza molto veloce e pulita.
+4. C’è una piccola lineetta/sottolineatura sotto il tasto o sotto il testo iniziale di avvio intro: va rimossa completamente.
+
+MODIFICHE RICHIESTE
+
+VIDEO FULLSCREEN REALE
+- L’intro video deve essere fullscreen reale su mobile e desktop.
+- Il contenitore dell’intro deve usare posizione fixed e coprire tutta la viewport.
+- Il video deve riempire tutta l’area visibile usando:
+  width: 100vw;
+  height: 100dvh;
+  object-fit: cover;
+- Aggiungi anche fallback compatibili:
+  min-width: 100vw;
+  min-height: 100dvh;
+- Gestisci bene iPhone/Safari mobile, evitando spazi dovuti a 100vh classico.
+- Usa preferibilmente 100dvh o una variabile viewport aggiornata via JS se necessario.
+- Nessuna banda nera, nessun margine, nessun padding, nessun contenitore che limiti il video.
+- L’overlay dell’intro deve essere sopra tutto con z-index molto alto.
+
+PARTENZA IMMEDIATA DEL VIDEO
+- Al click/tap sul pulsante o sulla schermata iniziale:
+  - nascondi immediatamente logo/testo/pulsante con fade molto rapida oppure display none dopo un fade brevissimo
+  - avvia subito il video senza ritardi
+  - avvia subito anche l’audio associato
+- Il click deve chiamare direttamente video.play() dentro l’evento utente.
+- Il video deve avere playsInline su iPhone.
+- Niente attese inutili, niente timeout lunghi prima del play.
+
+TRANSIZIONE FINALE
+- Quando il video finisce:
+  - fai sparire subito l’intro overlay
+  - mostra immediatamente il sito sottostante
+  - usa una dissolvenza breve ed elegante (circa 200–400ms massimo)
+- Non lasciare schermata nera troppo lunga dopo il video.
+- Non lasciare l’overlay presente sopra il sito dopo la fine.
+- Dopo la fine del video:
+  - rimuovi pointer-events dall’overlay
+  - sblocca lo scroll del body
+  - marca la intro come completata in sessionStorage
+
+RIMOZIONE LINEETTA SOTTO IL TASTO
+- Rimuovi completamente qualsiasi underline, border-bottom, pseudo-elemento ::before / ::after, box-shadow o decorative line sotto il testo o il pulsante iniziale.
+- Il bottone/testo iniziale non deve avere nessuna lineetta sotto.
+- Controlla anche eventuali stili ereditati da link, button, span o classi animate.
+- Se la scritta è cliccabile come link o button, assicurati che abbia:
+  text-decoration: none;
+  border: none;
+  outline: none;
+  box-shadow: none;
+- Controlla anche pseudo-elementi:
+  .intro-enter::before,
+  .intro-enter::after {
+    display: none !important;
+    content: none !important;
+  }
+
+DESIGN E UX
+- Mantieni il logo IUSMK e la scritta:
+  "Tocca per entrare nel mondo di IUSMK"
+- Prima del click devono essere centrati e ben visibili su sfondo nero premium.
+- Dopo il click devono sparire velocemente e lasciare spazio solo al video fullscreen.
+- Nessun elemento del sito deve comparire sopra il video.
+- Nessun bordo bianco/nero visibile attorno al video.
+
+CONTROLLO CSS DA APPLICARE
+Assicurati che html, body e root/app non introducano spazi:
+- margin: 0;
+- padding: 0;
+- width: 100%;
+- min-height: 100%;
+- overflow-x: hidden;
+
+Assicurati che il wrapper intro abbia qualcosa di equivalente a:
+position: fixed;
+inset: 0;
+width: 100vw;
+height: 100dvh;
+background: #000;
+display: flex;
+align-items: center;
+justify-content: center;
+z-index: 999999;
+
+E che il video abbia qualcosa di equivalente a:
+position: absolute;
+inset: 0;
+width: 100vw;
+height: 100dvh;
+object-fit: cover;
+background: #000;
+
+CONTROLLO JAVASCRIPT / REACT
+- Al click dell’utente, esegui immediatamente la funzione di start intro.
+- La funzione deve:
+  1. impostare stato "started"
+  2. nascondere subito CTA/logo
+  3. far partire video.play()
+  4. far partire audio.play() se separato
+- Alla fine del video usa onEnded per:
+  1. lanciare fade-out dell’overlay
+  2. rimuovere overlay quasi subito
+  3. mostrare sito
+  4. salvare introShown in sessionStorage
+
+DEBUG
+- Controlla perché il video non sta coprendo tutta l’altezza su iPhone.
+- Verifica se qualche parent container sta limitando altezza/larghezza.
+- Verifica se ci sono max-width, border-radius, overflow hidden o aspect-ratio indesiderati sul video wrapper.
+- Elimina qualunque stile che faccia sembrare il video “incastonato” invece che fullscreen.
+
+IMPORTANTE
+- Non modificare il resto del sito.
+- Non rompere routing, header, animazioni o contenuti esistenti.
+- Pulisci eventuale codice vecchio dell’intro che causa ritardi, lineette o dimensioni sbagliate.
+- Voglio il risultato finale professionale, premium, fluido, perfetto su iPhone.
+
+Dopo aver fatto le modifiche:
+- mostrami esattamente quali file hai modificato
+- spiegami dove hai corretto:
+  1. fullscreen video
+  2. play immediato
+  3. comparsa sito a fine video
+  4. rimozione lineetta

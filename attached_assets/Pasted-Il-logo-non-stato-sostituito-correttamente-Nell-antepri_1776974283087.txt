@@ -1,0 +1,76 @@
+Il logo non è stato sostituito correttamente.
+Nell’anteprima si vede ancora il vecchio logo in alto a sinistra.
+
+Quindi devi fare una sostituzione completa e reale, non parziale.
+
+Cosa devi fare adesso
+1. Trova TUTTI i riferimenti al vecchio logo
+
+Cerca in tutto il progetto ogni riferimento al logo attuale, compresi:
+
+import tipo logo, logo-iusmk, logo.png, logo.svg, ecc.
+immagini in:
+navbar
+header
+menu mobile
+intro/loading screen
+footer
+login
+academy
+componenti condivisi
+riferimenti in CSS
+riferimenti in config / assets / public
+favicon / icone app / manifest se presenti
+eventuali versioni duplicate del logo dentro public, assets, src/assets, images, ecc.
+2. Forza il nuovo logo in ogni punto
+
+Usa esclusivamente il nuovo logo allegato al posto del vecchio, in ogni punto del sito.
+
+Non limitarti a sostituire un file “simile”:
+devi verificare uno per uno i componenti che mostrano il logo.
+
+3. Aggiorna anche eventuali cache-buster / file statici
+
+Probabilmente il browser o il build sta ancora caricando un vecchio asset.
+
+Quindi:
+
+rinomina il nuovo file logo con un nome diverso e unico
+aggiorna tutti gli import/path al nuovo nome
+elimina o smetti di usare il vecchio asset
+se serve fai rebuild completo
+se serve svuota riferimenti statici o copie duplicate
+
+Esempio: non riutilizzare lo stesso nome del vecchio logo se può causare cache.
+
+4. Controllo visivo obbligatorio
+
+Dopo la modifica verifica davvero nell’anteprima che:
+
+il logo in alto a sinistra sia quello nuovo
+non compaia più il vecchio logo in nessuna pagina
+anche menu mobile / intro / altre schermate usino il nuovo logo
+5. Non cambiare altro
+
+Non modificare:
+
+dimensioni generali della navbar
+hero
+slideshow
+pulsanti
+struttura del sito
+6. Se il logo in alto a sinistra viene da un componente separato
+
+Apri e correggi direttamente il componente esatto che lo renderizza, invece di dire che è stato sostituito globalmente senza verificarlo.
+
+7. Verifica finale richiesta
+
+Alla fine dimmi chiaramente:
+
+quali file/componenti mostravano ancora il vecchio logo
+in quali file li hai corretti
+quale nuovo asset stai usando adesso
+
+Importante: al momento il vecchio logo è ancora visibile.
+Quindi la sostituzione precedente non è corretta.
+Voglio che il vecchio logo sparisca completamente da tutto il sito.

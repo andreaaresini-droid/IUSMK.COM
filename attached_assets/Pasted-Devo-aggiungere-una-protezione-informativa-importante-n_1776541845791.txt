@@ -1,0 +1,92 @@
+Devo aggiungere una protezione/informativa importante nel sito IUSMK riguardo ai video corsi.
+
+OBIETTIVO
+Quando un cliente acquista un corso e prova ad aprire il primo video del corso, deve comparire un pop-up informativo SOLO la prima volta, con un avviso chiaro che vieta di registrare, salvare o diffondere in qualsiasi modo i video corsi di Giuseppe.
+
+In più voglio che questa regola venga aggiunta anche in una delle pagine legali/informative del sito.
+
+FUNZIONALITÀ RICHIESTA
+
+1. Pop-up al primo accesso al video
+Quando un utente apre un video corso per la prima volta:
+- mostra un pop-up/modal prima della visione del video
+- il pop-up deve uscire SOLO la prima volta per quell’utente
+- dopo che l’utente lo chiude o lo accetta, non deve ricomparire ad ogni apertura successiva
+- se possibile, salvalo per utente/account e non solo localmente nel browser
+- se non è possibile subito lato database, usa almeno un sistema persistente affidabile
+
+2. Testo del pop-up
+Usa questo testo o una versione molto simile, professionale e chiara:
+
+Titolo:
+Avviso importante sui contenuti del corso
+
+Testo:
+I video corsi di Giuseppe Musto sono riservati esclusivamente alla visione personale dell’utente autorizzato.
+È severamente vietato registrare, salvare, duplicare, condividere, distribuire o diffondere in qualsiasi modo i contenuti video del corso, integralmente o parzialmente, senza autorizzazione.
+Qualsiasi uso non autorizzato dei contenuti potrà comportare la revoca dell’accesso al corso e l’adozione dei provvedimenti consentiti dalla legge.
+
+Pulsante:
+Ho capito
+
+3. Comportamento del pop-up
+- deve apparire prima che il video venga fruito
+- deve essere chiaro e leggibile anche da mobile
+- deve essere coerente con lo stile IUSMK
+- l’utente deve poter confermare con un pulsante tipo “Ho capito”
+- dopo la conferma, il video può essere visto normalmente
+- non deve uscire ogni volta, ma solo al primo accesso al video/corso
+
+4. Regola di visualizzazione
+Valuta la logica migliore tra queste:
+- una sola volta per utente in assoluto su tutti i corsi
+oppure
+- una sola volta per utente per ciascun corso
+Preferisco la seconda se è semplice da implementare:
+- la prima volta che apre un video di quel corso, vede il pop-up
+- poi non lo vede più per quel corso
+
+5. Aggiornamento pagina legale
+Aggiungi questa regola anche in una delle pagine che hai creato.
+La pagina migliore da aggiornare è “Termini e Condizioni”.
+
+Aggiungi una sezione chiara tipo:
+
+Titolo sezione:
+Tutela dei contenuti digitali
+
+Testo:
+I contenuti dei corsi, inclusi video, immagini, materiali didattici e altri contenuti digitali messi a disposizione tramite IUSMK, sono destinati esclusivamente all’uso personale dell’utente autorizzato.
+È vietato registrare, salvare, copiare, distribuire, condividere, diffondere, riprodurre o utilizzare in qualsiasi forma non autorizzata i contenuti dei corsi, integralmente o parzialmente.
+La violazione di tali regole può comportare la sospensione o revoca dell’accesso e l’adozione delle misure consentite dalla legge.
+
+6. Compatibilità
+Non rompere:
+- accesso ai corsi
+- riproduzione video
+- mobile
+- dashboard admin
+- pagina corso
+- notifiche
+- login/sessione
+
+7. UX
+- popup elegante
+- leggibile
+- niente bug di overlay
+- funziona bene su telefono e desktop
+- non deve bloccare permanentemente il corso una volta confermato
+
+8. Debug
+Aggiungi log chiari per:
+- primo accesso al corso/video
+- popup mostrato
+- popup confermato
+- stato salvato correttamente
+- eventuali errori
+
+Alla fine dimmi:
+1. quali file hai modificato
+2. come hai gestito il “solo la prima volta”
+3. dove hai salvato lo stato del popup
+4. in quale pagina legale hai aggiunto la clausola

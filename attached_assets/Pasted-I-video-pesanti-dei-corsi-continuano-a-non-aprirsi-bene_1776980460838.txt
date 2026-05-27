@@ -1,0 +1,72 @@
+I video pesanti dei corsi continuano a non aprirsi bene dentro il player del sito.
+
+Voglio cambiare gestione lato cliente: non devono più essere riprodotti direttamente dentro la pagina, ma devono uscire come file video apribile dal telefono.
+
+Obiettivo
+
+Nell’Academy, al posto del player nero/bloccato, per ogni lezione deve comparire un blocco/pulsante tipo:
+
+Apri video lezione
+
+Quando il cliente clicca:
+
+il video si apre sul telefono/browser in una nuova schermata o player nativo
+non deve essere scaricabile direttamente con pulsante download
+il link deve essere protetto
+Regole importanti
+1. Niente player incorporato per video pesanti
+
+Rimuovi o disattiva il player interno HTML5 per i video dei corsi pesanti.
+
+2. Apertura video come file protetto
+
+Il video deve aprirsi tramite:
+
+URL firmato/temporaneo
+oppure endpoint protetto che verifica l’accesso dell’utente
+
+Non usare un link pubblico fisso copiabile.
+
+3. Protezione download
+
+Imposta:
+
+Content-Disposition: inline, non attachment
+niente pulsante download nel sito
+niente link diretto visibile
+URL temporaneo con scadenza breve
+accesso consentito solo agli utenti che hanno acquistato/sbloccato il corso
+
+So che non si può impedire al 100% registrazioni o salvataggi se il video viene visto, ma voglio rendere il download diretto il più difficile possibile.
+
+4. UI lato cliente
+
+Nel portale studente mostra:
+
+titolo lezione
+descrizione
+pulsante rosso “Apri video”
+eventuale testo: “Il video si aprirà in una nuova schermata protetta”
+5. Mobile/iPhone
+
+Deve funzionare bene su iPhone e Android:
+
+aprire il player nativo del telefono
+non restare schermo nero
+non bloccarsi
+tornare poi al sito senza problemi
+6. Admin invariato
+
+L’admin deve continuare a poter caricare video pesanti nei corsi.
+
+7. Controllo finale
+
+Testa:
+
+video piccolo
+video da 150MB
+apertura lato cliente da mobile
+accesso negato se utente non autorizzato
+URL scaduto dopo un po’
+
+IMPORTANTE: voglio risolvere il problema dei video pesanti evitando il player incorporato e usando apertura protetta del file video.

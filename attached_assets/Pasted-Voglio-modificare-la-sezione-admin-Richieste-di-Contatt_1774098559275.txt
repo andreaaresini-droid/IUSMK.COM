@@ -1,0 +1,74 @@
+Voglio modificare la sezione admin “Richieste di Contatto” del sito IUSMK senza cambiare inutilmente il design attuale.
+
+Modifiche da fare:
+
+1. ELIMINAZIONE MESSAGGI
+Aggiungi un tasto chiaro per eliminare i messaggi ricevuti.
+Requisiti:
+- Il pulsante deve essere visibile nella vista dettaglio del messaggio selezionato
+- Deve eliminare davvero il messaggio dal database/collection corretta
+- Dopo l’eliminazione, la lista a sinistra deve aggiornarsi subito senza bisogno di ricaricare manualmente la pagina
+- Prima di eliminare, aggiungi una conferma tipo “Sei sicuro di voler eliminare questo messaggio?”
+- Se l’eliminazione fallisce, mostra un messaggio di errore reale
+- Mantieni lo stile grafico coerente con il pannello admin
+
+2. SOSTITUIRE “RISPONDI VIA EMAIL” CON “RISPONDI TRAMITE WHATSAPP”
+Voglio sostituire il pulsante attuale “Rispondi via email” con un pulsante “Rispondi tramite WhatsApp”.
+Requisiti:
+- Il pulsante deve aprire WhatsApp con il numero del cliente già compilato
+- Se possibile, precompila anche un testo automatico del tipo:
+  “Ciao [Nome], ti contatto in risposta al tuo messaggio inviato dal sito IUSMK riguardo: [Oggetto].”
+- Usa il numero presente nel messaggio ricevuto
+- Se il numero non è presente, nullo o non valido:
+  - disattiva il pulsante oppure
+  - mostra un messaggio chiaro tipo “Numero WhatsApp non disponibile”
+- Gestisci correttamente il formato del numero per renderlo compatibile con WhatsApp
+- Mantieni lo stile coerente con la dashboard admin
+
+3. NOTIFICA PUSH ALL’ADMIN QUANDO ARRIVA UN NUOVO MESSAGGIO DAL MODULO CONTATTI
+Quando qualcuno invia un messaggio dal modulo contatti del sito pubblico, voglio che l’admin riceva una notifica push.
+Obiettivo:
+- notificare in tempo reale o quasi reale l’arrivo di una nuova richiesta di contatto
+
+Analizza e implementa la soluzione migliore compatibile con il progetto attuale.
+Valuta e configura una soluzione concreta tra queste opzioni:
+- notifiche browser push per l’admin loggato nella dashboard
+- realtime in-app notification dentro il pannello admin
+- fallback con polling automatico se il realtime non è disponibile
+- eventuale supporto a service worker se necessario
+
+Requisiti:
+- Quando arriva un nuovo messaggio, l’admin deve vedere una notifica evidente
+- Se la dashboard admin è aperta, aggiornare automaticamente la lista dei messaggi
+- Se possibile, mostrare anche una notifica browser nativa
+- La notifica deve contenere almeno:
+  - nome contatto
+  - oggetto
+  - indicazione che è arrivato un nuovo messaggio
+- Non rompere il login admin e non compromettere il resto della dashboard
+- Se per le push browser serve il consenso, gestiscilo correttamente
+- Se le vere push non sono ancora possibili con l’architettura attuale, implementa almeno un sistema affidabile di aggiornamento automatico + alert visivo/sonoro nell’admin
+
+4. QUALITÀ E LOGICA
+Controlla tutto il flusso end-to-end:
+- il form pubblico salva correttamente
+- la dashboard admin legge correttamente
+- eliminazione funziona davvero
+- il bottone WhatsApp usa il numero corretto
+- le notifiche arrivano correttamente
+
+5. VINCOLI IMPORTANTI
+- Non cambiare inutilmente grafica, colori, layout e stile del sito
+- Mantieni il design attuale
+- Modifica solo ciò che serve per queste funzioni
+- Se devi aggiungere backend/API/database, fallo in modo pulito
+- Aggiungi gestione errori reale
+- Aggiungi log utili lato client e server per il debug
+
+Dopo aver finito:
+- testa tutto
+- verifica che eliminazione, WhatsApp e notifiche funzionino davvero
+- dammi un riepilogo finale con:
+  - file e parti aggiornate
+  - logica implementata
+  - eventuali limiti residui

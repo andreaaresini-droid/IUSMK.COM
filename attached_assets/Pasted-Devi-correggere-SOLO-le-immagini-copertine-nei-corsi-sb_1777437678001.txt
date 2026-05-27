@@ -1,0 +1,67 @@
+Devi correggere SOLO le immagini/copertine nei corsi sbloccati e nel portale studente.
+
+PROBLEMI:
+1. Nella sezione “I miei corsi”, nel riquadro piccolo vicino al titolo, non si vede la copertina del corso.
+2. Nel portale studente, non si vede l’immagine/copertina del video corso: appare un riquadro nero con play.
+
+OBIETTIVO:
+Le copertine devono vedersi sempre correttamente sia in:
+- I miei corsi
+- Portale studente
+- Card video corso
+
+CORREZIONE:
+Usa una funzione unica per recuperare la copertina del corso/video.
+
+Deve controllare tutti questi campi:
+
+course.coverImageUrl
+course.coverImage
+course.thumbnailUrl
+course.thumbnail
+course.imageUrl
+course.posterUrl
+course.poster
+course.backgroundImage
+course.backgroundImageUrl
+course.media?.[0]?.url
+course.media?.[0]?.src
+course.media?.[0]?.fileUrl
+course.media?.[0]?.publicUrl
+course.additionalMedia?.[0]?.url
+course.additionalMedia?.[0]?.src
+course.videoPosterUrl
+course.videoPoster
+
+Se il valore è un oggetto, estrai:
+url || src || fileUrl || publicUrl || imageUrl || posterUrl
+
+REGOLE:
+- Se trovi un’immagine valida, mostrala con tag img.
+- Non usare il video come immagine se esiste una copertina.
+- Non mostrare icona libro/fallback se esiste una copertina valida.
+- Non mostrare riquadro nero se esiste una copertina valida.
+- Se il corso ha solo video e non ha immagine, usa poster/thumbnail del video se disponibile.
+- Se manca davvero tutto, allora mostra fallback.
+
+PORTALE STUDENTE:
+Nel box del video corso:
+- prima di mostrare il player nero, mostra la copertina del corso/video con pulsante play sopra.
+- quando il cliente clicca play, allora carica il video.
+- non caricare subito il video pesante se non serve.
+- usa poster del video se disponibile.
+
+PERFORMANCE:
+- loading eager per copertina principale visibile.
+- decoding async.
+- niente preload video pesante.
+- niente fetch duplicati.
+
+IMPORTANTE:
+- Non modificare accessi, codici, pagamenti o progressi.
+- Non rompere il video player.
+- Non modificare Academy.
+- Correggi solo la mappatura/visualizzazione delle immagini.
+
+RISULTATO:
+Le immagini/copertine dei corsi si vedono correttamente in “I miei corsi” e nel portale studente.

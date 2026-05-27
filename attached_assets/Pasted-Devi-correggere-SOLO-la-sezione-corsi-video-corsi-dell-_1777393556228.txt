@@ -1,0 +1,59 @@
+Devi correggere SOLO la sezione corsi/video corsi dell’Academy.
+
+PROBLEMA 1: “SCOPRI IL CORSO” PORTA A 404
+Quando il cliente clicca su “Scopri il corso” nella card del video corso, viene aperta una pagina 404.
+
+Correggi il routing:
+- ogni video corso deve avere una pagina dettaglio valida
+- il tasto “Scopri il corso” deve portare alla pagina dettaglio del singolo video corso
+- usa slug o id corretto del corso
+- se il corso non ha slug, genera uno slug automatico dal titolo
+- se lo slug non esiste, usa fallback con id
+- non deve mai portare a una route inesistente
+
+La pagina dettaglio video corso deve mostrare:
+- titolo
+- copertina/anteprima
+- descrizione
+- suggerimenti/informazioni
+- media aggiuntivi
+- prezzo
+- tasto acquista
+- tasto attiva con codice
+- se già sbloccato, tasto guarda corso/video
+
+PROBLEMA 2: ACQUISTO SOLO CON ACCOUNT
+Un cliente NON loggato non deve poter acquistare direttamente un corso.
+
+Quando un utente non loggato clicca “Acquista”:
+- NON aprire subito il link pagamento
+- rimandalo alla pagina login/registrazione
+- mostra un messaggio chiaro tipo:
+
+“Per acquistare un corso devi prima creare un account o accedere. Dopo il pagamento riceverai il codice per sbloccare il corso direttamente sul tuo account.”
+
+Dopo login/registrazione:
+- se possibile, riportalo al corso che voleva acquistare
+- oppure mostra il corso di nuovo con il tasto acquista
+
+PROBLEMA 3: CODICE DOPO PAGAMENTO
+Il motivo è che dopo l’acquisto il cliente deve ricevere il codice/accesso sull’account con cui ha pagato.
+
+Quindi:
+- il pagamento deve essere collegato a un utente registrato/loggato
+- il codice del corso deve essere assegnato all’account dell’utente corretto
+- non permettere acquisti anonimi
+- non permettere che il cliente paghi senza account
+
+IMPORTANTE:
+- Non rompere i Payment Link già esistenti.
+- Non rompere il sistema di codici già esistente.
+- Non modificare login se funziona, aggiungi solo redirect/messaggio quando serve.
+- Non modificare categorie Academy.
+- Non modificare galleria, chat, notifiche o homepage.
+- Mantieni lo stile IUSMK.
+
+RISULTATO FINALE:
+- “Scopri il corso” apre correttamente la pagina dettaglio del singolo video corso.
+- Se un cliente non loggato clicca “Acquista”, viene mandato a login/registrazione con spiegazione.
+- Solo gli utenti loggati possono procedere al pagamento e ricevere il codice sul proprio account.

@@ -1,0 +1,78 @@
+Elimina completamente Resend dal flusso di recupero password del progetto IUSMK e fai inviare le email direttamente tramite Gmail SMTP.
+
+IMPORTANTE:
+- intervieni SOLO sul sistema email del reset password
+- non toccare Stripe, corsi, coupon, notifiche admin, dashboard admin o altre funzioni già stabili
+- non usare più Resend
+- non usare più EMAIL_FROM o RESEND_API_KEY per il reset password
+- usa Gmail SMTP
+
+OBIETTIVO
+Voglio che il recupero password invii le email direttamente dall’account Gmail configurato nei secrets.
+
+CONFIGURAZIONE DA USARE
+Il sistema deve leggere SOLO questi secrets:
+
+SMTP_HOST
+SMTP_PORT
+SMTP_USER
+SMTP_PASS
+SMTP_FROM
+APP_URL
+
+Valori attesi:
+- SMTP_HOST = smtp.gmail.com
+- SMTP_PORT = 587
+- SMTP_USER = email Gmail completa
+- SMTP_PASS = app password Gmail
+- SMTP_FROM = mittente email
+- APP_URL = dominio del sito
+
+IMPLEMENTAZIONE
+1. rimuovi l’uso di Resend dal reset password
+2. usa Nodemailer con Gmail SMTP
+3. configura il transporter con:
+   - host: process.env.SMTP_HOST
+   - port: Number(process.env.SMTP_PORT)
+   - secure: false se porta 587, true se porta 465
+   - auth.user: process.env.SMTP_USER
+   - auth.pass: process.env.SMTP_PASS
+
+4. il mittente deve essere:
+   from: process.env.SMTP_FROM
+
+5. nel forgot-password:
+   - cerca utente
+   - genera token reset
+   - costruisci reset link con APP_URL
+   - invia email via Gmail SMTP
+
+6. contenuto email:
+   Oggetto: Recupero Password IUSMK
+   Corpo:
+   Ciao [Nome],
+   hai richiesto il reset della password del tuo account IUSMK Academy.
+   Clicca qui per reimpostarla:
+   [RESET_LINK]
+   Il link è valido per 1 ora.
+   Se non sei stato tu, ignora questa email.
+
+7. aggiungi log chiari:
+   - [EMAIL_BOOT] SMTP_HOST loaded: ...
+   - [EMAIL_BOOT] SMTP_USER loaded: ...
+   - [EMAIL_DEBUG] from value: ...
+   - [EMAIL_DEBUG] to: ...
+   - [EMAIL_OK] email inviata correttamente
+   - [EMAIL_FAIL] errore SMTP completo
+
+8. nessun crash del server se l’invio fallisce
+9. se manca un secret SMTP, logga errore chiaro
+10. usa solo Gmail SMTP per forgot-password e test-email
+11. disattiva o ignora completamente Resend per questa funzione
+12. non toccare la UI se non necessario
+
+RISULTATO FINALE
+- il reset password deve inviare email da Gmail
+- niente più onboarding@resend.dev
+- niente più RESEND_API_KEY nel flusso forgot-password
+- nei log devo vedere il mittente Gmail reale

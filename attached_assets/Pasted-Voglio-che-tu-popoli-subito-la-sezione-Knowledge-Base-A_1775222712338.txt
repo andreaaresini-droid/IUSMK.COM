@@ -1,0 +1,207 @@
+Voglio che tu popoli subito la sezione “Knowledge Base AI” del sito IUSMK con una serie di voci iniziali già pronte e pubblicate, così l’assistente AI possa rispondere correttamente alle domande base dei clienti.
+
+IMPORTANTE:
+- Non modificare ciò che già funziona nel sito.
+- Non creare dati casuali.
+- Inserisci queste voci nella Knowledge Base come record separati, ordinati, chiari e modificabili dall’admin.
+- Tutte le voci create devono essere:
+  - isPublished = true
+  - isActive = true
+- Usa categorie coerenti (es. contatti, corsi, acquisti, accesso, supporto, policy, sito, password, notifiche).
+- Se una voce simile esiste già, aggiornala invece di duplicarla male.
+- Mantieni testi chiari, brevi e pensati per risposte AI ai clienti.
+
+CREA QUESTE VOCI INIZIALI NELLA KNOWLEDGE BASE:
+
+1) TITOLO:
+A cosa serve il sito IUSMK
+CATEGORIA:
+sito
+KEYWORDS:
+iusmk, sito, a cosa serve, prenotazioni, barber, informazioni
+CONTENUTO:
+Il sito IUSMK serve principalmente per presentare chi è IUSMK, cosa fa e i contenuti che mette a disposizione. Il sito non serve per prenotare tagli o appuntamenti dal barbiere.
+
+2) TITOLO:
+Prenotazioni tagli
+CATEGORIA:
+sito
+KEYWORDS:
+prenotazioni, appuntamenti, tagli, barba, booking, prenotare
+CONTENUTO:
+Al momento il sito IUSMK non è pensato per prenotare tagli o appuntamenti. Serve soprattutto per conoscere IUSMK e acquistare i suoi videocorsi.
+
+3) TITOLO:
+Cosa si può acquistare sul sito
+CATEGORIA:
+corsi
+KEYWORDS:
+acquisti, corsi, videocorsi, comprare, prodotti digitali
+CONTENUTO:
+Sul sito IUSMK è possibile acquistare videocorsi realizzati da IUSMK. I corsi mostrano tecniche e contenuti legati al mondo barber, come tagli, sfumature, colori e altri argomenti formativi.
+
+4) TITOLO:
+Contenuti dei corsi IUSMK
+CATEGORIA:
+corsi
+KEYWORDS:
+corsi, tagli, sfumature, colori, formazione, barber
+CONTENUTO:
+I corsi IUSMK sono contenuti formativi che insegnano tecniche barber, come tagli, sfumature, colori e lavorazioni simili. I contenuti possono variare in base al corso acquistato.
+
+5) TITOLO:
+Come si sbloccano i corsi acquistati
+CATEGORIA:
+accesso
+KEYWORDS:
+sbloccare corso, codice, accesso corso, notifiche, acquisto
+CONTENUTO:
+Dopo l’acquisto, il corso si sblocca tramite un codice. Il codice viene inviato nella sezione notifiche del cliente all’interno del sito.
+
+6) TITOLO:
+Dove trovare il codice del corso
+CATEGORIA:
+notifiche
+KEYWORDS:
+codice corso, notifiche, dove trovo il codice, accesso
+CONTENUTO:
+Il codice per sbloccare il corso acquistato viene inviato nella sezione notifiche del proprio account cliente.
+
+7) TITOLO:
+Se non trovo il codice del corso
+CATEGORIA:
+supporto
+KEYWORDS:
+codice non arrivato, notifiche, corso bloccato, assistenza, supporto
+CONTENUTO:
+Se il cliente non trova il codice per sbloccare il corso nella sezione notifiche, deve controllare di aver effettuato correttamente l’accesso al proprio account e verificare la sezione notifiche. Se il problema continua, deve contattare direttamente IUSMK o Giuseppe.
+
+8) TITOLO:
+Politica resi
+CATEGORIA:
+policy
+KEYWORDS:
+resi, rimborso, restituzione, acquisto, policy
+CONTENUTO:
+Per eventuali richieste di reso o rimborso, il cliente deve contattare personalmente Giuseppe. Sarà Giuseppe a valutare caso per caso se effettuare o meno il reso.
+
+9) TITOLO:
+Come richiedere un reso
+CATEGORIA:
+policy
+KEYWORDS:
+richiedere reso, rimborso, giuseppe, supporto
+CONTENUTO:
+Le richieste di reso non sono automatiche. Il cliente deve contattare direttamente Giuseppe e spiegare la situazione. La decisione finale sul reso viene presa personalmente da Giuseppe.
+
+10) TITOLO:
+Contatti IUSMK
+CATEGORIA:
+contatti
+KEYWORDS:
+contatti, telefono, whatsapp, chiamare, giuseppe, conversazione
+CONTENUTO:
+Per parlare con IUSMK o con Giuseppe, i clienti possono contattarlo al numero 3393010246. Possono usarlo per chiamate, WhatsApp o richieste dirette, se previsto.
+
+11) TITOLO:
+Come contattare Giuseppe
+CATEGORIA:
+contatti
+KEYWORDS:
+giuseppe, contattare, telefono, whatsapp, assistenza
+CONTENUTO:
+Chi desidera parlare direttamente con Giuseppe può contattarlo al numero 3393010246.
+
+12) TITOLO:
+Recupero password
+CATEGORIA:
+password
+KEYWORDS:
+password, recupero password, accesso, login, account
+CONTENUTO:
+Se un cliente non riesce ad accedere al proprio account, deve usare la funzione di recupero password presente nella schermata di accesso. Se il problema continua, deve contattare l’assistenza.
+
+13) TITOLO:
+Problemi di accesso account
+CATEGORIA:
+accesso
+KEYWORDS:
+login, accesso, account, password, entrare
+CONTENUTO:
+Se un cliente ha problemi ad accedere, deve prima controllare email e password inserite. Se non ricorda la password, deve usare il recupero password. Se ancora non riesce ad accedere, deve contattare l’assistenza.
+
+14) TITOLO:
+Dove vedere le notifiche del proprio account
+CATEGORIA:
+notifiche
+KEYWORDS:
+notifiche, account, cliente, messaggi, codice corso
+CONTENUTO:
+Le notifiche personali del cliente si trovano nell’area del proprio account. In quella sezione possono arrivare informazioni utili, compresi eventuali codici per sbloccare i corsi acquistati.
+
+15) TITOLO:
+Cosa fare dopo l’acquisto di un corso
+CATEGORIA:
+acquisti
+KEYWORDS:
+dopo acquisto, corso, codice, notifiche, accesso
+CONTENUTO:
+Dopo aver acquistato un corso, il cliente deve controllare la sezione notifiche del proprio account per trovare il codice necessario a sbloccare il contenuto acquistato.
+
+16) TITOLO:
+Il sito IUSMK vende servizi in presenza?
+CATEGORIA:
+sito
+KEYWORDS:
+servizi, presenza, taglio, barber shop, appuntamento
+CONTENUTO:
+Il sito IUSMK non è pensato come sistema di prenotazione di servizi in presenza. È principalmente una piattaforma informativa e formativa dedicata all’attività di IUSMK e ai suoi corsi.
+
+17) TITOLO:
+Chi è IUSMK
+CATEGORIA:
+sito
+KEYWORDS:
+chi è iusmk, barber, artista, formazione
+CONTENUTO:
+IUSMK è un barber artist che usa il sito per presentare la propria attività e mettere a disposizione contenuti formativi come videocorsi dedicati al settore barber.
+
+18) TITOLO:
+Assistenza clienti IUSMK
+CATEGORIA:
+supporto
+KEYWORDS:
+assistenza, aiuto, supporto, clienti, contatti
+CONTENUTO:
+Per assistenza su accesso, corsi, codici, resi o informazioni generali, il cliente può usare le informazioni presenti sul sito oppure contattare direttamente Giuseppe quando necessario.
+
+19) TITOLO:
+Codici di accesso ai corsi
+CATEGORIA:
+accesso
+KEYWORDS:
+codici accesso, corsi, sblocco, notifiche
+CONTENUTO:
+I codici di accesso servono a sbloccare i corsi acquistati. Dopo l’acquisto, il cliente deve controllare la sezione notifiche del proprio account per trovare il codice ricevuto.
+
+20) TITOLO:
+Se l’assistente AI non conosce una risposta
+CATEGORIA:
+supporto
+KEYWORDS:
+assistente ai, risposta mancante, informazione mancante
+CONTENUTO:
+Se l’assistente AI non trova una risposta certa nelle informazioni disponibili, informerà il cliente che al momento non può dare quell’informazione con certezza e segnalerà la richiesta all’admin per aggiornare la Knowledge Base.
+
+REGOLE AGGIUNTIVE IMPORTANTI:
+- Dopo aver creato queste voci, assicurati che siano subito visibili nella sezione Knowledge Base AI.
+- Mantieni il contenuto modificabile dall’admin.
+- Non creare risposte che parlano di prenotazioni tagli come se il sito le supportasse.
+- Quando l’assistente AI risponde a domande su prenotazioni, deve chiarire che il sito non serve per prenotare tagli.
+- Quando risponde a domande sui corsi, deve spiegare che si acquistano sul sito e si sbloccano con un codice inviato nelle notifiche dell’account.
+- Quando risponde a domande sui resi, deve dire che bisogna contattare personalmente Giuseppe e che sarà lui a decidere.
+- Quando risponde a domande sui contatti, deve usare il numero 3393010246.
+- Se esistono già dati nel sistema relativi a login, notifiche, acquisti, corsi o contatti, collega l’assistente a queste voci senza rompere nulla.
+
+MIGLIORIA EXTRA:
+Se possibile, crea anche una funzione “Seed Knowledge Base” eseguibile una sola volta o riutilizzabile dall’admin, così in futuro si possano aggiungere facilmente altre voci iniziali senza inserirle manualmente ogni volta.

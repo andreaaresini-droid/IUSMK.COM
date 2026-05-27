@@ -1,0 +1,140 @@
+MODIFICA SOLO LA PAGINA DI ACCESSO/ATTIVAZIONE CORSI LATO CLIENTE, SENZA TOCCARE O ROMPERE NULLA DI CIÒ CHE GIÀ FUNZIONA.
+
+OBIETTIVO
+Attualmente nella pagina corsi compare il testo:
+“Già attivato? Accedi invece.”
+e il flusso è ancora basato sull’inserimento di un codice.
+
+Voglio cambiare questa logica.
+
+NUOVO COMPORTAMENTO RICHIESTO
+
+1) PULSANTE / LINK IN BASSO
+Sostituisci il testo/link:
+“Già attivato? Accedi invece.”
+
+con:
+
+“Ancora non sei registrato? Registrati ora”
+
+Questo link non deve più portare a un flusso di attivazione con codice.
+Deve invece aprire o reindirizzare alla pagina di REGISTRAZIONE cliente.
+
+2) PAGINA REGISTRAZIONE CLIENTE
+Crea o modifica la pagina di registrazione cliente in modo che contenga SOLO questi campi:
+- Nome
+- Cognome
+- E-mail
+- Password
+
+NON devono esserci altri campi.
+NON deve essere richiesto alcun codice accesso in fase di registrazione.
+NON deve esserci il vecchio flusso “sblocca l’accesso” come metodo principale per i nuovi clienti.
+
+3) LOGICA REGISTRAZIONE
+Quando il cliente si registra:
+- crea un account customer
+- salva nome, cognome, email e password in modo sicuro
+- email univoca
+- password hashata, mai in chiaro
+- dopo registrazione, reindirizza alla sezione login oppure effettua login automatico se già supportato
+
+4) PAGINA LOGIN
+Mantieni una pagina login separata e pulita per chi possiede già un account.
+Il login deve richiedere SOLO:
+- e-mail
+- password
+
+Se serve, nella pagina login metti il link:
+“Ancora non sei registrato? Registrati ora”
+che porta alla registrazione.
+
+5) RIMOZIONE DEL VECCHIO FLUSSO CODICE COME ACCESSO PRINCIPALE
+La schermata attuale “SBLOCCA L’ACCESSO” con:
+- codice di accesso
+- nome completo
+- indirizzo email
+
+non deve più essere il flusso principale per il cliente che vuole entrare o acquistare un corso.
+
+Il codice corso deve essere inviato SOLO DOPO il pagamento, tramite notifica interna all’utente registrato.
+Quindi:
+- non usare più il codice come metodo iniziale di creazione account
+- non chiedere più il codice per registrarsi
+- il codice resta solo una informazione ricevuta dopo acquisto
+
+6) MENU / CTA
+Quando un utente non è autenticato:
+- il bottone in alto a destra “Accedi” deve portare alla pagina login clienti corsi
+- dalla login page deve esserci il link alla registrazione
+
+7) TESTI DA USARE
+Nella pagina registrazione usa testi chiari e semplici in stile IUSMK.
+
+Titolo:
+“Crea il tuo account”
+
+Sottotitolo:
+“Registrati per acquistare i corsi, ricevere i codici di accesso e visualizzare le notifiche nel tuo profilo.”
+
+Campi:
+- Nome
+- Cognome
+- E-mail
+- Password
+
+Pulsante:
+“Registrati”
+
+Sotto il form:
+“Sei già registrato? Accedi”
+
+Nella pagina login:
+Titolo:
+“Accedi al tuo account”
+
+Campi:
+- E-mail
+- Password
+
+Pulsante:
+“Accedi”
+
+Sotto il form:
+“Ancora non sei registrato? Registrati ora”
+
+8) GRAFICA
+Mantieni lo stile grafico esistente IUSMK:
+- dark theme
+- pulsanti rossi
+- layout pulito
+- responsive mobile perfetto
+
+9) COSA NON DEVI TOCCARE
+NON modificare o rompere:
+- Stripe
+- webhook
+- acquisto corsi
+- notifiche
+- dashboard admin
+- logica corsi
+- coupon
+- altre pagine già funzionanti
+
+10) RISULTATO FINALE
+Il flusso corretto deve essere:
+- utente clicca “Accedi”
+- vede login con email e password
+- se non ha account clicca “Ancora non sei registrato? Registrati ora”
+- apre la registrazione
+- inserisce solo nome, cognome, email, password
+- crea account
+- accede
+- poi può acquistare corsi
+- dopo il pagamento riceve il codice nelle notifiche
+
+IMPORTANTE
+Fai una modifica precisa e mirata.
+Elimina il vecchio flusso basato sul codice come schermata iniziale per i nuovi clienti.
+Non lasciare elementi confusi o doppi.
+Tutto deve essere coerente con il nuovo sistema account clienti.

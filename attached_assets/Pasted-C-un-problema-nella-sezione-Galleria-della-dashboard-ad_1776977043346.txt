@@ -1,0 +1,135 @@
+C’è un problema nella sezione Galleria della dashboard admin:
+attualmente non riesco ad aggiungere immagini e video abbastanza grandi, perché compare l’errore “File troppo grande – Massimo 10MB”.
+
+Voglio che sistemi questa parte in modo serio e stabile.
+
+OBIETTIVO
+
+L’admin deve poter caricare immagini e video più pesanti senza che il sistema li rifiuti inutilmente.
+
+1. Aumentare il limite upload
+Immagini
+
+Aumenta il limite per le immagini ad almeno:
+
+30MB minimo
+oppure meglio:
+50MB
+Video
+
+Aumenta il limite per i video ad almeno:
+
+100MB minimo
+oppure meglio:
+150MB
+2. Non limitarti solo al frontend
+
+Non voglio solo cambiare il messaggio visivo.
+
+Devi controllare e aggiornare tutti i punti dove può esserci un limite:
+
+frontend
+backend
+middleware upload
+API route
+server body size limit
+storage provider / bucket / upload endpoint
+validazioni lato admin
+eventuali limitazioni su form parser / multer / uploadthing / cloudinary / supabase storage / ecc.
+3. Compressione automatica intelligente
+
+Se necessario, aggiungi un sistema intelligente:
+
+Per immagini:
+comprimi automaticamente solo se davvero serve
+mantieni buona qualità
+supporta JPG / PNG / WEBP
+Per video:
+se il file è molto grande, permetti comunque l’upload
+se serve, crea una gestione più robusta:
+upload diretto allo storage
+barra di progresso
+niente errore immediato per file normali ma pesanti
+4. Migliorare UX upload
+
+Quando carico un file grande voglio:
+
+stato di caricamento chiaro
+barra o percentuale upload
+messaggi veri e precisi
+niente blocchi improvvisi
+niente errore generico inutile
+
+Esempi:
+
+“Caricamento in corso…”
+“Compressione immagine…”
+“Upload completato”
+“Formato non supportato”
+“File troppo grande oltre il limite massimo consentito”
+5. Differenziare limiti per immagini e video
+
+Attualmente non voglio un limite unico.
+
+Voglio due regole separate:
+immagini → limite più basso
+video → limite più alto
+
+E il controllo deve dipendere dal tipo di contenuto selezionato:
+
+se seleziono Immagine, usa il limite immagini
+se seleziono Video, usa il limite video
+6. Verificare il form attuale
+
+Controlla il form nella sezione Galleria:
+
+pulsante upload
+drag and drop
+selettore immagine/video
+validazioni
+richiesta backend
+
+Perché adesso qualcosa blocca il caricamento troppo presto.
+
+7. Non rompere ciò che già funziona
+
+Mantieni funzionanti:
+
+aggiunta contenuti
+categorie
+modifica
+eliminazione
+filtri immagini/video/categorie
+8. Controllo finale obbligatorio
+
+Dopo la modifica fai queste prove reali:
+
+Test immagini:
+prova a caricare un’immagine sopra 10MB
+verifica che venga accettata
+Test video:
+prova a caricare un video pesante
+verifica che venga accettato
+Test UI:
+controlla che non compaia più l’errore attuale per file normali ma grandi
+9. Se serve, cambia architettura upload
+
+Se il problema dipende dal fatto che il sistema attuale non è adatto a file più grandi, allora miglioralo.
+
+Ad esempio:
+
+upload diretto su storage
+endpoint separato per video
+gestione streaming/chunked upload se necessario
+
+Non voglio una soluzione fragile.
+
+IMPORTANTE
+
+Voglio poter caricare immagini e video abbastanza grandi nella galleria admin senza essere bloccata dal limite attuale di 10MB.
+
+Quindi:
+
+elimina il limite attuale troppo basso
+imposta limiti realistici
+assicurati che il caricamento funzioni davvero

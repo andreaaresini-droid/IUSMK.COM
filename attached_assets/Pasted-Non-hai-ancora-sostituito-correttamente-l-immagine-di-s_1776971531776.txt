@@ -1,0 +1,74 @@
+Non hai ancora sostituito correttamente l’immagine di sfondo della homepage.
+
+Problema attuale: nella hero si vede ancora la vecchia immagine del sito.
+Io voglio che venga usata esclusivamente la nuova immagine che ti allego, senza mantenere quella vecchia sotto, sopra o in overlay.
+
+Cosa devi fare esattamente
+1. Sostituzione reale dell’immagine hero
+Trova il punto esatto del codice dove la homepage carica l’immagine di sfondo attuale della hero.
+Rimuovi il riferimento alla vecchia immagine, qualunque sia il modo in cui viene caricata:
+background-image
+tag <img>
+layer assoluto
+array immagini
+pseudo-elementi tipo ::before o ::after
+overlay con immagine separata
+Usa solo la nuova immagine che ti allego come immagine principale della hero.
+2. Verifica che non esista ancora la vecchia immagine
+
+Controlla che:
+
+non ci siano due layer immagine sovrapposti
+non resti la vecchia immagine in un div assoluto
+non venga ancora importata da un file asset precedente
+non venga mantenuta da cache o da un componente diverso della homepage
+
+Se necessario:
+
+elimina il vecchio import
+sostituisci il file asset
+aggiorna il path corretto della nuova immagine
+3. Mantieni il rosso sfumato
+
+Sopra la nuova immagine applica un overlay rosso sfumato simile a prima, non troppo forte, elegante e morbido.
+
+Indicazione stile:
+
+background: linear-gradient(
+  to bottom,
+  rgba(120, 0, 0, 0.28),
+  rgba(70, 0, 0, 0.48)
+);
+
+Adatta i valori in modo che il rosso sia visibile ma non copra troppo la foto.
+
+4. Elimina la scritta centrale
+
+Rimuovi completamente la scritta grande centrale.
+Se è già stata rimossa, controlla che non restino:
+
+spazi vuoti
+container inutili
+margini/padding che occupano il centro
+5. Mantieni il bottone centrale solo se già previsto
+
+Se nella hero deve restare il pulsante “ENTRA ALL'ACADEMY”, lascialo.
+Ma non devono esserci altri testi grandi sopra l’immagine.
+
+6. Responsive
+
+Su mobile la nuova immagine deve:
+
+riempire bene la hero
+essere centrata correttamente
+non essere sostituita dalla vecchia immagine in nessun breakpoint
+7. Controllo finale obbligatorio
+
+Dopo la modifica:
+
+apri l’anteprima della homepage
+verifica visivamente che si veda davvero la nuova immagine allegata e non quella vecchia
+se necessario svuota cache/build e ripubblica
+
+Importante: non voglio una modifica “simile” o un overlay sulla vecchia foto.
+Voglio la sostituzione totale della vecchia immagine di sfondo con quella nuova allegata.

@@ -1,0 +1,152 @@
+Voglio modificare l’animazione intro del sito IUSMK con queste nuove specifiche precise.
+
+OBIETTIVO
+All’apertura della homepage deve comparire un overlay fullscreen con una foto che allegherò su Replit.
+Dal basso verso l’alto deve salire un rasoio elettrico (non più forbici), che attraversa verticalmente il centro della foto e la “taglia” in due metà:
+- metà sinistra → cade/scivola verso sinistra
+- metà destra → cade/scivola verso destra
+
+Sotto deve poi apparire la home del sito.
+
+IMPORTANTE:
+questa animazione deve partire SEMPRE:
+- alla prima apertura
+- se si chiude e si riapre la pagina
+- se si aggiorna il sito
+Quindi NON usare localStorage/sessionStorage per saltarla.
+
+--------------------------------------------------
+1. SOSTITUIRE LE FORBICI CON IL RASOIO
+--------------------------------------------------
+- rimuovi completamente le forbici dall’animazione attuale
+- usa al loro posto il rasoio che allego
+- il rasoio deve avere sfondo trasparente
+- se il file allegato non è già pronto, ritaglialo/puliscilo correttamente
+- adattane il colore in modo coerente con il branding del sito IUSMK:
+  - palette scura / premium
+  - dettagli che richiamino oro/giallo del sito oppure colori coerenti con il brand
+- non deve sembrare fuori stile rispetto al sito
+
+--------------------------------------------------
+2. MOVIMENTO DEL RASOIO
+--------------------------------------------------
+- il rasoio deve partire dal basso fuori schermo
+- deve salire verso l’alto in linea verticale
+- deve attraversare il centro della foto
+- il movimento deve essere fluido, premium e realistico
+- se serve, aggiungi una leggera vibrazione/micro oscillazione mentre sale per dare l’effetto di un rasoio acceso
+- mantieni il rasoio ben visibile
+
+--------------------------------------------------
+3. TAGLIO DELLA FOTO
+--------------------------------------------------
+La foto iniziale deve essere tagliata verticalmente in 2 metà:
+- metà sinistra
+- metà destra
+
+Quando il rasoio passa al centro:
+- la foto deve separarsi in due pezzi
+- i due pezzi devono muoversi verso i rispettivi lati:
+  - parte sinistra → scivola/cade verso sinistra
+  - parte destra → scivola/cade verso destra
+
+Effetto desiderato:
+- taglio netto centrale
+- dinamica elegante e cinematografica
+- la separazione deve sembrare causata dal passaggio del rasoio
+
+Usa la tecnica migliore:
+- clip-path
+- mask
+- due layer separati
+- animazioni transform
+Scegli la soluzione più pulita e performante.
+
+--------------------------------------------------
+4. SUONO DEL RASOIO
+--------------------------------------------------
+Voglio che mentre il rasoio sale e taglia la foto si senta il suono del rasoio.
+Requisiti:
+- aggiungi un effetto audio realistico da clipper/rasoio elettrico
+- il suono deve partire quando il rasoio si muove
+- il suono deve fermarsi a fine animazione
+- volume moderato, non aggressivo
+- se per i browser serve un’interazione utente per l’audio, gestisci la migliore soluzione possibile compatibile con il sito
+- se autoplay audio è limitato, implementa un fallback elegante ma prova comunque a farlo funzionare nel modo più affidabile possibile
+
+--------------------------------------------------
+5. TRANSIZIONE ALLA HOME
+--------------------------------------------------
+Dopo il taglio:
+- le due metà della foto escono dai lati
+- overlay sfuma via
+- sotto appare la home del sito già pronta
+- tutto deve essere fluido, senza lag o flash brutti
+
+--------------------------------------------------
+6. ANIMAZIONE SEMPRE ATTIVA
+--------------------------------------------------
+Molto importante:
+NON voglio che l’animazione venga mostrata solo una volta.
+Voglio che parta sempre:
+- ad ogni apertura della pagina
+- ad ogni refresh
+- ad ogni nuova visita
+Quindi:
+- rimuovi qualunque logica tipo localStorage/sessionStorage che la blocca dopo la prima volta
+
+--------------------------------------------------
+7. RESPONSIVE
+--------------------------------------------------
+Controlla bene:
+- desktop
+- mobile
+- tablet
+
+Su tutti i dispositivi:
+- il rasoio deve avere dimensione corretta
+- il taglio deve essere centrato
+- le metà della foto devono separarsi bene
+- niente elementi tagliati male o fuori asse
+
+--------------------------------------------------
+8. PERFORMANCE
+--------------------------------------------------
+- usa animazioni fluide con transform e opacity quando possibile
+- evita lag
+- overlay fullscreen pulito
+- il sito sotto non deve rompersi
+- mantieni caricamento buono
+
+--------------------------------------------------
+9. NON TOCCARE IL RESTO DEL SITO
+--------------------------------------------------
+- non modificare navbar
+- non modificare hero
+- non modificare le altre sezioni
+- aggiungi/modifica solo l’intro animation
+- mantieni il design premium del sito
+
+--------------------------------------------------
+10. TEST FINALI
+--------------------------------------------------
+Verifica davvero questi casi:
+- apertura normale della home
+- refresh della pagina
+- chiusura e riapertura
+- mobile
+- desktop
+- suono sincronizzato
+- taglio corretto sinistra/destra
+- overlay che scompare bene
+- home visibile correttamente dopo l’animazione
+
+--------------------------------------------------
+11. RIEPILOGO FINALE
+--------------------------------------------------
+Alla fine voglio un riepilogo con:
+- come hai sostituito le forbici con il rasoio
+- come hai adattato il colore al brand
+- come hai implementato il taglio verticale in due metà
+- come hai gestito il suono
+- conferma che l’animazione parte sempre a ogni apertura/refresh

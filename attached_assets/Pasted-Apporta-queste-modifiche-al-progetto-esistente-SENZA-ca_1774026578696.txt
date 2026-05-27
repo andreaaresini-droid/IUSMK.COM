@@ -1,0 +1,256 @@
+Apporta queste modifiche al progetto esistente SENZA cambiare identità visiva, palette colori, branding IUSMK e stile generale del sito. Devi correggere due problemi reali e prioritari: usabilità mobile del pannello admin e flusso reale di sblocco corsi per lo studente.
+
+OBIETTIVO PRINCIPALE
+Il sito sarà usato principalmente da telefono, quindi:
+- il pannello admin deve essere perfetto da mobile
+- tutte le funzioni admin devono essere accessibili facilmente da telefono
+- il flusso studente deve funzionare davvero: se creo un codice per uno studente, il corso deve comparire nella dashboard studente e il tasto “Attiva Codice” non deve dare errore
+
+==================================================
+1. DASHBOARD ADMIN: RENDERLA PERFETTA DA TELEFONO
+==================================================
+
+PROBLEMA ATTUALE
+Da telefono non si vedono bene tutte le funzioni della dashboard admin, compreso il tasto per uscire e tornare alla home del sito. La sidebar e i contenuti non sono ottimizzati per mobile.
+
+DEVI SISTEMARE COSÌ:
+
+A. SIDEBAR MOBILE
+- Su mobile, la sidebar admin non deve restare larga e fissa come desktop
+- Trasformala in un menu mobile comodo
+- Usa una di queste soluzioni:
+  - drawer laterale apribile con icona hamburger
+  - menu off-canvas
+  - bottom navigation mobile + drawer secondario
+- La soluzione scelta deve essere elegante, semplice e molto usabile su telefono
+
+B. ACCESSO RAPIDO ALLE FUNZIONI
+Su telefono devono essere facilmente raggiungibili:
+- Dashboard
+- Corsi
+- Codici di Accesso
+- Galleria
+- Richieste di Contatto
+- Credenziali Admin
+- Esci
+- Torna al sito / Home
+
+C. TASTI IMPORTANTI VISIBILI
+Da telefono devono essere sempre ben visibili o facilmente raggiungibili:
+- tasto Esci
+- tasto Torna alla Home del sito
+- tasto Genera Codice
+- tasto Nuovo Corso
+- tasti modifica/elimina
+- accesso alle sezioni admin
+
+D. LAYOUT MOBILE
+Ottimizza davvero per smartphone:
+- niente elementi tagliati
+- niente sidebar che copre il contenuto
+- niente testo fuori schermo
+- niente tasti troppo piccoli
+- padding corretti
+- card e tabelle adattate al mobile
+- dove necessario, trasforma tabelle in card responsive
+
+E. CODICI DI ACCESSO ADMIN SU MOBILE
+La tabella codici di accesso deve essere leggibile su telefono.
+Se serve:
+- trasformala in card verticali su mobile
+oppure
+- usa scroll orizzontale elegante
+ma preferibilmente:
+- card mobile con campi:
+  - Codice
+  - Corso
+  - Cliente
+  - Stato
+  - Scadenza
+  - Azioni
+
+F. ADMIN DASHBOARD CARDS
+Le card statistiche devono essere ben spaziate e leggibili su mobile, senza tagli o elementi sovrapposti.
+
+G. NAVIGAZIONE MOBILE
+Aggiungi in alto nella dashboard admin mobile:
+- logo IUSMK
+- pulsante menu
+- eventuale pulsante rapido “Torna al sito”
+
+H. UX
+Tutto deve essere utilizzabile con una mano:
+- pulsanti grandi
+- area touch comoda
+- menu chiaro
+- zero confusione
+
+==================================================
+2. FIX FLUSSO STUDENTE: CODICE CREATO MA CORSO NON SBLOCCATO
+==================================================
+
+PROBLEMA ATTUALE
+Ho creato un codice per lo studente Andrea Aresini, ma:
+- nella dashboard studente appare “Nessun corso sbloccato”
+- se premo “Attiva Codice” mi dà errore
+- dagli screenshot si vede anche errore 404 su endpoint tipo:
+  /api/student/courses
+quindi il flusso backend/frontend non è collegato bene
+
+DEVI CORREGGERE DAVVERO TUTTO IL FLUSSO.
+
+A. CONTROLLA IL CODICE GENERATO
+Quando creo un codice nell’admin:
+- deve essere salvato correttamente nel database
+- deve essere collegato a:
+  - corso giusto
+  - nome studente
+  - email studente
+  - stato attivo
+- il record deve poi poter essere letto dalla parte studente
+
+B. FIX ENDPOINT STUDENTE
+Lo screenshot mostra errori 404 su:
+- /api/student/courses
+oppure endpoint simili
+
+Quindi:
+- verifica quali chiamate frontend sta facendo la dashboard studente
+- crea o correggi gli endpoint mancanti
+- se la route è sbagliata, sistemala
+- se il metodo HTTP è sbagliato, correggilo
+- se il path è incoerente tra frontend e backend, allinealo
+
+OBBLIGATORIO:
+- la dashboard studente non deve più chiamare endpoint inesistenti
+- la lista corsi sbloccati deve essere caricata da un endpoint funzionante davvero
+
+C. LOGICA CORSI SBLOCCATI
+Quando uno studente ha un codice valido associato:
+- il corso collegato a quel codice deve comparire automaticamente nella dashboard studente
+oppure
+- se richiedi attivazione manuale, il tasto Attiva Codice deve funzionare davvero e sbloccare il corso
+
+Devi chiarire e implementare una sola logica coerente.
+
+SCELTA CONSIGLIATA:
+- se il codice è già associato a nome/email dello studente e viene attivato correttamente, allora il corso deve comparire nella dashboard studente
+- se è già stato attivato, il pulsante “Attiva Codice” non deve dare errore, ma deve:
+  - aprire la pagina corretta
+  - oppure mostrare form funzionante
+  - oppure mostrare messaggio tipo “Hai già un corso associato”
+
+D. PULSANTE “ATTIVA CODICE”
+Attualmente dà errore.
+Devi sistemare il pulsante in modo reale:
+- deve aprire la schermata corretta
+oppure
+- deve aprire un modal funzionante
+oppure
+- deve portare alla pagina /access corretta
+Ma soprattutto:
+- non deve generare errori JS o 404
+
+E. DASHBOARD STUDENTE
+Quando Andrea Aresini entra nella dashboard studente:
+- il sistema deve cercare i corsi sbloccati davvero
+- se Andrea ha un codice attivo associato a un corso, quel corso deve essere mostrato
+- non deve apparire “Nessun corso sbloccato” se nel database esiste un codice valido per lei
+
+F. QUERY DATABASE
+Controlla e correggi la logica di recupero corsi studente.
+Probabilmente manca uno di questi passaggi:
+- codice non collegato correttamente al corso
+- codice non collegato all’utente studente
+- utente studente non trovato correttamente
+- query corsi sbloccati non usa la relazione giusta
+- endpoint dashboard studente non esiste o usa path sbagliato
+
+Verifica davvero:
+- AccessCode
+- StudentUser
+- AccessActivation
+- Course
+- eventuali relazioni intermedie
+
+G. CASI DA GESTIRE
+La dashboard studente deve gestire bene:
+- studente con 1 corso sbloccato
+- studente con più corsi sbloccati
+- studente senza corsi
+- codice revocato
+- codice non valido
+- codice già attivato
+
+==================================================
+3. COMPORTAMENTO DESIDERATO
+==================================================
+
+CASO REALE DA TESTARE
+Esiste uno studente:
+- Andrea Aresini
+- email: andreaaresini118@gmail.com
+- codice attivo associato a un corso
+
+Dopo il fix:
+- Andrea entra nella dashboard studente
+- il sistema deve mostrare il corso collegato
+- non deve comparire “Nessun corso sbloccato”
+- se preme “Attiva Codice”, non deve apparire errore
+- se il codice è già attivato, mostra il corso o un messaggio coerente
+- se il codice non è ancora attivato, il flusso di attivazione deve completarsi correttamente
+
+==================================================
+4. MIGLIORIE UI STUDENTE SU MOBILE
+==================================================
+
+Dato che il sito sarà usato molto da telefono:
+- rendi anche la dashboard studente mobile friendly
+- il bottone “Esci” deve essere visibile bene
+- la lista corsi sbloccati deve essere in card mobile belle e leggibili
+- il pulsante “Attiva Codice” deve essere grande e facilmente cliccabile
+- nessun elemento deve uscire dallo schermo
+- footer e navbar non devono disturbare la lettura
+
+==================================================
+5. TEST OBBLIGATORI
+==================================================
+
+Dopo le modifiche testa davvero questi flussi:
+
+TEST 1 – ADMIN MOBILE
+- apri dashboard admin da telefono
+- verifica che tutte le sezioni siano accessibili
+- verifica che Esci sia raggiungibile
+- verifica che Torna alla Home sia raggiungibile
+- verifica che Genera Codice sia usabile da telefono
+
+TEST 2 – CODICE STUDENTE
+- crea o usa il codice attivo per Andrea Aresini
+- verifica nel database che sia collegato al corso corretto
+- entra nella dashboard studente
+- verifica che il corso compaia davvero
+
+TEST 3 – ATTIVA CODICE
+- premi “Attiva Codice”
+- verifica che non si verifichino errori 404
+- completa il flusso
+- verifica che il corso venga sbloccato davvero
+
+TEST 4 – ENDPOINT
+- controlla che non ci siano più errori console relativi a:
+  /api/student/courses
+  o altri endpoint mancanti
+- correggi tutte le route fino a eliminare i 404
+
+==================================================
+6. IMPORTANTE
+==================================================
+
+- fai modifiche reali nel codice esistente
+- non limitarti a descrivere la soluzione
+- mantieni design e branding attuali
+- dai priorità assoluta all’esperienza mobile
+- correggi davvero endpoint, query database, relazioni e componenti frontend finché il sistema non funziona end-to-end
+- se una tabella non è adatta al mobile, trasformala in card responsive
+- se il pulsante Attiva Codice è inutile quando il corso è già associato, cambia il comportamento in modo intelligente e coerente

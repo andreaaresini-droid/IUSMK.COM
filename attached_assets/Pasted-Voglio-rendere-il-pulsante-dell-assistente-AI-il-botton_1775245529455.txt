@@ -1,0 +1,122 @@
+Voglio rendere il pulsante dell’assistente AI (il bottone rosso in basso a destra) trascinabile dall’utente (draggable), in modo che ogni cliente possa spostarlo dove preferisce sullo schermo.
+
+IMPORTANTE:
+- Non modificare la logica della chat già funzionante
+- Modifica solo il comportamento del bottone flottante
+- Deve funzionare perfettamente su mobile e desktop
+
+==================================================
+1) DRAG & DROP DEL BOTTONE
+==================================================
+
+Rendi il bottone:
+- trascinabile con mouse (desktop)
+- trascinabile con touch (mobile)
+
+Comportamento:
+- l’utente può premere e trascinare il bottone
+- il bottone segue il dito/mouse in tempo reale
+- il movimento deve essere fluido
+
+==================================================
+2) LIMITI SCHERMO (IMPORTANTISSIMO)
+==================================================
+
+Il bottone NON deve uscire dallo schermo.
+
+Imposta vincoli:
+- non deve andare fuori viewport
+- deve rimanere sempre visibile
+- margine minimo dai bordi (es. 10px)
+
+==================================================
+3) SNAP AI BORDI (EFFETTO PROFESSIONALE)
+==================================================
+
+Quando l’utente rilascia il bottone:
+- deve “attaccarsi” automaticamente al lato più vicino (sinistra o destra)
+- con una piccola animazione smooth
+
+==================================================
+4) SALVATAGGIO POSIZIONE
+==================================================
+
+Salva la posizione del bottone per ogni utente.
+
+Metodo:
+- usa localStorage
+
+Dati da salvare:
+- posizione X
+- posizione Y
+
+Quando l’utente ricarica il sito:
+- il bottone deve tornare nella posizione salvata
+
+==================================================
+5) CLICK VS DRAG (BUG DA EVITARE)
+==================================================
+
+Evita questo problema:
+- se l’utente trascina leggermente → NON deve aprire la chat
+- se l’utente clicca → deve aprire la chat
+
+Soluzione:
+- se movimento < soglia → consideralo click
+- se movimento > soglia → consideralo drag
+
+==================================================
+6) MOBILE UX
+==================================================
+
+Su mobile:
+- il drag deve funzionare con touch
+- evitare scroll involontari
+- il bottone deve essere sempre facilmente cliccabile
+
+==================================================
+7) APERTURA CHAT
+==================================================
+
+Il comportamento attuale deve rimanere:
+- tap/click sul bottone → apre la chat
+- posizione del bottone NON deve influenzare la chat
+
+==================================================
+8) ANIMAZIONI
+==================================================
+
+Aggiungi:
+- transizione smooth quando si aggancia ai bordi
+- movimento fluido durante drag
+
+==================================================
+9) SICUREZZA
+==================================================
+
+- non usare librerie pesanti
+- implementazione leggera in JS puro o compatibile con il framework attuale
+- non rallentare il sito
+
+==================================================
+10) TEST
+==================================================
+
+Verifica:
+- desktop: drag con mouse funziona
+- mobile: drag con dito funziona
+- bottone non esce dallo schermo
+- posizione salvata dopo refresh
+- click apre chat normalmente
+- drag non apre la chat
+
+==================================================
+11) RISULTATO FINALE
+==================================================
+
+Voglio che il bottone dell’assistente AI:
+- sia trascinabile
+- si attacchi ai lati
+- salvi la posizione
+- funzioni fluido come Messenger / WhatsApp bubble
+- non rompa nulla del sistema esistente

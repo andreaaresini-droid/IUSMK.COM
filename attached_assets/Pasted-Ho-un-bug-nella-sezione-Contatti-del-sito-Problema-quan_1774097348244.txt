@@ -1,0 +1,47 @@
+Ho un bug nella sezione Contatti del sito.
+
+Problema:
+quando un utente compila e invia il form contatti sul sito pubblico, compare correttamente il messaggio di successo “Messaggio inviato! Ti ricontatterò presto.”, però nella dashboard admin, nella sezione “Richieste di Contatto”, non viene salvato o mostrato nulla.
+
+Voglio che tu analizzi e corregga tutto il flusso end-to-end.
+
+Obiettivi:
+1. Verificare che il form contatti del sito pubblico invii davvero i dati al backend.
+2. Verificare che il frontend NON mostri il messaggio di successo se la richiesta fallisce.
+3. Controllare che l’endpoint/API del form contatti riceva correttamente questi campi:
+   - nome
+   - email
+   - telefono
+   - oggetto
+   - messaggio
+4. Controllare che il backend salvi realmente i dati nel database/collection corretta.
+5. Controllare che la dashboard admin “Richieste di Contatto” legga dalla stessa tabella/collection dove il form salva i messaggi.
+6. Correggere eventuali problemi di:
+   - endpoint sbagliato
+   - fetch non atteso
+   - gestione errori mancante
+   - insert nel database non eseguito
+   - mismatch tra nomi campi frontend/backend/database
+   - query admin che punta alla risorsa sbagliata
+7. Aggiungere logging chiaro lato server e lato client per capire se l’invio avviene, se il salvataggio riesce e se la lettura admin funziona.
+8. Fare in modo che:
+   - se il salvataggio va a buon fine, il messaggio appaia subito nella dashboard admin
+   - se fallisce, l’utente veda un messaggio di errore reale e non un falso successo
+
+Cose importanti:
+- Non rompere il design attuale del sito.
+- Non modificare inutilmente la grafica della sezione contatti o della dashboard admin.
+- Mantieni intatti gli stili.
+- Correggi solo la logica necessaria.
+- Se necessario, allinea i nomi dei campi tra frontend, API e database.
+- Se non esiste una persistenza corretta, creala e collegala alla dashboard admin.
+
+Dopo la correzione:
+- testa il form end-to-end
+- verifica che un nuovo messaggio inviato dal sito compaia davvero nella dashboard admin
+- verifica che gli errori siano gestiti correttamente
+
+Fammi anche un breve riepilogo finale di:
+- causa del problema
+- file/logica corretti
+- soluzione applicata

@@ -1,0 +1,117 @@
+C’è un bug generale sulle immagini dei corsi/Academy: dopo le ultime modifiche non si vedono più diverse immagini.
+
+Devi correggere SOLO la gestione immagini/media di Academy e Corsi.
+
+PROBLEMI:
+1. In “I miei corsi” non si vede l’immagine di copertina del corso.
+2. Nella pagina categoria Academy non si vede più l’immagine/copertina del video trailer.
+3. Nella gallery della categoria Academy alcune immagini continuano a non vedersi e mostrano “Media non disponibile”.
+4. I video invece si vedono, quindi il problema sembra legato soprattutto al rendering/mappatura delle immagini.
+
+OBIETTIVO:
+Le immagini devono vedersi sempre in:
+- pagina Academy categoria
+- trailer/poster categoria
+- gallery categoria
+- pagina singolo corso
+- card corso
+- sezione “I miei corsi”
+
+CORREZIONE RICHIESTA:
+Crea una funzione unica e stabile per leggere le immagini/media, usata ovunque in Academy e Corsi.
+
+Esempio:
+normalizeMedia(media)
+
+La funzione deve supportare tutti questi possibili formati già salvati:
+- stringa URL semplice
+- { url: "..." }
+- { src: "..." }
+- { imageUrl: "..." }
+- { coverImage: "..." }
+- { coverImageUrl: "..." }
+- { thumbnail: "..." }
+- { thumbnailUrl: "..." }
+- { poster: "..." }
+- { posterUrl: "..." }
+- { fileUrl: "..." }
+- { publicUrl: "..." }
+
+Deve restituire sempre:
+{
+  url: "...",
+  type: "image" | "video",
+  poster: "...optional",
+  mimeType: "...optional"
+}
+
+REGOLE:
+1. Se il file finisce con:
+   - .jpg
+   - .jpeg
+   - .png
+   - .webp
+   allora è sempre immagine.
+
+2. Se il file finisce con:
+   - .mp4
+   - .mov
+   - .webm
+   allora è sempre video.
+
+3. Se type manca, rilevalo da:
+   - mimeType
+   - estensione URL
+   - campi disponibili
+
+4. Non mostrare “Media non disponibile” se esiste un URL valido.
+
+5. Non usare il tag video per immagini.
+6. Non usare il tag img per video.
+7. Non usare poster vuoti o non validi.
+8. Non salvare o usare blob temporanei come URL definitivo.
+
+CONTROLLI SPECIFICI:
+- In “I miei corsi”, la copertina deve usare:
+  course.coverImageUrl || course.coverImage || course.thumbnailUrl || course.thumbnail || course.imageUrl || normalizzazione media
+- Nella pagina categoria, il trailer deve usare il poster corretto:
+  category.trailerPosterUrl || category.trailerPoster || category.posterUrl || category.coverImageUrl
+  Se non esiste poster, mostra il video con primo frame/preview, ma non box nero fisso.
+- Nella gallery categoria, ogni media deve passare da normalizeMedia prima del render.
+
+IMPORTANTE SUL SALVATAGGIO:
+Quando l’admin modifica categoria o corso:
+- non cancellare immagini già salvate
+- non sovrascrivere media con array vuoti
+- non cambiare il formato dei vecchi media in modo incompatibile
+- non perdere coverImage/poster/gallery
+- se aggiorna solo testi, lascia i media invariati
+
+FALLBACK:
+Se davvero un’immagine non è raggiungibile:
+- mostra fallback solo dopo errore reale di caricamento
+- non mostrare subito “Media non disponibile” solo perché type o campo URL non è stato letto correttamente
+
+DEBUG:
+Aggiungi log temporanei solo in development per capire:
+- oggetto media originale
+- URL risolto
+- type rilevato
+- errore img/video onError
+
+NON TOCCARE:
+- login
+- pagamenti
+- codici
+- notifiche
+- chat
+- galleria principale se funziona
+- layout generale
+
+RISULTATO FINALE:
+Tutte le immagini tornano visibili:
+- copertina corso in “I miei corsi”
+- poster/cover del trailer categoria
+- immagini della gallery categoria
+- immagini delle card corso
+e non devono più sparire dopo aggiornamenti o refresh.

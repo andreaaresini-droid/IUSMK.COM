@@ -1,0 +1,106 @@
+Voglio che i video dei corsi vengano caricati direttamente dal pannello admin del sito e guardati dentro il sito.
+
+Obiettivo
+
+I video dei corsi possono durare anche ore, quindi devi creare una gestione upload/streaming interna seria.
+
+1. Storage video interno
+
+I video NON devono essere salvati nel database/base64.
+
+Devono essere salvati come file su storage del progetto/server, ad esempio:
+
+cartella server dedicata /uploads/courses/videos
+oppure storage/bucket già collegato al progetto
+
+Nel database salva solo:
+
+URL/path del video
+titolo
+descrizione
+durata
+thumbnail
+ordine lezione
+2. Upload video pesanti
+
+L’admin deve poter caricare video pesanti almeno fino a 1GB.
+
+Implementa:
+
+upload multipart/streaming
+niente errore 413
+barra progresso
+messaggi chiari
+validazione MP4/MOV/WebM
+limite reale coerente con quello scritto in UI
+3. Streaming dal sito
+
+Il video deve essere visibile nel portale studente direttamente dal sito.
+
+Serve un endpoint video con supporto a:
+
+Range Requests / HTTP 206 Partial Content
+
+Questo è fondamentale, perché il browser deve poter caricare il video a pezzi senza scaricarlo tutto.
+
+4. Player interno
+
+Nel portale studente usa un player HTML5:
+
+<video controls playsInline preload="metadata">
+  <source src="/api/courses/videos/:videoId/stream" type="video/mp4" />
+</video>
+
+Il player deve avere:
+
+play/pausa
+barra avanzamento
+audio
+fullscreen
+compatibilità iPhone/Safari
+5. Protezione accesso
+
+L’endpoint /api/courses/videos/:videoId/stream deve:
+
+verificare che l’utente sia loggato
+verificare che abbia accesso al corso
+non mostrare video a utenti non autorizzati
+non esporre file pubblici diretti
+6. Correggere schermata bianca
+
+Il pulsante “Apri video lezione” non deve più aprire una pagina bianca.
+
+Deve aprire:
+
+una pagina/player interno funzionante
+oppure
+un modal player nel portale studente
+
+Se il video manca, mostra:
+“Video non ancora disponibile”.
+
+7. Compatibilità iPhone
+
+Per iPhone/Safari:
+
+video MP4 con codec H.264/AAC consigliato
+playsInline
+controls
+supporto Range Requests
+header corretti:
+Content-Type: video/mp4
+Accept-Ranges: bytes
+Content-Range
+Content-Length
+8. Test obbligatori
+
+Verifica:
+
+upload video 150MB
+apertura nel portale studente
+avanzamento avanti/indietro
+audio
+reload pagina
+accesso negato se non autorizzato
+
+IMPORTANTE: voglio video caricati e guardati direttamente dal sito, con streaming progressivo interno, non servizi esterni.

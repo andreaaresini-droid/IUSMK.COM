@@ -1,0 +1,94 @@
+C’è solo un’ultima correzione da fare nella HOME del sito IUSMK.
+
+ATTENZIONE:
+NON devi modificare nient’altro.
+Tutto il resto va bene così com’è.
+
+==================================================
+PROBLEMA
+==================================================
+
+Il pulsante “Entra all’Academy” è troppo in basso.
+
+Io voglio che il pulsante venga spostato PIÙ IN ALTO, precisamente nella zona che ho evidenziato in rosso nello screenshot allegato:
+- subito sotto il logo/immagine “Transforming Scalps into Canvases”
+- con meno spazio vuoto tra logo e pulsante
+- più vicino al contenuto centrale
+
+==================================================
+OBIETTIVO
+==================================================
+
+Spostare il pulsante “Entra all’Academy” verso l’alto:
+- senza cambiare il logo
+- senza cambiare lo sfondo
+- senza cambiare intro
+- senza cambiare navbar
+- senza cambiare stile del pulsante
+
+Voglio solo ridurre lo spazio vuoto tra:
+- il logo centrale
+e
+- il pulsante “Entra all’Academy”
+
+==================================================
+COSA FARE
+==================================================
+
+1. Trova il contenitore del pulsante “Entra all’Academy” nella HOME
+2. Spostalo più in alto
+3. Riduci il margin-top / padding-top / gap verticale che lo separa dal logo centrale
+4. Mantieni il pulsante centrato
+5. Mantieni identici:
+   - stile
+   - dimensione
+   - colore
+   - bordo
+   - font
+   - responsive
+
+==================================================
+IMPORTANTE
+==================================================
+
+NON cambiare:
+- posizione del logo centrale
+- immagine di sfondo
+- intro iniziale
+- audio
+- rasoio
+- altri pulsanti
+- altre sezioni del sito
+- colori
+- layout generale
+
+Devi cambiare SOLO la posizione verticale del pulsante “Entra all’Academy”.
+
+==================================================
+RISULTATO DESIDERATO
+==================================================
+
+Il pulsante deve stare:
+- più vicino al logo
+- nella zona evidenziata in rosso nello screenshot
+- con un aspetto più compatto e pulito
+- senza troppo spazio vuoto in mezzo
+
+==================================================
+TEST FINALI
+==================================================
+
+Verifica che:
+- il pulsante sia salito
+- il logo sia rimasto dov’è
+- il pulsante non si sovrapponga al logo
+- il layout resti pulito
+- su mobile si veda bene
+
+==================================================
+OUTPUT
+==================================================
+
+Fammi vedere solo:
+- il valore modificato (margin-top / padding / gap)
+- il file/componente dove hai fatto il cambiamento

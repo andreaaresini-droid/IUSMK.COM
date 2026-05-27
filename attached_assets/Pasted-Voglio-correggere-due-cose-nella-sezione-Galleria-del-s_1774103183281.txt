@@ -1,0 +1,81 @@
+Voglio correggere due cose nella sezione Galleria del sito IUSMK, senza cambiare inutilmente lo stile generale.
+
+1) DASHBOARD ADMIN: FAR VEDERE I TASTI MODIFICA / ELIMINA FOTO
+Problema:
+nella dashboard admin della galleria, le foto ora si vedono, ma non si vedono bene oppure non compaiono i controlli per gestirle, in particolare i tasti per modificare o eliminare una foto.
+
+Cosa voglio:
+- rendere chiaramente visibili nella dashboard admin i controlli per ogni immagine
+- aggiungere o sistemare i pulsanti:
+  - Modifica
+  - Elimina
+- i pulsanti devono essere facili da usare anche da telefono
+- devono stare sopra la foto oppure in overlay visibile, oppure sotto la card, purché siano ben visibili
+- non devono uscire fuori dal riquadro
+- non devono essere nascosti da problemi di z-index, overflow, hover-only o responsive mobile
+- se ora compaiono solo su hover desktop, voglio che su mobile siano sempre visibili o accessibili con un layout adatto
+- il pulsante Elimina deve continuare a funzionare davvero
+- il pulsante Modifica deve permettere di modificare almeno categoria e didascalia/titolo della foto, e se già previsto anche l’immagine stessa
+- mantieni il design coerente con il pannello admin attuale
+
+Controlli da fare:
+- verifica problemi di CSS responsive
+- verifica problemi di overlay nascosti
+- verifica se i controlli esistono ma non si vedono per colori, dimensioni, posizionamento o overflow
+- verifica che su mobile i controlli non dipendano dall’hover
+- se necessario, riorganizza la card admin in modo pulito ma senza stravolgere il design
+
+2) GALLERIA PUBBLICA CLIENTE: RIQUADRI PIÙ PICCOLI + FOTO CLICCABILI
+Problema:
+nella parte visibile al cliente, nella sezione Galleria, le foto risultano troppo grandi. Voglio una griglia più compatta ed elegante.
+
+Cosa voglio:
+- riquadri delle foto più piccoli rispetto ad ora
+- una visualizzazione più ordinata e armoniosa, soprattutto da mobile
+- le foto devono essere cliccabili
+- quando il cliente clicca una foto, deve aprirsi una visualizzazione più grande della stessa immagine
+
+Implementa una soluzione elegante tipo:
+- lightbox
+oppure
+- modal fullscreen
+oppure
+- overlay con immagine ingrandita
+
+Requisiti per l’apertura foto:
+- click/tap sulla foto apre l’immagine grande
+- possibilità di chiudere facilmente
+- se possibile, supporta swipe o almeno frecce/controlli semplici per passare alle altre immagini
+- mantieni esperienza ottima su mobile
+- non rompere i filtri categoria già esistenti
+- mantieni il design premium e coerente con il sito
+
+Responsive richiesto:
+- su mobile: cards più piccole, ben spaziate, eleganti
+- su desktop: griglia proporzionata e più compatta rispetto ad ora
+- evita foto enormi che occupano troppo spazio verticale
+- mantieni comunque una buona qualità visiva
+
+Importante:
+- non cambiare inutilmente colori, font e stile generale
+- non rompere la logica attuale di caricamento immagini
+- non rompere i filtri categoria
+- modifica solo ciò che serve per migliorare admin e galleria pubblica
+- testa il risultato sia lato admin che lato cliente
+
+Dopo la modifica voglio che tu verifichi:
+1. lato admin:
+   - i pulsanti modifica/elimina sono visibili e usabili anche da telefono
+2. lato cliente:
+   - la griglia è più compatta
+   - le foto sono cliccabili
+   - si aprono ingrandite correttamente
+   - la chiusura funziona bene
+   - tutto resta responsive
+
+Alla fine fammi un riepilogo chiaro con:
+- cosa hai corretto nella dashboard admin
+- come hai reso visibili i controlli modifica/elimina
+- come hai ridotto la dimensione dei riquadri nella galleria pubblica
+- che sistema hai usato per l’ingrandimento immagini (lightbox/modal/overlay)
+- eventuali limiti residui

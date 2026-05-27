@@ -1,0 +1,35 @@
+Devi modificare SOLO il testo della biografia nella pagina “Chi è IUSMK”.
+
+NON modificare layout, colori, immagini o altre sezioni.
+
+1. SOSTITUISCI IL TESTO PRINCIPALE BIOGRAFIA CON QUESTO:
+
+Sono Giuseppe Musto, in arte IUSMK.  
+Mi definisco un barber artist.
+
+Lavoro il capello a 360°, sviluppando progetti che uniscono taglio, hair tattoo e hair color in un’unica visione.  
+Ogni lavoro nasce da uno studio preciso di forme, linee e proporzioni, con l’obiettivo di costruire risultati solidi, visivamente forti e distintivi.
+
+Il mio approccio è tecnico ma guidato da una direzione artistica chiara, influenzata dal mio background nel mondo del graffiti e del muralismo.  
+Questa esperienza ha definito il mio modo di leggere le superfici, lo spazio e la composizione, elementi che oggi porto nel mio lavoro sui capelli.
+
+Non seguo semplicemente le tendenze: le interpreto e le spingo oltre, trasformandole in qualcosa di personale e riconoscibile.  
+Presto grande attenzione al dettaglio, alla struttura e alla coerenza del risultato finale, mantenendo sempre un equilibrio tra estetica e identità.
+
+I miei lavori possono essere puliti o estremi, ma nascono sempre da una visione precisa e da un controllo tecnico rigoroso.
+
+Il mio obiettivo è portare il barbering verso una dimensione più contemporanea e visiva, dove tecnica e direzione artistica si incontrano per creare qualcosa che non passa inosservato.
+
+Voglio che tu, mentre scrolli, ti immedesimi. Che trovi ispirazione, domande, motivazione. Che possa sentire che anche il tuo percorso può essere unico, potente, diverso. Perché l'arte non è ciò che facciamo: è il modo in cui guardiamo ciò che ci circonda.
+
+2. SOSTITUISCI IL TESTO NEL RIQUADRO/CITAZIONE CON RIGA GIALLA LATERALE CON QUESTO:
+
+“Non mi interessa fare qualcosa di già visto.
+Ho bisogno di costruire qualcosa che abbia un senso, anche quando è estremo.
+L’immaginario è ciò che dà direzione a tutto il resto.”
+
+IMPORTANTE:
+- Mantieni le virgolette nella citazione.
+- Mantieni la riga gialla laterale.
+- Non cambiare font, dimensioni, colori o layout.
+- Non modificare footer, immagini, menu o altre pagine.

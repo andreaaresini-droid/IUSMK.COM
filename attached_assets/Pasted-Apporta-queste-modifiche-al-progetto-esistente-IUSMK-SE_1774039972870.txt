@@ -1,0 +1,217 @@
+Apporta queste modifiche al progetto esistente IUSMK SENZA cambiare branding, colori, font e stile generale del sito.
+
+ATTENZIONE:
+Voglio modifiche reali al sistema già esistente, non spiegazioni teoriche.
+
+==================================================
+1. RIMUOVERE LE SCRITTE SOVRAPPOSTE SUL VIDEO
+==================================================
+
+PROBLEMA
+Attualmente sul video compaiono scritte/watermark con nome/email che non mi piacciono.
+
+OBIETTIVO
+- rimuovere completamente tutte le scritte sovrapposte al video
+- il video deve restare pulito
+- non devono comparire watermark testuali in overlay
+- mantieni comunque il video visibile direttamente nel sito IUSMK
+
+AZIONI DA FARE
+- elimina ogni overlay testuale sopra il player
+- elimina watermark dinamici o statici
+- non lasciare tracce visive semi-trasparenti
+- non modificare il resto del layout del player
+
+==================================================
+2. UN SOLO DISPOSITIVO PER CODICE / ACCESSO BLOCCATO AL DEVICE
+==================================================
+
+PROBLEMA
+Ho provato ad accedere allo stesso corso con lo stesso codice da computer e da telefono e il sistema ha permesso l’accesso da entrambi.
+
+QUESTO NON VA BENE.
+
+NUOVA REGOLA
+- un codice, una volta attivato su un dispositivo, deve poter essere usato SOLO su quel dispositivo
+- se si prova ad accedere dallo stesso account/codice su un altro dispositivo, l’accesso deve essere bloccato
+- eccezione: questo comportamento può essere diverso solo se l’admin lo imposta nelle impostazioni del codice
+
+==================================================
+3. LOGICA CORRETTA DA IMPLEMENTARE
+==================================================
+
+Per ogni codice di accesso devi implementare una gestione dispositivo reale.
+
+A. ALLA CREAZIONE DEL CODICE
+Nelle impostazioni del codice aggiungi un parametro configurabile tipo:
+- numero massimo dispositivi consentiti
+
+Valori possibili:
+- 1 (default)
+- 2
+- 3
+oppure comunque un numero personalizzabile
+
+IMPORTANTE:
+- il default deve essere 1 dispositivo
+- quindi normalmente ogni codice funziona su un solo device
+
+B. ALLA PRIMA ATTIVAZIONE
+Quando l’utente inserisce il codice e lo attiva per la prima volta:
+- il sistema salva il dispositivo utilizzato
+- lega il codice a quel dispositivo
+- salva dati come:
+  - fingerprint dispositivo
+  - user agent
+  - browser
+  - eventuale ip
+  - timestamp attivazione
+
+C. AI SUCCESSIVI ACCESSI
+Quando l’utente prova a usare quel codice:
+- se entra dallo stesso dispositivo autorizzato → accesso consentito
+- se entra da un dispositivo diverso e il limite massimo è già raggiunto → accesso negato
+- mostra messaggio chiaro tipo:
+  “Questo codice è già attivo su un altro dispositivo”
+  oppure
+  “Accesso non consentito: limite dispositivi raggiunto”
+
+D. ECCEZIONE IMPOSTATA DALL’ADMIN
+Se nel codice l’admin ha impostato ad esempio 2 dispositivi consentiti:
+- il sistema deve permettere accesso fino a 2 device diversi
+- al terzo device deve bloccare
+
+==================================================
+4. ADMIN — MODIFICA IMPOSTAZIONI CODICE
+==================================================
+
+Nella sezione admin “Codici di Accesso”, nella creazione e modifica codice, aggiungi un campo chiaro tipo:
+- “Dispositivi consentiti”
+oppure
+- “Numero massimo dispositivi”
+
+REQUISITI:
+- deve essere modificabile dall’admin
+- default = 1
+- visibile sia in creazione che in modifica codice
+- salvato realmente nel database
+- usato davvero nella logica di accesso
+
+Facoltativo ma utile:
+- mostrare anche quanti dispositivi sono già stati usati per quel codice
+- ad esempio:
+  “1/1 dispositivi usati”
+  “1/2 dispositivi usati”
+
+==================================================
+5. GESTIONE DEVICE SESSIONS
+==================================================
+
+Devi usare davvero una logica coerente di tracciamento device, ad esempio con una tabella tipo:
+- DeviceSession
+oppure
+- AccessDevice
+
+Campi suggeriti:
+- id
+- accessCodeId
+- studentUserId
+- fingerprint
+- userAgent
+- ipAddress
+- firstSeenAt
+- lastSeenAt
+- isActive
+
+Quando uno studente entra:
+- verifica se il device corrente è già autorizzato
+- se sì, lascia entrare
+- se no, confronta quanti device autorizzati esistono già per quel codice
+- se il limite è superato, blocca
+
+==================================================
+6. COMPORTAMENTO DESIDERATO
+==================================================
+
+CASO 1
+- codice con limite dispositivi = 1
+- utente attiva il corso da telefono
+- poi prova da computer
+RISULTATO:
+- computer bloccato
+- telefono continua a funzionare
+
+CASO 2
+- codice con limite dispositivi = 2
+- utente attiva da telefono e computer
+RISULTATO:
+- entrambi funzionano
+- terzo dispositivo bloccato
+
+CASO 3
+- admin modifica un codice già esistente e porta il limite da 1 a 2
+RISULTATO:
+- il secondo dispositivo può essere autorizzato da quel momento in poi
+
+==================================================
+7. MESSAGGI CHIARI
+==================================================
+
+Se l’accesso viene negato per limite dispositivi:
+- mostra messaggio elegante e chiaro
+- niente errori tecnici
+- esempio:
+  “Questo accesso è già associato al numero massimo di dispositivi consentiti.”
+
+Se il device è autorizzato:
+- accesso normale al corso
+
+==================================================
+8. NON ROMPERE IL FLUSSO ATTUALE
+==================================================
+
+Mantieni intatto ciò che già ora funziona:
+- player interno al sito
+- corsi sbloccati
+- codici associati ai corsi
+- dashboard studente
+- admin panel
+
+Devi solo:
+- togliere le scritte sul video
+- aggiungere e far funzionare davvero il blocco per dispositivo
+
+==================================================
+9. TEST OBBLIGATORI
+==================================================
+
+TEST 1
+- crea codice con dispositivi consentiti = 1
+- attiva da telefono
+- prova da computer
+- il computer deve essere bloccato
+
+TEST 2
+- stesso codice, stesso telefono
+- deve continuare a funzionare
+
+TEST 3
+- crea codice con dispositivi consentiti = 2
+- attiva da telefono
+- attiva da computer
+- entrambi devono funzionare
+- prova da terzo dispositivo
+- il terzo deve essere bloccato
+
+TEST 4
+- verifica che nel player non compaiano più scritte sovrapposte
+
+==================================================
+10. IMPORTANTE
+==================================================
+
+- fai modifiche reali al codice esistente
+- non limitarti a descrivere
+- salva davvero il limite dispositivi nel database
+- usa davvero il controllo device lato server/app
+- mantieni il design attuale

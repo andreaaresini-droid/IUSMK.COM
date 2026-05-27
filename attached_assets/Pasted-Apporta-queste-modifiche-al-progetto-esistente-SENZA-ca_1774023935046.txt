@@ -1,0 +1,71 @@
+Apporta queste modifiche al progetto esistente SENZA cambiare stile generale, palette, layout principale e struttura del sito. Devi correggere funzionalità e aggiornare alcuni contenuti.
+
+1. FIX PULSANTE “NUOVO CORSO” NEL PANNELLO ADMIN
+- Quando nella dashboard admin clicco su “Nuovo Corso” attualmente non succede nulla
+- Correggi questa funzione realmente
+- Il pulsante deve aprire un form/modal/pagina funzionante per creare un nuovo corso
+- Il form deve permettere almeno di inserire:
+  - titolo corso
+  - descrizione
+  - livello
+  - prezzo
+  - stato (bozza/pubblicato)
+  - immagine copertina
+- Il salvataggio deve funzionare davvero nel sistema/database già esistente
+- Dopo il salvataggio, il nuovo corso deve comparire correttamente nella lista corsi admin
+- Se usi modal o drawer, deve aprirsi e chiudersi correttamente
+- Aggiungi anche validazione base dei campi
+- Verifica che anche modifica ed eliminazione continuino a funzionare
+
+2. ELIMINARE COMPLETAMENTE LE TESTIMONIANZE
+- Rimuovi dal sito pubblico tutta la sezione “Testimonianze”
+- Rimuovi dal footer/menu/eventuali link visibili lato utente legati alle testimonianze
+- Rimuovi anche dal pannello admin la voce “Testimonianze” nella sidebar
+- Se esistono componenti, query o sezioni dedicate, puliscile senza rompere il resto del sito
+- Non lasciare spazi vuoti o sezioni spezzate
+
+3. AGGIORNARE CONTATTI
+Sostituisci i dati attuali con questi, in tutte le parti del sito dove compaiono:
+
+- Email: iusmkbarber@gmail.com
+- Telefono / WhatsApp: +39 3393010246
+- Instagram: https://www.instagram.com/_iusmk_?igsh=cDFyejQ3djNqbnV1
+
+Se c’è un username visualizzato, usa:
+- @_iusmk_
+
+4. PAGINA CONTATTI – RIMUOVERE “PRENOTAZIONE APPUNTAMENTO”
+Nella pagina contatti:
+- elimina completamente la sezione “Prenotazione Appuntamento”
+- se è un’opzione dentro il menu a tendina “Oggetto”, rimuovila
+- se è presente come testo, pulsante, box o scelta predefinita, eliminala ovunque
+- lascia come opzioni del menu oggetto solo voci coerenti con il sito, ad esempio:
+  - Informazioni sul Corso
+  - Collaborazioni / Eventi
+  - Altro
+- imposta come default una voce neutra tipo “Seleziona un argomento” oppure “Informazioni sul Corso”
+
+5. RIQUADRO “RICHIESTE ACADEMY”
+Nel box “Richieste Academy” sostituisci completamente il testo attuale con questo testo esatto:
+
+“Interessato a uno dei miei corsi? Contattami tramite il form o whatsapp. Dopo aver confermato il tuo posto, riceverai un codice di accesso unico per sbloccare immediatamente i contenuti del corso.”
+
+- Mantieni lo stile grafico attuale
+- Correggi eventuali maiuscole/minuscole per coerenza visiva
+- Non aggiungere altro testo non richiesto
+
+6. CONTROLLO FINALE
+Verifica che:
+- il pulsante “Nuovo Corso” funzioni davvero
+- la sidebar admin non mostri più “Testimonianze”
+- sul sito pubblico non ci siano più sezioni testimonianze
+- nei contatti compaiano solo i nuovi dati corretti
+- “Prenotazione Appuntamento” non compaia più da nessuna parte
+- il box “Richieste Academy” mostri esattamente il nuovo testo
+- non venga alterato il resto del design
+
+Importante:
+- fai modifiche reali nei file del progetto esistente
+- non limitarti a descrivere le modifiche
+- se trovi dati mock hardcoded, aggiornali
+- se trovi bug di collegamento tra pulsante e modal/form, sistemali direttamente

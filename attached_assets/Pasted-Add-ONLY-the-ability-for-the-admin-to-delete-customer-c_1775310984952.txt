@@ -1,0 +1,91 @@
+Add ONLY the ability for the admin to delete customer chats.
+Do NOT change anything else that is already working.
+
+==================================================
+OBJECTIVE — ADD “DELETE CHAT” ACTION IN ADMIN CUSTOMER CHATS
+==================================================
+
+In the admin dashboard, inside the “Chat Clienti” section, add a clear action to delete a customer chat/conversation.
+
+Required behavior:
+1. Admin must be able to delete a chat from:
+   - the chat list row/card
+   OR
+   - inside the opened conversation view
+   OR both if clean
+2. Use an Italian label such as:
+   - “Elimina chat”
+   or a trash icon with tooltip/text
+3. Before deleting, show a confirmation dialog:
+   - “Vuoi eliminare questa chat?”
+   - buttons:
+     - “Annulla”
+     - “Conferma”
+4. After confirmation:
+   - delete the chat/conversation from the admin customer chat system
+   - remove it immediately from the visible chat list
+   - if that chat is currently open, close the detail panel and show the empty state
+5. Update unread counters/badges immediately after deletion
+
+==================================================
+IMPORTANT DATA RULE
+==================================================
+
+When deleting a chat:
+- delete the conversation and its messages ONLY if that is how the current chat model is designed
+OR
+- archive/hide it safely if hard delete would break references
+
+Best requirement:
+- use the safest existing approach already compatible with the current data structure
+- do NOT break notifications, unread counters, or other linked features
+
+If there are notification records linked to that chat:
+- either delete only the linked notification records safely
+- or detach them safely
+- but do NOT leave broken references
+
+==================================================
+UI / UX REQUIREMENTS
+==================================================
+
+1. Keep the current IUSMK admin dark style
+2. Make the delete action visible but not invasive
+3. Works on both desktop and mobile admin
+4. Do not clutter the interface
+5. If possible:
+   - add delete action in the opened chat header
+   - optional also in the chat list item menu
+
+==================================================
+SAFETY RULES
+==================================================
+
+- DO NOT break existing chat creation
+- DO NOT break message sending
+- DO NOT break notifications
+- DO NOT break “Apri chat” behavior
+- DO NOT break unread badge counts
+- DO NOT modify unrelated dashboard sections
+- DO NOT delete users/accounts, only the selected chat
+- Reuse existing chat/conversation model and routes where possible
+
+==================================================
+MANDATORY TESTS
+==================================================
+
+1. Admin opens “Chat Clienti”
+2. Admin deletes one existing chat
+3. Confirmation dialog appears correctly
+4. After confirm, chat disappears from list
+5. If deleted chat was open, the right panel resets correctly
+6. Unread counters update correctly
+7. Other chats remain untouched
+8. No unrelated data is broken
+9. Works correctly on mobile
+
+At the end, show me clearly:
+- which files you changed
+- whether deletion is hard delete or safe archive/hide
+- how linked notifications are handled
+- how unread counters are updated after deletion

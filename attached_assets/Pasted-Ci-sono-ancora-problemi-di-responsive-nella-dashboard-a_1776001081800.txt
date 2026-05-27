@@ -1,0 +1,262 @@
+Ci sono ancora problemi di responsive nella dashboard admin di IUSMK.
+
+Le sezioni che NON si vedono bene sono ancora:
+- Corsi
+- Galleria
+- Log conversazioni AI
+
+OBIETTIVO
+Voglio che queste pagine siano progettate bene e si vedano correttamente in tutti questi contesti:
+- desktop
+- browser mobile Safari
+- browser mobile Chrome
+- sito aggiunto alla Home / PWA / applicazione su iPhone
+
+IMPORTANTE
+Non voglio una toppa con overflow nascosto.
+Voglio che queste 3 sezioni vengano sistemate davvero, con layout responsive corretto, leggibile e pulito.
+
+==================================================
+1. SEZIONE CORSI — DA SISTEMARE COMPLETAMENTE
+==================================================
+
+PROBLEMA
+La sezione Corsi è ancora impostata come una tabella troppo larga per mobile.
+Su telefono il contenuto si comprime male e alcune colonne non si vedono bene.
+
+COSA VOGLIO
+Su desktop:
+- puoi mantenere una tabella/lista ricca se funziona bene
+
+Su mobile / Safari / Chrome mobile / PWA:
+- NON deve restare una tabella rigida da desktop
+- voglio una visualizzazione responsive vera, preferibilmente a card
+
+Per ogni corso su mobile voglio una card ben leggibile con:
+- immagine miniatura
+- nome corso
+- livello
+- prezzo
+- numero video/lezioni
+- stato
+- eventuali pulsanti azione
+
+Quindi:
+- desktop = tabella o lista strutturata
+- mobile = card verticali responsive
+
+REQUISITI TECNICI
+- nessuna colonna tagliata
+- nessuno scroll orizzontale per leggere i dati principali
+- titolo corso che va a capo bene oppure truncation elegante
+- badge stato leggibile
+- spaziatura corretta
+- immagine proporzionata
+- pulsanti non compressi
+
+==================================================
+2. SEZIONE GALLERIA — DA RIDISEGNARE RESPONSIVE
+==================================================
+
+PROBLEMA
+La sezione Galleria su telefono non è ancora corretta:
+- card troppo grandi o troppo strette
+- pulsanti compressi
+- intestazione con titolo + categorie + bottone rosso che non entra bene
+- layout non armonioso su mobile/PWA
+
+COSA VOGLIO
+
+HEADER GALLERIA
+Su desktop:
+- può restare orizzontale con titolo + filtri + bottone
+
+Su mobile:
+- deve diventare layout a blocchi
+- titolo su una riga
+- filtro categorie sotto oppure accanto solo se entra davvero
+- bottone “aggiungi immagine” sotto, a larghezza piena o ben adattato
+- nessun elemento deve uscire fuori schermo
+
+CARD GALLERIA
+Su desktop:
+- griglia multi-colonna elegante
+
+Su mobile:
+- griglia responsive vera
+- se 2 colonne risultano strette o scomode, usa 1 colonna
+- se 2 colonne funzionano bene, devono comunque rientrare perfettamente nello schermo
+- immagini visibili bene
+- badge categoria leggibile
+- titolo leggibile
+- pulsanti Modifica / Elimina ben visibili e cliccabili
+- niente bottoni tagliati o troppo stretti
+
+PULSANTI
+Su mobile i pulsanti devono:
+- andare su due righe se serve
+- oppure stare stacked verticalmente
+- oppure avere layout flessibile che non rompa la card
+
+Meglio un layout leggermente più alto ma leggibile, piuttosto che compresso.
+
+==================================================
+3. SEZIONE LOG CONVERSAZIONI AI — DA OTTIMIZZARE PER MOBILE
+==================================================
+
+PROBLEMA
+La pagina Log Conversazioni AI è ancora troppo densa per mobile:
+- filtri/tab troppo larghi
+- card log molto larghe
+- metadati in basso troppo compressi
+- testi lunghi che rischiano di allargare il contenitore
+
+COSA VOGLIO
+
+HEADER
+Su mobile:
+- titolo e sottotitolo ben leggibili
+- niente elementi troppo larghi
+
+FILTRO TAB
+Le tab:
+- Tutte
+- Risposte AI
+- Fallback
+
+su mobile devono:
+- andare a capo correttamente
+oppure
+- essere scrollabili orizzontalmente SOLO nella barra tab, non in tutta la pagina
+oppure
+- essere disposte in modo responsive senza rompere il layout
+
+CARD LOG
+Ogni conversazione su mobile deve essere leggibile come card verticale:
+- stato/icona
+- titolo o preview domanda
+- data/ora
+- messaggio utente
+- risposta AI
+- metadati in basso
+
+METADATI
+La riga con:
+- sessione
+- confidence
+- KB IDs
+non deve rompere il layout
+
+Su mobile voglio che:
+- vada a capo
+- sia divisa in blocchi
+- non allarghi la card
+- testi lunghi usino wrap corretto
+
+TESTI
+Assicurati che:
+- i testi lunghi vadano a capo
+- nessun contenuto forzi la card oltre la viewport
+- i blocchi grigi del messaggio siano fluidi
+
+==================================================
+4. REGOLE GLOBALI RESPONSIVE DA APPLICARE
+==================================================
+
+Controlla e correggi davvero questi punti:
+
+- nessun container principale deve superare max-width: 100%
+- tutti i flex item devono avere min-width: 0 dove serve
+- testi lunghi: overflow-wrap, word-break dove opportuno
+- immagini: max-width: 100%, height: auto
+- bottoni: devono potersi adattare al mobile
+- grid: colonne responsive vere
+- tabelle desktop non devono essere forzate su mobile
+- i contenuti admin devono avere padding mobile realistico
+- niente uso sbagliato di 100vw che crea overflow
+- niente elementi fixed/absolute che spingono il layout fuori viewport
+
+==================================================
+5. CHAT BUTTON E MANIGLIA LATERALE
+==================================================
+
+Controlla anche:
+- bottone chat rosso flottante
+- maniglia laterale grigia/destra
+
+Non devono:
+- coprire pulsanti importanti
+- far sembrare le card tagliate
+- dare fastidio alla lettura
+
+Se necessario:
+- riduci dimensione/offset su mobile
+- spostali rispettando la safe area
+- mantieni usabilità senza invadere i contenuti
+
+==================================================
+6. SAFARI / CHROME / PWA / DESKTOP
+==================================================
+
+Queste 3 sezioni devono funzionare bene in:
+- desktop
+- Safari iPhone
+- Chrome mobile
+- PWA iPhone da schermata Home
+
+Quindi testa davvero i breakpoint e correggi eventuali differenze dovute a:
+- safe area iPhone
+- viewport standalone PWA
+- comportamento Safari mobile
+- dimensioni notch/dynamic island
+
+==================================================
+7. APPROCCIO CORRETTO
+==================================================
+
+NON voglio che tu faccia solo piccoli fix CSS locali.
+
+Voglio che:
+- sezione Corsi abbia un vero layout mobile dedicato
+- sezione Galleria abbia un vero layout mobile dedicato
+- sezione Log Conversazioni AI abbia un vero layout mobile dedicato
+
+Desktop e mobile non devono essere uguali “compressi”.
+Devono essere adattati bene al dispositivo.
+
+==================================================
+8. TEST OBBLIGATORI
+==================================================
+
+Testa e conferma il risultato su:
+- Corsi desktop
+- Corsi mobile browser
+- Corsi PWA iPhone
+- Galleria desktop
+- Galleria mobile browser
+- Galleria PWA iPhone
+- Log Conversazioni AI desktop
+- Log Conversazioni AI mobile browser
+- Log Conversazioni AI PWA iPhone
+
+Per ogni pagina verifica:
+- nessun taglio laterale
+- nessun contenuto compresso male
+- nessun pulsante fuori schermo
+- leggibilità corretta
+- struttura ordinata
+
+==================================================
+9. OUTPUT FINALE
+==================================================
+
+Quando hai finito dimmi:
+1. problemi precisi trovati in ciascuna delle 3 sezioni
+2. file/componenti modificati
+3. cosa hai cambiato nella versione desktop
+4. cosa hai cambiato nella versione mobile
+5. conferma dei test su browser e PWA
+6. conferma che ora Corsi, Galleria e Log Conversazioni AI si vedono bene su desktop, Safari/Chrome mobile e app da schermata Home
+
+IMPORTANTE
+Correggi davvero il design responsive di queste 3 pagine. Non applicare solo overflow-x hidden o riduzioni casuali.

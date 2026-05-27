@@ -1,0 +1,188 @@
+Devo migliorare tutta la dashboard admin del sito IUSMK rendendo la gestione delle sezioni molto più comoda, veloce e professionale, sia da desktop sia da telefono.
+
+SEZIONI COINVOLTE
+- Acquisti
+- Account registrati
+- Chat clienti
+- Corsi
+- Codici di accesso
+- Codici sconto
+- Link pagamenti
+- Richieste di contatto
+
+OBIETTIVO GENERALE
+In ognuna di queste sezioni voglio aggiungere tutti gli strumenti utili per semplificare la ricerca, l’ordinamento, il filtraggio e la gestione dei dati, con UI pulita, perfettamente allineata e ottimizzata sia per mobile sia per desktop.
+
+FUNZIONI GENERALI DA AGGIUNGERE DOVE HA SENSO
+Per ogni sezione, valuta e implementa in modo intelligente:
+
+1. Barra di ricerca
+- cerca in tempo reale o con debounce
+- ricerca per i campi più utili della sezione
+- placeholder chiari e specifici
+- ricerca funzionante bene anche da mobile
+
+2. Ordinamento
+aggiungi ordinamenti utili come:
+- dal più recente al più vecchio
+- dal più vecchio al più recente
+- alfabetico A-Z / Z-A dove ha senso
+- importo maggiore/minore dove ha senso
+- stato
+- ultimo aggiornamento
+- ultimo messaggio/risposta dove ha senso
+
+3. Filtri
+aggiungi filtri coerenti con ogni sezione, ad esempio:
+- stato
+- attivo/inattivo
+- letto/non letto
+- completato/pending/revocato
+- con/senza risposta
+- con/senza acquisti
+- con/senza codici
+- con/senza pagamento
+- intervallo date
+- corso specifico
+- cliente specifico
+- categoria specifica se esiste
+
+4. Pulsante reset filtri
+- voglio un tasto chiaro per azzerare tutti i filtri
+
+5. Conteggi utili
+- mostra contatori intelligenti in alto quando ha senso
+- esempio: totale, attivi, revocati, non letti, completati, pending
+
+6. Layout responsive e ordinato
+- tutto deve essere perfettamente centrato e ben allineato
+- nessun elemento tagliato
+- nessun bottone troppo piccolo
+- nessuna tabella ingestibile su mobile
+- se necessario, usa card su mobile e tabella su desktop
+- spacing coerente
+- header sezione pulito
+- controlli filtri ben disposti sia da computer sia da telefono
+
+7. Performance
+- evita lag
+- evita refetch inutili
+- usa debounce nella ricerca
+- evita render infiniti
+- mantieni tutto fluido anche con tanti dati
+
+DETTAGLIO PER SEZIONE
+
+A) ACQUISTI
+Aggiungi:
+- ricerca per nome cliente
+- ricerca per email
+- ricerca per nome corso
+- filtro per stato (completato, pending, revocato se esiste)
+- filtro per data
+- ordinamento per data acquisto
+- ordinamento per importo
+- contatori utili (totale acquisti, completati, ricavi)
+- mobile layout perfetto
+
+B) ACCOUNT REGISTRATI
+Aggiungi:
+- ricerca per nome
+- ricerca per email
+- filtro per utenti con corsi / senza corsi
+- filtro per utenti con codici / senza codici
+- ordinamento per data registrazione
+- ordinamento alfabetico
+- eventuale filtro per utenti attivi/non attivi se esiste
+- mobile layout perfetto
+
+C) CHAT CLIENTI
+Aggiungi:
+- ricerca per nome cliente
+- ricerca per email
+- ricerca per testo messaggio se possibile
+- filtro non lette / lette
+- filtro aperte / chiuse / in attesa se esiste
+- ordinamento per ultimo messaggio
+- ordinamento per più recenti
+- badge e contatori utili
+- mobile layout perfetto
+
+D) CORSI
+Aggiungi:
+- ricerca per nome corso
+- filtro attivo/inattivo
+- filtro con payment link / senza payment link
+- ordinamento per data creazione
+- ordinamento alfabetico
+- filtro per corsi con contenuti / senza contenuti se possibile
+- mobile layout perfetto
+
+E) CODICI DI ACCESSO
+Aggiungi:
+- ricerca per codice
+- ricerca per cliente
+- ricerca per corso
+- filtro attivo/revocato/usato/non usato
+- ordinamento per data assegnazione
+- ordinamento per data attivazione
+- filtro per corso specifico
+- mobile layout perfetto
+
+F) CODICI SCONTO
+Aggiungi:
+- ricerca per nome/codice coupon
+- filtro attivo/non attivo
+- filtro inviato/non inviato
+- filtro per scadenza
+- ordinamento alfabetico
+- ordinamento per data creazione
+- ordinamento per utilizzi
+- mobile layout perfetto
+
+G) LINK PAGAMENTI
+Aggiungi:
+- ricerca per nome corso
+- ricerca per link
+- filtro attivo/non attivo
+- filtro con promo abilitata / non abilitata
+- ordinamento per data creazione o aggiornamento
+- mobile layout perfetto
+
+H) RICHIESTE DI CONTATTO
+Aggiungi:
+- ricerca per nome
+- ricerca per email
+- ricerca per contenuto messaggio
+- filtro lette/non lette
+- filtro risposte/non risposte
+- ordinamento per data arrivo
+- badge contatore non lette
+- mobile layout perfetto
+
+UI/UX
+- ogni sezione deve avere una barra controlli in alto molto chiara
+- su desktop possono stare in riga
+- su mobile devono impaginarsi bene a colonne senza rompersi
+- design coerente con lo stile IUSMK
+- tutto visivamente pulito, elegante, leggibile
+
+IMPORTANTISSIMO
+- non rompere logiche già esistenti
+- non rompere notifiche
+- non rompere acquisti
+- non rompere admin dettagli cliente
+- non rompere chat
+- non rompere corsi/codici
+- se una sezione oggi usa una tabella fragile, migliorala senza perdere dati
+
+DEBUG
+- controlla che ricerca e filtri funzionino davvero
+- controlla che su mobile non ci siano overflow, tagli, pulsanti fuori schermo
+- controlla che reset filtri e ordinamenti funzionino in ogni sezione
+
+Alla fine dimmi:
+1. quali file hai modificato
+2. che strumenti di ricerca/filtro hai aggiunto in ogni sezione
+3. come hai ottimizzato la versione mobile
+4. quali filtri/ordinamenti hai scelto per ogni pagina

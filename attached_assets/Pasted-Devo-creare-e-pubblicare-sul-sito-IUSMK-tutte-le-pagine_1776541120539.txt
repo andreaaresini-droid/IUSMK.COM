@@ -1,0 +1,273 @@
+Devo creare e pubblicare sul sito IUSMK tutte le pagine legali/informative necessarie, collegandole nel footer in fondo al sito insieme a “Privacy Policy” e “Termini e Condizioni”.
+
+OBIETTIVO
+Creare pagine reali, pulite, coerenti con lo stile IUSMK, ben leggibili sia da desktop sia da mobile, e linkarle nel footer del sito.
+
+DATI REALI DA USARE
+- Nome e cognome titolare/gestore: Giuseppe Musto
+- Email ufficiale: iusmkbarber@gmail.com
+- Instagram: usa l’account Instagram già presente nel sito IUSMK
+- Sede: non presente
+- Partita IVA: al momento non disponibile
+
+PAGINE DA CREARE
+1. Termini e Condizioni
+2. Informativa Privacy
+3. Cookie Policy
+4. Resi e Recesso
+5. Contatti / Informazioni legali
+6. FAQ
+
+REQUISITI IMPORTANTI
+- Non inventare dati non forniti
+- Se manca la sede, non inserirla
+- Se manca la P.IVA, non inserirla
+- Usa solo i dati reali indicati sopra
+- Mantieni i testi professionali, chiari, ordinati
+- Le pagine devono essere responsive e coerenti con lo stile del sito
+- Le pagine devono essere raggiungibili dal footer
+- Nel footer aggiungi i link a tutte queste pagine
+- Mantieni anche Privacy Policy e Termini e Condizioni nel footer
+- Se esistono già pagine vecchie o placeholder, aggiornale o sostituiscile correttamente
+
+TESTI DA INSERIRE
+
+====================================
+PAGINA 1 — TERMINI E CONDIZIONI
+====================================
+
+Titolo:
+Termini e Condizioni
+
+Testo:
+
+Ultimo aggiornamento: [inserisci la data attuale]
+
+Benvenuto su IUSMK. I presenti Termini e Condizioni disciplinano l’utilizzo del sito e l’acquisto dei corsi digitali offerti tramite la piattaforma.
+
+1. Titolare del sito
+Il sito IUSMK è gestito da Giuseppe Musto.
+Email di contatto: iusmkbarber@gmail.com
+Per assistenza relativa ai corsi e agli acquisti è possibile contattare Giuseppe ai recapiti indicati nella sezione Contatti.
+
+2. Oggetto del servizio
+IUSMK offre corsi digitali accessibili online. I corsi possono essere acquistati tramite i metodi di pagamento disponibili sul sito o tramite checkout Stripe collegato ai relativi link di pagamento.
+
+3. Registrazione account
+Per accedere ad alcune funzionalità del sito e ai contenuti acquistati può essere richiesta la creazione di un account personale. L’utente è responsabile della correttezza dei dati inseriti e della riservatezza delle proprie credenziali di accesso.
+
+4. Acquisto dei corsi
+L’acquisto di un corso si considera concluso al completamento del pagamento. Dopo il pagamento, l’utente riceverà le istruzioni per l’accesso al corso acquistato secondo le modalità previste dalla piattaforma.
+
+5. Prezzi
+I prezzi dei corsi sono indicati nelle relative pagine o nel checkout. Prima della conferma del pagamento, l’utente visualizza il prezzo complessivo applicabile.
+
+6. Modalità di accesso ai contenuti
+L’accesso ai corsi può avvenire tramite account utente e, se previsto dalla piattaforma, tramite codice di accesso o procedura di sblocco collegata all’acquisto o all’assegnazione del corso.
+
+7. Utilizzo consentito
+I contenuti dei corsi sono destinati esclusivamente all’uso personale dell’utente che li ha acquistati o ricevuti legittimamente. È vietata la diffusione non autorizzata dei contenuti, dei materiali didattici, dei video, delle immagini e dei codici di accesso.
+
+8. Modifiche e disponibilità del servizio
+IUSMK si impegna a mantenere il sito e i contenuti accessibili, salvo esigenze tecniche, manutenzione, aggiornamenti o cause non dipendenti dal gestore.
+
+9. Resi e diritto di recesso
+Le condizioni relative a resi, rimborsi e diritto di recesso sono disciplinate nella specifica pagina “Resi e Recesso”, che costituisce parte integrante dei presenti Termini.
+
+10. Assistenza
+Per informazioni, assistenza tecnica, richieste relative agli acquisti o ai corsi, l’utente può contattare IUSMK tramite i recapiti presenti nella sezione Contatti.
+
+11. Privacy e cookie
+Il trattamento dei dati personali è disciplinato dall’Informativa Privacy e dalla Cookie Policy disponibili sul sito.
+
+12. Legge applicabile
+I presenti Termini e Condizioni sono disciplinati dalla legge italiana, fatti salvi gli eventuali diritti inderogabili riconosciuti ai consumatori dalla normativa applicabile.
+
+====================================
+PAGINA 2 — RESI E RECESSO
+====================================
+
+Titolo:
+Resi e Recesso
+
+Testo:
+
+Ultimo aggiornamento: [inserisci la data attuale]
+
+Se acquisti un corso su IUSMK, puoi richiedere il recesso entro 14 giorni dall’acquisto, contattando Giuseppe tramite email all’indirizzo iusmkbarber@gmail.com.
+
+1. Termine per il recesso
+La richiesta di recesso deve essere inviata entro 14 giorni dalla data di acquisto del corso.
+
+2. Come richiedere il recesso
+Per esercitare il recesso, l’utente deve contattare Giuseppe indicando almeno:
+- nome e cognome
+- email usata per l’acquisto
+- corso acquistato
+- data di acquisto
+- richiesta di recesso
+
+3. Valutazione della richiesta
+Una volta ricevuta la richiesta, IUSMK verificherà i dati dell’acquisto e fornirà riscontro all’utente nel più breve tempo possibile.
+
+4. Rimborso
+Se la richiesta di recesso è accolta, il rimborso verrà effettuato con modalità compatibili con il metodo di pagamento utilizzato, salvo diversa comunicazione all’utente.
+
+5. Nota informativa
+Per IUSMK è prevista la possibilità di richiedere il recesso entro 14 giorni dall’acquisto contattando Giuseppe.
+
+====================================
+PAGINA 3 — INFORMATIVA PRIVACY
+====================================
+
+Titolo:
+Informativa Privacy
+
+Testo:
+
+Ultimo aggiornamento: [inserisci la data attuale]
+
+Ai sensi della normativa applicabile in materia di protezione dei dati personali, IUSMK informa gli utenti sulle modalità di trattamento dei dati raccolti tramite il sito.
+
+1. Titolare del trattamento
+Titolare del trattamento: Giuseppe Musto
+Email di contatto: iusmkbarber@gmail.com
+
+2. Dati trattati
+IUSMK può trattare i seguenti dati:
+- dati identificativi e di contatto inseriti in fase di registrazione o acquisto
+- dati necessari alla gestione dell’account
+- dati relativi agli acquisti dei corsi
+- dati inviati tramite moduli di contatto o chat
+- dati tecnici di navigazione
+
+3. Finalità del trattamento
+I dati sono trattati per:
+- consentire la registrazione e l’accesso al sito
+- gestire gli acquisti e l’erogazione dei corsi
+- fornire assistenza agli utenti
+- gestire richieste di contatto
+- adempiere a obblighi legali
+- migliorare il funzionamento del sito, nei limiti consentiti
+
+4. Base giuridica
+Il trattamento avviene, a seconda dei casi, per:
+- esecuzione di un contratto o di misure precontrattuali
+- adempimento di obblighi legali
+- consenso, quando richiesto
+- legittimo interesse, ove applicabile
+
+5. Modalità del trattamento
+I dati sono trattati con strumenti informatici e organizzativi idonei a garantirne la sicurezza, la riservatezza e l’integrità.
+
+6. Conservazione dei dati
+I dati sono conservati per il tempo necessario alle finalità per cui sono raccolti e per l’eventuale ulteriore periodo richiesto dalla legge o necessario alla tutela dei diritti del titolare.
+
+7. Comunicazione dei dati
+I dati possono essere comunicati a fornitori di servizi tecnici, strumenti di pagamento, hosting, assistenza e altri soggetti che trattano i dati per conto del titolare o come autonomi titolari, nei limiti necessari alla gestione del servizio.
+
+8. Diritti dell’interessato
+L’utente può esercitare i diritti previsti dalla normativa applicabile, tra cui accesso, rettifica, cancellazione, limitazione, opposizione e, ove previsto, portabilità dei dati, contattando il titolare ai recapiti indicati sopra.
+
+9. Cookie e strumenti di tracciamento
+Per informazioni sui cookie e sugli strumenti di tracciamento utilizzati dal sito, consulta la Cookie Policy.
+
+====================================
+PAGINA 4 — COOKIE POLICY
+====================================
+
+Titolo:
+Cookie Policy
+
+Testo:
+
+Ultimo aggiornamento: [inserisci la data attuale]
+
+Questa Cookie Policy descrive l’uso dei cookie e di eventuali strumenti di tracciamento utilizzati dal sito IUSMK.
+
+1. Cosa sono i cookie
+I cookie sono piccoli file che vengono salvati sul dispositivo dell’utente durante la navigazione e servono, a seconda dei casi, al funzionamento del sito, alla memorizzazione di preferenze, alla misurazione statistica o ad altre finalità.
+
+2. Tipologie di cookie
+Il sito può utilizzare:
+- cookie tecnici o strettamente necessari
+- cookie di preferenza
+- cookie statistici o analitici
+- eventuali cookie di profilazione o di terze parti, se presenti
+
+3. Gestione del consenso
+Per i cookie non tecnici, il consenso dell’utente deve essere raccolto secondo modalità conformi alla normativa applicabile. Il sito deve consentire all’utente di accettare, rifiutare o gestire le preferenze dei cookie.
+
+4. Come gestire i cookie
+L’utente può gestire le proprie preferenze tramite il banner o lo strumento di gestione dei cookie presente sul sito, oltre che tramite le impostazioni del browser.
+
+5. Cookie di terze parti
+Eventuali servizi di terze parti integrati nel sito possono installare propri cookie secondo le rispettive informative.
+
+====================================
+PAGINA 5 — CONTATTI / INFORMAZIONI LEGALI
+====================================
+
+Titolo:
+Contatti e Informazioni legali
+
+Testo:
+
+Per informazioni sui corsi, assistenza tecnica, acquisti, recesso o altre richieste, puoi contattare IUSMK ai seguenti recapiti:
+
+- Referente: Giuseppe Musto
+- Email: iusmkbarber@gmail.com
+- Instagram: usa e mostra l’account Instagram ufficiale già presente nel sito IUSMK
+
+Informazioni legali:
+- Titolare/gestore del sito: Giuseppe Musto
+- Sede: non disponibile
+- Partita IVA: al momento non disponibile
+
+====================================
+PAGINA 6 — FAQ
+====================================
+
+Titolo:
+FAQ
+
+Testo:
+
+1. Dove inserisco il coupon?
+Il coupon va inserito direttamente nel checkout Stripe, se il corso o il link di pagamento lo prevede.
+
+2. Posso chiedere il recesso?
+Sì, per IUSMK è possibile richiederlo entro 14 giorni dall’acquisto contattando Giuseppe via email all’indirizzo iusmkbarber@gmail.com.
+
+3. Quando ricevo l’accesso al corso?
+Dopo il completamento del pagamento e secondo la procedura prevista dal sito.
+
+4. Posso usare il coupon più di una volta?
+Dipende da come è stato configurato il coupon. Alcuni coupon possono avere un solo utilizzo, altri più utilizzi, oppure limiti specifici.
+
+5. Dove posso contattare IUSMK?
+Puoi scrivere a iusmkbarber@gmail.com oppure contattare l’account Instagram ufficiale del sito.
+
+FOOTER
+Nel footer del sito aggiungi o aggiorna i link a:
+- Termini e Condizioni
+- Informativa Privacy
+- Cookie Policy
+- Resi e Recesso
+- Contatti
+- FAQ
+
+REQUISITI TECNICI
+- crea route/pagine vere
+- collegale nel footer
+- responsive perfetto
+- stile coerente con il sito
+- testi leggibili e ordinati
+- non rompere il resto del sito
+- se esistono già privacy/termini, aggiornali con questi contenuti
+- usa l’account Instagram già configurato nel sito, senza inventarne uno nuovo
+
+Alla fine dimmi:
+1. quali file hai creato o modificato
+2. quali link hai aggiunto nel footer
+3. quali pagine esistevano già e quali hai creato da zero

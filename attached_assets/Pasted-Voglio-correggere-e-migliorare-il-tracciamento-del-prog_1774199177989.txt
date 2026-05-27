@@ -1,0 +1,95 @@
+Voglio correggere e migliorare il tracciamento del progresso nel Portale Studente del sito IUSMK.
+
+Problemi attuali:
+1. Voglio aggiungere una spunta verde vicino ai video/moduli che lo studente ha già completato o visto
+2. La percentuale di progresso del corso non avanza dopo che lo studente ha finito di guardare un video
+
+Obiettivo:
+fare in modo che il sistema tracci davvero i video completati dallo studente e aggiorni correttamente lo stato visivo e la percentuale del progresso del corso.
+
+Cosa voglio esattamente:
+
+1) SPUNTA VERDE SUI VIDEO GIÀ VISTI
+Nella lista dei moduli/video del corso, voglio che ogni video completato mostri chiaramente una spunta verde.
+Requisiti:
+- la spunta deve comparire accanto al titolo del video/modulo completato
+- deve essere ben visibile anche da telefono
+- deve essere coerente con lo stile attuale del portale
+- se il video non è completato, la spunta non deve esserci
+- se possibile, usa anche uno stato visivo aggiuntivo elegante tipo testo “Completato” o badge discreto, ma senza appesantire il design
+
+2) PROGRESSO REALE DEL CORSO
+La percentuale “Progresso” deve aggiornarsi davvero in base ai video completati.
+Regola desiderata:
+- se un corso ha 2 video e lo studente completa 1 video, progresso = 50%
+- se completa 2 video su 2, progresso = 100%
+- in generale: progresso = video completati / video totali del corso
+
+3) QUANDO UN VIDEO DEVE ESSERE CONSIDERATO COMPLETATO
+Analizza e implementa la logica migliore.
+Voglio che il video venga segnato come completato quando lo studente lo ha realmente guardato fino alla fine, oppure quando ha raggiunto una soglia alta tipo 90%–95% della durata.
+Quindi:
+- non segnare completato appena il video parte
+- non segnare completato troppo presto
+- usa una soglia realistica e affidabile
+
+4) SALVATAGGIO PERSISTENTE DEL PROGRESSO
+Molto importante:
+- il completamento deve essere salvato in modo persistente per ogni studente e per ogni video
+- se lo studente esce e rientra, la spunta verde deve restare
+- la percentuale deve restare corretta
+- il progresso non deve sparire dopo refresh o nuove modifiche al sito
+
+5) TRACCIAMENTO PER SINGOLO STUDENTE E SINGOLO VIDEO
+Controlla che il sistema salvi correttamente una relazione tipo:
+- studente
+- corso
+- video/modulo
+- stato completato/non completato
+- percentuale o timestamp utile, se necessario
+
+Se la struttura attuale non lo supporta, aggiungila in modo pulito e compatibile con il progetto.
+
+6) UI NEL PORTALE STUDENTE
+Aggiorna il frontend del portale studente:
+- lista moduli/video con stato completato ben visibile
+- spunta verde sul modulo completato
+- percentuale progresso aggiornata in tempo reale appena un video viene completato
+- barra progresso coerente con la percentuale reale
+- tutto responsive anche da telefono
+
+7) EDGE CASES IMPORTANTI
+Gestisci bene questi casi:
+- uno studente guarda metà video e poi esce → non deve risultare completato
+- uno studente guarda quasi tutto il video → può essere segnato completato se supera la soglia scelta
+- se uno studente rivede un video già completato, la spunta deve restare
+- se un corso ha più video, il progresso deve aggiornarsi correttamente per tutti
+- se ci sono corsi vecchi, non romperli
+- se ci sono video multipli nello stesso corso, il progresso deve funzionare per tutti i moduli
+
+8) TEST DA FARE
+Dopo la correzione testa davvero:
+- apri un corso con più moduli/video
+- completa un video
+- verifica comparsa spunta verde
+- verifica aggiornamento percentuale
+- ricarica la pagina
+- verifica che stato e progresso restino salvati
+- completa tutti i video
+- verifica progresso 100%
+
+9) VINCOLI IMPORTANTI
+- non cambiare inutilmente il design generale
+- mantieni lo stile del portale studente
+- modifica solo la logica e gli elementi UI necessari
+- aggiungi gestione errori e logging utile per capire:
+  - quando il video viene considerato completato
+  - cosa viene salvato
+  - come viene calcolato il progresso
+
+Alla fine fammi un riepilogo chiaro con:
+- come hai definito il completamento di un video
+- dove viene salvato il progresso
+- come viene calcolata la percentuale
+- come hai mostrato la spunta verde nel portale
+- eventuali limiti residui

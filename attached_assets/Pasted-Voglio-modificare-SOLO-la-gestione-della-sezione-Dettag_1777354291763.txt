@@ -1,0 +1,38 @@
+Voglio modificare SOLO la gestione della sezione “Dettagli corso per il cliente” dei corsi IUSMK.
+
+Nella dashboard admin, quando creo o modifico un corso, nella sezione “Dettagli corso per il cliente”, dove ora posso aggiungere immagini, devo poter aggiungere anche video.
+
+REQUISITI ADMIN:
+- Non rimuovere la possibilità di caricare immagini.
+- Aggiungi la possibilità di caricare video nella stessa area media dei dettagli corso.
+- Ogni elemento media deve distinguere il tipo: immagine o video.
+- I video caricati devono essere salvati e mostrati insieme alle immagini nei dettagli del corso.
+- La gestione deve funzionare sia in creazione corso sia in modifica corso.
+- Se esiste già una struttura per i media della galleria, riutilizzala dove possibile senza rompere nulla.
+- Non modificare altre sezioni del sito.
+
+COPERTINA VIDEO:
+- Per ogni video caricato nei dettagli corso, la copertina/anteprima deve mostrare automaticamente i primi 2 secondi del video in loop.
+- Non deve comparire lo schermo nero con solo il tasto play.
+- Il video-preview deve essere silenzioso, in autoplay, muted, loop e playsInline.
+- La preview deve caricarsi velocemente e non bloccare la pagina.
+
+LATO CLIENTE:
+- Nella pagina “Scopri il corso” / dettagli corso, le foto e i video inseriti in “Dettagli corso per il cliente” devono essere apribili come succede già nella galleria.
+- Cliccando su una foto deve aprirsi il viewer/lightbox full-screen.
+- Cliccando su un video deve aprirsi il viewer/lightbox full-screen con controlli video completi:
+  - play/pausa
+  - barra per andare avanti e indietro
+  - volume/muto
+  - possibilità di chiudere il viewer
+- Il comportamento deve essere uguale o molto simile a quello già presente nella galleria del sito.
+
+IMPORTANTE:
+- Non toccare la galleria esistente se funziona già.
+- Non cambiare grafica generale, colori, layout o funzioni non richieste.
+- Non rompere i corsi già pubblicati.
+- I corsi che hanno solo immagini devono continuare a funzionare come prima.
+- I nuovi corsi devono supportare immagini + video nella sezione dettagli cliente.
+- Verifica anche mobile e desktop.
+- Su mobile il viewer deve aprirsi bene, senza tagliare pulsanti o controlli.
+- Mantieni tutto coerente con lo stile IUSMK.

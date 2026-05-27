@@ -1,0 +1,143 @@
+L’assistente AI IUSMK continua ad andare sempre in fallback anche per domande che dovrebbero essere coperte dalla Knowledge Base, ad esempio:
+- "non riesco ad acquistare il corso"
+- "come sblocco il corso"
+- "dove trovo il codice"
+- "come contatto Giuseppe"
+
+Quindi il problema NON è la UI, ma la logica di recupero delle risposte dalla Knowledge Base.
+
+CORREGGI SOLO QUESTO SENZA TOCCARE LE ALTRE FUNZIONI DEL SITO.
+
+OBIETTIVO
+L’assistente deve riuscire a trovare e usare le voci esistenti della Knowledge Base anche quando l’utente scrive frasi naturali, varianti, errori leggeri o domande non identiche al titolo della voce.
+
+PROBLEMA ATTUALE DA RISOLVERE
+Attualmente il sistema probabilmente cerca solo match troppo rigidi o troppo letterali, quindi non trova voci già presenti e attiva sempre il fallback.
+
+IMPLEMENTA QUESTE CORREZIONI:
+
+1) MIGLIORA IL RECUPERO DELLE VOCI KB
+Quando arriva una domanda utente:
+- normalizza il testo
+- converti in minuscolo
+- rimuovi spazi doppi
+- rimuovi punteggiatura inutile
+- confronta la domanda con:
+  - title
+  - content
+  - keywords
+  - category
+- non usare solo match esatto
+- usa un ranking più intelligente basato su parole chiave contenute nella domanda
+
+2) MATCH SEMANTICO / LOOSE MATCH
+Se l’utente scrive:
+- "non riesco ad acquistare il corso"
+deve trovare voci tipo:
+- "Cosa si può acquistare sul sito"
+- "Cosa fare dopo l’acquisto di un corso"
+- "Come si sbloccano i corsi acquistati"
+- "Se non trovo il codice del corso"
+
+Se l’utente scrive:
+- "non trovo il codice"
+deve trovare:
+- "Dove trovare il codice del corso"
+- "Codici di accesso ai corsi"
+- "Se non trovo il codice del corso"
+
+Se l’utente scrive:
+- "voglio prenotare un taglio"
+deve trovare:
+- "Prenotazioni tagli"
+- "A cosa serve il sito IUSMK"
+
+Quindi voglio che il sistema lavori per similarità pratica e non solo per uguaglianza esatta.
+
+3) SEARCH SCORE MIGLIORATO
+Assegna punteggi ai record KB, ad esempio:
+- match nel title = punteggio alto
+- match nelle keywords = punteggio alto
+- match nel content = punteggio medio
+- match nella category = punteggio medio
+- più parole rilevanti combaciano, più il punteggio sale
+
+Poi:
+- ordina i risultati per score decrescente
+- prendi i migliori 3-5 record
+- usa quelli per costruire il contesto
+
+4) GESTIONE SINONIMI / INTENTI
+Aggiungi una mappa interna di sinonimi o intenti per aiutare il retrieval.
+
+Esempi:
+- acquistare, comprare, acquistato, ordine, ordinare -> acquisto corso
+- sbloccare, aprire, accedere, entrare -> accesso corso
+- codice, codice corso, codice accesso -> codice corso
+- contatto, chiamare, whatsapp, numero, parlare con giuseppe -> contatti
+- prenotare, appuntamento, booking -> prenotazioni
+- reso, rimborso, restituzione -> resi
+
+Usa questa mappa per espandere la query interna prima della ricerca nella KB.
+
+5) SOGLIA FALLBACK TROPPO RIGIDA
+Controlla la soglia di confidence:
+- se esistono record chiaramente pertinenti, NON attivare fallback
+- fallback solo quando davvero non esistono voci utili
+- meglio una risposta costruita da 2-3 voci pertinenti che fallback inutile
+
+6) DEBUG VISIBILE NEL BACKEND
+Aggiungi log lato server per capire perché va in fallback.
+Per ogni domanda logga:
+- domanda originale
+- domanda normalizzata
+- record KB trovati
+- punteggi assegnati
+- record finali usati
+- motivo del fallback se scatta
+
+Non mostrare questi log al cliente, solo lato admin/dev.
+
+7) TEST OBBLIGATORI
+Verifica che dopo la correzione l’assistente risponda correttamente almeno a queste domande:
+
+- "non riesco ad acquistare il corso"
+Risposta attesa: deve parlare dei videocorsi, del fatto che si acquistano sul sito, e se necessario indirizzare al supporto/contatto.
+
+- "come sblocco il corso"
+Risposta attesa: deve dire che dopo l’acquisto si sblocca con un codice ricevuto nelle notifiche del cliente.
+
+- "dove trovo il codice"
+Risposta attesa: deve dire che il codice si trova nella sezione notifiche dell’account cliente.
+
+- "posso prenotare un taglio?"
+Risposta attesa: deve dire che il sito non serve per prenotare tagli.
+
+- "come faccio per i resi?"
+Risposta attesa: deve dire che bisogna contattare direttamente Giuseppe e che decide lui caso per caso.
+
+- "come contatto giuseppe?"
+Risposta attesa: deve usare il numero 3393010246.
+
+- "non riesco ad entrare nel mio account"
+Risposta attesa: deve spiegare recupero password / controllo accesso.
+
+8) SYSTEM PROMPT
+Controlla che il system prompt NON blocchi troppo presto la risposta.
+Deve:
+- impedire invenzioni
+- ma consentire di rispondere usando più voci KB pertinenti
+- non deve richiedere una corrispondenza perfetta letterale
+
+9) NON TOCCARE
+- Non modificare la grafica della chat
+- Non modificare altre sezioni del sito
+- Non cambiare la dashboard se non per eventuali log tecnici
+- Non rompere il salvataggio delle domande senza risposta
+
+10) RISULTATO FINALE
+Voglio che l’assistente:
+- usi davvero la Knowledge Base già presente
+- smetta di andare in fallback per domande semplici e coperte
+- continui a usare fallback solo quando davvero non ha dati sufficienti
+- risponda in modo naturale, chiaro e coerente con le voci KB

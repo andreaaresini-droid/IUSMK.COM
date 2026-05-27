@@ -1,0 +1,161 @@
+C’è ancora un problema nel sistema notifiche di IUSMK:
+
+PROBLEMA
+Quando dall’admin invio una notifica con un video allegato, il cliente riceve la notifica ma NON riesce a vedere il video.
+
+OBIETTIVO
+Voglio che, quando invio una notifica con video dal pannello admin, il cliente possa:
+1. ricevere la notifica push
+2. aprire la notifica dal sito/app
+3. vedere correttamente il video allegato dentro la notifica o nella schermata di dettaglio della notifica
+
+IMPORTANTE
+So già che il video normalmente non viene riprodotto dentro la push di sistema del browser.
+Quindi NON voglio che il video venga riprodotto dentro la notifica push.
+Voglio invece che:
+- la push arrivi correttamente
+- cliccando la push si apra la notifica giusta
+- dentro il sito/app il cliente possa vedere il video senza errori
+
+COSA DEVI CONTROLLARE E CORREGGERE
+
+1. Verifica upload e salvataggio del video
+Controlla che quando l’admin allega un video:
+- il file venga caricato davvero
+- venga salvato in modo persistente
+- venga generato un URL valido e accessibile
+- il campo videoUrl venga salvato correttamente nella notifica nel database
+- il file non finisca in un path temporaneo o privato non accessibile dal client
+
+2. Verifica formato e accessibilità
+Controlla che:
+- il video sia servito con un URL pubblico corretto
+- il server restituisca status 200
+- il content-type sia corretto, ad esempio video/mp4, video/webm ecc.
+- non ci siano errori di permessi, auth o CORS
+- il file non venga bloccato perché servito da una route protetta non compatibile con il player frontend
+
+3. Verifica salvataggio dati notifica
+Nel record della notifica voglio almeno:
+- title
+- body/message
+- type
+- imageUrl opzionale
+- videoUrl opzionale
+- linkUrl opzionale
+- createdAt
+- recipientUserId
+
+Se videoUrl non viene salvato oppure viene salvato male, correggilo.
+
+4. Rendering lato cliente
+Nel centro notifiche lato cliente, e anche nella pagina di dettaglio notifica se esiste, aggiungi la gestione completa dei video.
+
+Quando una notifica contiene videoUrl:
+- mostra un player video HTML5
+- mostra controls
+- mostra una mini anteprima chiara
+- permetti play/pause
+- fai il render responsive anche su mobile/PWA
+- se il browser non supporta l’anteprima automatica, mostra comunque il player cliccabile
+
+Usa una struttura tipo:
+- titolo notifica
+- testo notifica
+- eventuale immagine
+- eventuale player video
+- data
+- pulsante apri dettaglio se serve
+
+5. Click dalla push
+Quando il cliente clicca sulla push di una notifica con video:
+- deve aprirsi direttamente la notifica corretta
+oppure
+- deve aprirsi il centro notifiche con la notifica evidenziata
+
+L’importante è che il cliente arrivi facilmente al contenuto video.
+
+6. UI cliente
+Se una notifica contiene un video, deve essere evidente.
+Aggiungi ad esempio:
+- badge "Video"
+- mini etichetta "Contenuto video"
+- eventuale icona play
+
+Così il cliente capisce subito che la notifica contiene un video.
+
+7. Fallback se il video non può essere mostrato inline
+Se per qualche motivo il video non può essere riprodotto inline:
+- mostra un pulsante chiaro tipo "Apri video"
+- aprilo in una pagina/modal dedicata
+- ma NON lasciare la notifica senza nulla
+
+8. Compatibilità mobile / PWA
+Controlla che il video sia visibile anche:
+- da telefono
+- da sito aggiunto alla home
+- da PWA
+- da Safari/Chrome mobile se possibile
+
+Il player deve essere responsive e non rompere il layout.
+
+9. Logging e debug
+Aggiungi log per capire dove fallisce:
+- upload video completato
+- URL video generato
+- videoUrl salvato nel database
+- notifica letta dal client
+- componente video renderizzato
+- eventuale errore caricamento media
+
+Se il video non si carica, logga l’errore reale.
+
+10. Test obbligatori
+Esegui questi test veri:
+
+TEST 1
+- admin invia notifica con video
+- la notifica viene salvata con videoUrl corretto
+
+TEST 2
+- il cliente riceve la push
+- clicca la push
+- si apre la notifica corretta
+
+TEST 3
+- nella notifica il video si vede con player funzionante
+
+TEST 4
+- prova da mobile/PWA
+- il video è visibile e riproducibile
+
+TEST 5
+- se il browser non supporta la preview ideale, compare almeno un pulsante “Apri video”
+
+11. Se il problema è nella UI admin
+Se oggi il video viene solo caricato ma non viene davvero associato alla notifica finale inviata al cliente:
+- correggi il form admin
+- correggi il submit
+- correggi il payload backend
+- correggi il salvataggio nel db
+
+12. Se il problema è nel frontend cliente
+Se il record notifica contiene davvero videoUrl ma il client non lo mostra:
+- aggiorna il componente NotificationItem / NotificationCard / NotificationDetail
+- aggiungi rendering condizionale del video
+- usa un tag <video> con source corretto
+- gestisci errori di caricamento in modo visibile
+
+RISULTATO FINALE CHE VOGLIO
+Quando mando una notifica con video:
+- il cliente riceve la push
+- apre la notifica
+- vede il video dentro il sito/app senza problemi
+
+OUTPUT FINALE
+Alla fine dimmi:
+1. qual era il problema preciso
+2. quali file hai modificato
+3. come hai corretto upload/salvataggio/rendering
+4. se il video ora si vede nel centro notifiche cliente
+5. test eseguiti e risultato

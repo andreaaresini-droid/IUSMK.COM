@@ -1,0 +1,218 @@
+Correggi in modo reale il progetto esistente IUSMK SENZA cambiare branding, grafica, colori, font o layout generale. Devi risolvere 3 bug funzionali reali del sistema.
+
+IMPORTANTE:
+- non descrivere soltanto cosa faresti
+- modifica davvero codice, endpoint, query, storage e relazioni
+- testa i flussi fino a renderli funzionanti davvero
+
+==================================================
+BUG 1 — ERRORE ELIMINAZIONE CODICE
+==================================================
+
+PROBLEMA
+Quando provo a eliminare un codice dalla sezione admin “Codici di Accesso”, il sistema restituisce errore.
+
+Dagli screenshot si vede un errore server 500 sull’endpoint di eliminazione codice.
+
+OBIETTIVO
+Far funzionare davvero il tasto “Elimina” del codice.
+
+DEVI CONTROLLARE E CORREGGERE:
+
+1. endpoint API di eliminazione codice
+- verifica la route usata dal frontend
+- verifica che il metodo DELETE sia gestito correttamente
+- verifica che l’id o il codice passato al backend sia quello giusto
+
+2. relazioni database collegate al codice
+- il codice potrebbe essere collegato a:
+  - access activations
+  - student enrollments / course access
+  - bound user
+  - sessioni dispositivo
+- prima di eliminare il codice, gestisci correttamente i record collegati
+
+3. comportamento corretto
+Quando elimino un codice:
+- chiedi conferma
+- elimina davvero il codice dal database
+- elimina o aggiorna in modo sicuro le relazioni collegate
+- aggiorna subito la UI admin
+- quel codice non deve più essere utilizzabile
+- se il codice era legato a un corso studente, il sistema non deve rompersi
+
+4. se esistono vincoli FK
+- correggi la logica con delete cascade, soft cleanup o transaction sicura
+- evita errori 500
+
+==================================================
+BUG 2 — ERRORE ELIMINAZIONE CORSO
+==================================================
+
+PROBLEMA
+Quando provo a eliminare un corso dalla sezione admin “Corsi”, il sistema restituisce errore 500.
+
+OBIETTIVO
+Far funzionare davvero il tasto elimina corso.
+
+DEVI CONTROLLARE E CORREGGERE:
+
+1. endpoint API di eliminazione corso
+- verifica route
+- verifica parametri
+- verifica metodo DELETE
+- verifica che il frontend stia inviando l’id corretto
+
+2. relazioni collegate al corso
+Il corso può essere collegato a:
+- codici di accesso
+- student enrollments / accessi studenti
+- video asset
+- moduli corso
+- cover image
+- record dashboard
+
+Devi gestire l’eliminazione in modo robusto.
+
+3. comportamento desiderato
+Quando elimino un corso:
+- mostra conferma
+- se esistono relazioni, scegli una logica robusta:
+
+OPZIONE CONSIGLIATA:
+- elimina prima in modo sicuro:
+  - codici associati
+  - enrollments/accessi associati
+  - eventuali moduli o record dipendenti
+- poi elimina il corso
+- se esistono file storage collegati, elimina anche quelli o scollegali correttamente
+
+oppure, se preferisci maggiore sicurezza:
+- blocca l’eliminazione con messaggio chiaro se esistono dipendenze
+MA in questo caso il bottone deve restituire un errore leggibile, non un 500 server
+
+4. niente errori server
+- niente crash
+- niente record orfani
+- niente UI bloccata
+
+==================================================
+BUG 3 — VIDEO “NON DISPONIBILE” ANCHE SE CARICATO
+==================================================
+
+PROBLEMA
+Quando entro nel corso con codice valido, il corso appare in dashboard ma il player/video dice:
+“Video non ancora disponibile”
+anche se il video è stato caricato.
+
+Quindi il caricamento video non è collegato correttamente al corso letto dalla dashboard studente.
+
+OBIETTIVO
+Fare in modo che il video caricato dall’admin sia davvero visibile allo studente autorizzato.
+
+DEVI CONTROLLARE E CORREGGERE:
+
+1. salvataggio upload video
+- verifica dove viene salvato il file video
+- verifica che il path/url venga scritto davvero nel record del corso o del modulo
+- verifica che non venga perso durante create/update
+
+2. lettura dati corso lato studente
+- controlla quale campo il frontend usa per capire se il video esiste
+- potrebbe aspettarsi ad esempio:
+  - videoUrl
+  - video_path
+  - streamUrl
+  - assetUrl
+  - module.videoUrl
+- allinea backend e frontend sullo stesso campo reale
+
+3. se esiste distinzione corso/moduli
+- se il video è caricato su modulo e non sul corso principale, fai in modo che la dashboard studente lo legga correttamente
+- se il corso ha moduli, mostra i moduli disponibili invece di dire “video non disponibile”
+- se per ora c’è un solo video principale, collega quel video direttamente al corso mostrato allo studente
+
+4. verifica storage/file serving
+- controlla che il file video esista davvero nello storage
+- controlla che l’URL restituito sia valido e accessibile
+- controlla che non ci siano problemi di permessi/path
+- se usi upload locale, assicurati che la cartella sia servita dal server
+- se usi Supabase/Firebase/Cloudinary/altro, assicurati che l’URL sia corretto e non nullo
+
+5. dashboard studente
+Quando lo studente apre un corso sbloccato:
+- se il video esiste, deve comparire davvero il player o il contenuto disponibile
+- non deve comparire “video non disponibile”
+- se ci sono moduli, il pannello laterale deve mostrare i moduli reali
+- se non ci sono moduli ma c’è un video principale, mostra il video principale
+
+6. banner messaggio
+Mostra “video non disponibile” solo se davvero nel database non esiste nessun file video associato al corso/modulo
+
+==================================================
+CONTROLLO AGGIUNTIVO — CONSISTENZA TRA ADMIN E STUDENTE
+==================================================
+
+Verifica tutto il flusso:
+
+A. ADMIN
+- crea corso
+- carica copertina
+- carica video
+- salva corso
+
+B. CODICE
+- genera codice per quel corso
+- assegna nome/email
+- salva codice
+
+C. STUDENTE
+- inserisce codice
+- sblocca corso
+- entra in dashboard
+- vede corso sbloccato
+- apre corso
+- vede il video realmente caricato
+
+Se uno di questi passaggi è scollegato, correggilo davvero.
+
+==================================================
+TEST OBBLIGATORI
+==================================================
+
+TEST 1 — ELIMINA CODICE
+- crea un codice test
+- eliminalo
+- verifica che sparisca dalla lista
+- verifica che non generi errore 500
+- verifica che non sia più utilizzabile
+
+TEST 2 — ELIMINA CORSO
+- crea un corso test
+- eliminalo
+- verifica che sparisca dalla lista
+- verifica che non generi errore 500
+
+TEST 3 — VIDEO CORSO
+- crea/modifica un corso
+- carica davvero un video
+- genera codice per quel corso
+- attiva il codice da studente
+- entra nella dashboard studente
+- apri il corso
+- verifica che il video venga mostrato davvero e non appaia “video non disponibile”
+
+TEST 4 — RELAZIONI
+- verifica che eliminare un codice non rompa corsi o dashboard
+- verifica che eliminare un corso gestisca bene codici/accessi/video associati
+
+==================================================
+IMPORTANTE
+==================================================
+
+- fai modifiche reali al codice esistente
+- non limitarti a spiegare
+- correggi sia backend sia frontend se necessario
+- se serve usa transaction o cleanup relazionale
+- evita errori 500
+- mantieni il design attuale

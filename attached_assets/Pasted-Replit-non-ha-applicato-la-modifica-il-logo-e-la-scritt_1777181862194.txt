@@ -1,0 +1,74 @@
+Replit non ha applicato la modifica: il logo e la scritta nella schermata iniziale sono rimasti uguali.
+
+Devi intervenire direttamente sul componente/CSS reale dell’intro iniziale, non solo su classi generiche.
+
+OBIETTIVO:
+Modificare SOLO la schermata prima del video, quella con:
+- logo IUSMK centrale
+- scritta “TOCCA PER ENTRARE NEL MONDO DI IUSMK”
+
+NON modificare il video intro e NON modificare il resto del sito.
+
+MODIFICHE OBBLIGATORIE:
+
+1. LOGO INTRO:
+- Trova l’elemento immagine/logo usato nella schermata iniziale prima del click.
+- Aumenta concretamente la sua dimensione.
+- Su mobile deve essere almeno 2 volte più grande rispetto ad ora.
+- Imposta una dimensione esplicita, non solo generica.
+
+Esempio:
+width: clamp(120px, 28vw, 220px);
+height: auto;
+
+Se il logo è gestito con classi Tailwind, sostituisci le classi attuali con qualcosa tipo:
+w-[120px] sm:w-[150px] md:w-[180px]
+
+IMPORTANTE:
+Il logo attualmente è troppo piccolo. Deve diventare chiaramente più visibile.
+
+2. SCRITTA ROSSA:
+- Trova il testo “TOCCA PER ENTRARE NEL MONDO DI IUSMK”.
+- Rendilo più luminoso e leggibile.
+- Aumenta leggermente il rosso.
+- Aggiungi glow visibile ma elegante.
+
+Esempio CSS:
+color: #ff1f1f;
+text-shadow:
+  0 0 6px rgba(255, 0, 0, 0.75),
+  0 0 14px rgba(255, 0, 0, 0.45);
+
+3. VISIBILITÀ:
+- La scritta deve essere più leggibile sullo sfondo scuro.
+- Non deve rimanere opaca come ora.
+- Se esiste opacity bassa sul testo, aumentala a 1.
+- Se il parent ha opacity o filtro scuro che abbassa anche logo/testo, correggilo separando overlay e contenuti.
+
+4. CONTROLLA IL CODICE:
+- Cerca nel progetto parole come:
+  “TOCCA PER ENTRARE”
+  “tocca per entrare”
+  “intro”
+  “IntroOverlay”
+  “Enter”
+  “IUSMK”
+- Applica la modifica nel file giusto.
+- Non creare un nuovo componente duplicato se esiste già quello attivo.
+
+5. NON MODIFICARE:
+- video intro
+- click sul tasto
+- audio
+- homepage
+- login
+- corsi
+- admin
+- chat
+- altre funzioni
+
+RISULTATO FINALE:
+Quando apro il sito da telefono, prima del video devo vedere:
+- logo IUSMK molto più grande e visibile
+- scritta rossa più luminosa e leggibile
+- stesso sfondo e stesso comportamento di prima

@@ -1,0 +1,76 @@
+Devo migliorare la visualizzazione dei video nella galleria pubblica del sito IUSMK.
+
+Ora i video si vedono, ma nella griglia appare un riquadro vuoto con il tasto play centrale. Non va bene.
+
+OBIETTIVO:
+Nella griglia della galleria, ogni video deve mostrare automaticamente un’anteprima animata in loop dei primi 2 secondi del video, invece del box vuoto con play.
+
+ISTRUZIONI:
+
+1. ANTEPRIMA VIDEO IN GRIGLIA:
+- Per ogni elemento video nella galleria, mostra il video stesso come preview.
+- Deve partire automaticamente in muted.
+- Deve mostrare solo i primi 2 secondi.
+- Deve andare in loop continuo sui primi 2 secondi.
+- Deve essere fluido e leggero.
+
+2. COMPORTAMENTO PREVIEW:
+- autoplay attivo
+- muted obbligatorio
+- playsInline obbligatorio
+- loop gestito manualmente sui primi 2 secondi
+- controls disattivati
+- preload="metadata" oppure preload="auto" solo per i primi video visibili
+
+3. LOOP SOLO PRIMI 2 SECONDI:
+Implementa una logica tipo:
+- quando il video parte, currentTime = 0
+- durante timeupdate, se currentTime >= 2, riportalo a 0 e continua play
+- il video non deve riprodurre tutto nella griglia
+- deve fare loop solo 0s → 2s
+
+4. PERFORMANCE:
+- Non caricare tutti i video pesanti insieme.
+- Per i primi 4/6 elementi visibili puoi usare preload="metadata" o "auto".
+- Per gli altri usa lazy loading / IntersectionObserver.
+- La preview deve partire solo quando il video è visibile nello schermo.
+- Quando il video esce dallo schermo, mettilo in pausa.
+- Quando rientra nello schermo, riprende il loop.
+
+5. UI:
+- Rimuovi il grande tasto play centrale dai riquadri della griglia.
+- Puoi lasciare una piccola etichetta “VIDEO” in alto a sinistra.
+- Il riquadro non deve più sembrare vuoto.
+- Il video deve riempire il box:
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+
+6. CLICK:
+- Quando l’utente clicca sul video nella griglia, deve aprirsi il video completo come già succede ora.
+- Nel dettaglio/modal il video completo deve partire normalmente o essere riproducibile completo.
+- La logica del loop dei primi 2 secondi deve valere SOLO nella griglia, non nel modal/dettaglio.
+
+7. FALLBACK:
+- Se il browser blocca autoplay, mostra almeno il poster/thumbnail del video.
+- Se non esiste poster, mostra il primo frame del video.
+- Non mostrare mai un riquadro vuoto.
+
+8. MOBILE:
+- Deve funzionare bene su iPhone Safari e Android.
+- Usa muted + playsInline per permettere autoplay mobile.
+- Evita audio nelle preview della griglia.
+
+9. NON MODIFICARE:
+- immagini della galleria
+- categorie
+- admin
+- intro video
+- homepage
+- login
+- corsi
+- chat
+- pagamenti
+
+RISULTATO FINALE:
+Nella galleria pubblica, le foto restano come ora, mentre i video mostrano automaticamente una preview animata in loop dei primi 2 secondi, senza riquadro vuoto e senza grande tasto play centrale.

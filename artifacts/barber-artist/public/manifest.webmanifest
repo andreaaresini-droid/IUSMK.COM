@@ -1,0 +1,24 @@
+{
+  "name": "IUSMK — Barber Artist",
+  "short_name": "IUSMK",
+  "description": "IUSMK Barber Artist. Corsi professionali di barberia e hair art. Scopri tecniche avanzate, formazione e stile.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/images/iusmk-app-icon.png?v=2",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/iusmk-app-icon.png?v=2",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

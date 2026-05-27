@@ -1,0 +1,14 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "TBYv9lmn8XTGv5Wlo6t0T"
+uri = "file://artifacts/barber-artist/public/images/iusmk-google-preview.png"
+type = "image"
+title = "Preview Google / Social (1200×630)"
+
+[[outputs]]
+id = "Xrj-n8dTkgRWbfS7z0OVt"
+uri = "file://artifacts/barber-artist/public/images/iusmk-app-icon.png"
+type = "image"
+title = "Icona App (512×512)"

@@ -1,0 +1,59 @@
+Devo correggere un ultimo problema nel sito IUSMK.
+
+Situazione attuale:
+- quando un cliente inserisce correttamente il codice, il corso si sblocca e lato cliente funziona
+- però nell’admin, nella sezione “Account registrati” > dettagli cliente > tab “Corsi”, il corso sbloccato non compare
+- quindi la dashboard admin non si aggiorna con i corsi realmente sbloccati dal cliente
+
+Comportamento corretto richiesto:
+1. Quando un cliente sblocca correttamente un corso tramite codice:
+   - il corso deve comparire subito anche lato admin
+   - precisamente in:
+     Admin > Account registrati > Dettagli cliente > tab “Corsi”
+2. La sezione “Corsi” dell’admin deve mostrare tutti i corsi realmente attivi/sbloccati per quel cliente
+3. Non deve dipendere solo da acquisti Stripe
+4. Deve includere anche i corsi sbloccati manualmente con codice
+
+Cosa devi controllare e correggere:
+A. Backend / database
+- verifica quale tabella / relazione usa l’admin per leggere i corsi del cliente
+- verifica quale tabella / relazione viene aggiornata quando il cliente sblocca il corso con codice
+- probabilmente oggi sono due flussi separati
+- unifica la logica in modo che lo sblocco codice aggiorni anche i dati usati dall’admin
+
+B. Logica corretta
+Quando il cliente attiva un codice valido:
+1. valida codice
+2. trova corso
+3. trova utente
+4. segna codice come usato/attivo
+5. assegna corso all’utente
+6. aggiorna anche il record/relazione che alimenta l’admin tab “Corsi”
+7. così il corso compare sia:
+   - in “I miei corsi” lato cliente
+   - sia nell’admin > dettagli cliente > “Corsi”
+
+C. Frontend admin
+- fai refetch/refresh corretto della tab “Corsi”
+- assicurati che non mostri solo acquisti ma tutti i corsi attivi del cliente
+- se serve cambia etichetta/logica da “corsi acquistati” a “corsi attivi” o equivalente
+
+D. Debug
+Aggiungi log chiari:
+- [UNLOCK] course assigned to user
+- [UNLOCK] admin-course-link created
+- [ADMIN COURSES] fetched customer active courses
+- [ADMIN COURSES ERROR] ...
+
+E. Importante
+- non rompere:
+  - sblocco con codice
+  - i miei corsi
+  - notifiche
+  - admin account registrati
+  - pagamenti Stripe
+
+Alla fine dimmi:
+1. quali file hai modificato
+2. qual era il motivo per cui l’admin non vedeva il corso
+3. come hai fatto in modo che i corsi sbloccati con codice compaiano anche nella tab “Corsi” del cliente nell’admin

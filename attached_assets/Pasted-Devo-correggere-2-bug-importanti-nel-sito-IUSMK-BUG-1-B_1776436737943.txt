@@ -1,0 +1,89 @@
+Devo correggere 2 bug importanti nel sito IUSMK.
+
+BUG 1 — Bottone “Apri contenuto” nella notifica
+Situazione attuale:
+- quando acquisto un corso, nella notifica appare il bottone “Apri contenuto”
+- cliccandolo non mi porta dove deve
+- mi rimanda al centro notifiche invece che alla pagina corretta
+
+Comportamento corretto richiesto:
+1. Se il corso acquistato NON è ancora sbloccato con codice:
+   - il bottone della notifica NON deve aprire i contenuti
+   - deve portare direttamente alla pagina Academy del corso corretto, dove posso inserire il codice
+2. Se il corso è GIÀ sbloccato:
+   - il bottone deve aprire direttamente la pagina contenuti del corso
+3. Quindi il bottone deve avere una logica condizionale:
+   - locked -> Academy / unlock page del corso corretto
+   - unlocked -> content page del corso corretto
+4. Non deve mai rimandare genericamente al centro notifiche
+
+Aggiungi log:
+- [NOTIFICATION CTA] clicked
+- [NOTIFICATION CTA] course status = locked/unlocked
+- [NOTIFICATION CTA] redirecting to academy unlock
+- [NOTIFICATION CTA] redirecting to course content
+- [NOTIFICATION CTA ERROR] ...
+
+BUG 2 — Login/Logout rotto dopo acquisto/sblocco
+Situazione attuale:
+- ero già dentro al mio account
+- dopo vari passaggi su notifiche / academy / codice / logout
+- quando provo a rientrare mi dice “Email o password non corretti”
+- ma le credenziali sono giuste
+
+Questo non deve succedere.
+
+Controlla e correggi:
+1. Il flusso di autenticazione completo:
+   - login
+   - logout
+   - persistenza sessione
+   - redirect post-login
+2. Verifica che il flusso acquisto/sblocco corso/nonifiche non modifichi o corrompa i dati account
+3. Verifica che il logout non elimini o corrompa dati utente
+4. Verifica che il login usi correttamente:
+   - email account reale
+   - password account reale
+   - nessuna interferenza con email del checkout Stripe o customer_details.email
+5. Verifica che non vengano creati conflitti tra:
+   - account utente del sito
+   - email usata nel pagamento
+   - sessione autenticata
+6. Verifica case sensitivity, trim, normalizzazione email
+7. Verifica che la password hashata/non hashata non venga alterata
+8. Se l’utente è già loggato e apre notifiche/academy/my-courses, non deve perdere la sessione
+9. Correggi eventuali bug di redirect che portano a pagine login anche quando l’utente è già autenticato
+
+Aggiungi log chiari:
+- [AUTH] login attempt
+- [AUTH] user found
+- [AUTH] password check result
+- [AUTH] session created
+- [AUTH] logout
+- [AUTH] session destroyed
+- [AUTH ERROR] ...
+- [SESSION] current authenticated user
+- [SESSION ERROR] ...
+
+IMPORTANTE
+Non rompere:
+- acquisti Stripe
+- notifiche
+- academy
+- i miei corsi
+- codici corso
+- dashboard admin
+
+Obiettivi finali:
+1. Il bottone della notifica deve portare alla pagina giusta:
+   - Academy se il corso è ancora da sbloccare
+   - contenuti se il corso è già sbloccato
+2. L’utente non deve mai ritrovarsi con login rotto dopo acquisto o sblocco
+3. Logout e login devono restare sempre affidabili
+
+Alla fine dimmi:
+1. quali file hai modificato
+2. perché il bottone “Apri contenuto” puntava alla pagina sbagliata
+3. come hai corretto la logica locked/unlocked
+4. perché il login risultava errato anche con credenziali corrette
+5. come hai corretto autenticazione e sessioni

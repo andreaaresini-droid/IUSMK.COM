@@ -1,0 +1,89 @@
+Devo correggere l’integrazione del logo 3D nel sito IUSMK.
+
+PROBLEMI ATTUALI:
+1. Nella schermata intro il logo 3D è troppo grande e non si vede bene.
+2. Nella home del sito è rimasto il logo 2D, invece io voglio il logo 3D.
+3. Il logo 3D deve essere ruotabile dal cliente, ma NON deve potersi spostare dal centro.
+
+OBIETTIVO:
+Usare il logo 3D (.glb) sia nella schermata intro sia nella home, con dimensioni corrette e interazione controllata.
+
+ISTRUZIONI:
+
+1. LOGO 3D NELLA SCHERMATA INTRO:
+- Riduci la dimensione del logo 3D nella schermata prima del video.
+- Attualmente è troppo grande.
+- Deve essere ben visibile interamente, senza uscire dai bordi.
+- Su mobile deve occupare circa 35%–45% della larghezza dello schermo.
+- Deve stare centrato sopra la scritta “TOCCA PER ENTRARE NEL MONDO DI IUSMK”.
+- Non deve coprire troppo lo sfondo.
+
+2. LOGO 3D NELLA HOME:
+- Sostituisci il logo 2D centrale della home con il logo 3D.
+- Usa lo stesso file .glb già caricato.
+- Non lasciare più il logo 2D in quella posizione.
+- Il logo 3D deve essere posizionato al centro nella stessa zona dove ora appare il logo 2D.
+
+3. INTERAZIONE:
+- Il cliente deve poter ruotare il logo 3D con dito o mouse.
+- Il logo NON deve potersi spostare.
+- Disattiva pan e zoom.
+- La rotazione deve avvenire solo intorno al centro del modello.
+
+Impostazioni OrbitControls:
+enableZoom={false}
+enablePan={false}
+enableRotate={true}
+enableDamping={true}
+dampingFactor={0.08}
+rotateSpeed={0.6}
+
+4. POSIZIONE:
+- Il logo deve rimanere sempre centrato.
+- Non deve traslare a destra/sinistra/su/giù.
+- Non deve seguire il dito come se fosse trascinabile.
+- Deve solo ruotare sul proprio asse.
+
+5. DIMENSIONI RESPONSIVE:
+Intro:
+- mobile: logo più piccolo, circa 35%–45% larghezza schermo
+- desktop: massimo 280px/320px di larghezza visiva
+
+Home:
+- dimensione equilibrata rispetto alla sezione
+- non deve coprire testo o bottoni
+- non deve uscire dal contenitore
+
+6. CANVAS:
+- Il Canvas deve avere sfondo trasparente.
+- Non deve creare riquadri visibili.
+- Non deve avere bordo.
+- Deve rispettare lo spazio del layout.
+
+7. CAMERA / SCALA:
+- Sistema camera e scala del modello.
+- Se il modello appare troppo grande, riduci scale del modello, non zoomare la pagina.
+- Esempio:
+  <primitive object={scene} scale={0.55} />
+oppure imposta una scala responsive.
+
+8. LUCI:
+- Mantieni luci soft e premium.
+- Il logo deve vedersi bianco/chiaro, non grigio spento.
+- Aggiungi ambientLight e directionalLight se serve.
+
+9. NON MODIFICARE:
+- video intro
+- scritta intro
+- comportamento click intro
+- galleria
+- corsi
+- admin
+- chat
+- login
+- pagamenti
+
+RISULTATO FINALE:
+Nella schermata intro il logo 3D è più piccolo, centrato e visibile.
+Nella home il logo 2D viene sostituito dal logo 3D.
+Il cliente può ruotare il logo 3D, ma il logo resta sempre bloccato al centro e non si sposta mai.

@@ -1,0 +1,210 @@
+Modify ONLY the push notification click-routing behavior described below.
+Do NOT change anything else that is already working.
+
+==================================================
+OBJECTIVE — OPEN THE CORRECT SECTION WHEN USER CLICKS A PUSH NOTIFICATION
+==================================================
+
+Current problem:
+push notifications may arrive on the phone, but when the user/admin taps them, the app/site does not always open the exact correct page/section related to that notification.
+
+I need push notifications to deep-link correctly to the exact destination.
+
+==================================================
+OBJECTIVE 1 — CUSTOMER SIDE ROUTING
+==================================================
+
+When a CUSTOMER receives a push notification and taps it, the site/app must open directly to the correct section.
+
+Required cases:
+
+1. If the push is for a new internal chat message from IUSMK/admin:
+   - open directly the exact chat conversation in the “Messaggi” / chat section
+   - open the correct thread, not a generic messages page
+
+2. If the push is for a course-related notification:
+   - open the correct course-related section/page
+   - if possible, the exact course or course access area
+
+3. If the push is for a generic notification:
+   - open the exact related page if there is one
+   - otherwise open the “Notifiche” section with that notification highlighted if possible
+
+==================================================
+OBJECTIVE 2 — ADMIN SIDE ROUTING
+==================================================
+
+When the ADMIN receives a push notification and taps it, the dashboard must open directly to the correct admin section.
+
+Required cases:
+
+1. If the push is for a new chat message from a customer:
+   - open the admin dashboard directly in “Chat Clienti”
+   - automatically select/open the exact conversation
+
+2. If the push is for a new contact request:
+   - open directly the “Richieste di Contatto” section
+   - automatically select/open the exact request/thread
+
+3. If the push is for a new registered customer:
+   - open directly the “Account Registrati” section
+   - if possible, highlight or open the exact new account
+
+4. If the push is for a new course purchase:
+   - open directly the “Acquisti” section
+   - if possible, highlight or open the exact purchase/order
+
+5. If the push is for a generic admin notification:
+   - open the relevant admin section if mapped
+   - otherwise open the admin “Notifiche” page
+
+==================================================
+OBJECTIVE 3 — REQUIRED DEEP LINK METADATA
+==================================================
+
+Every push notification must include enough metadata to route correctly when tapped.
+
+For each push notification, include fields such as:
+- type
+- targetUrl or targetRoute
+- targetSection
+- conversationId (if chat)
+- threadId (if contact request)
+- userId (if new registered user)
+- purchaseId or orderId (if purchase)
+- notificationId
+- senderId if needed
+
+Examples of notification types:
+- chat_message
+- contact_request
+- contact_reply
+- new_registered_user
+- new_purchase
+- course_notification
+- generic_notification
+
+Do NOT rely only on notification title/body text to determine destination.
+Use structured routing data.
+
+==================================================
+OBJECTIVE 4 — SERVICE WORKER / PUSH CLICK HANDLING
+==================================================
+
+Fix the push click logic so that tapping a push notification on the phone:
+
+1. Opens the site/app if it is closed
+2. Focuses the existing tab/app window if it is already open
+3. Navigates to the exact correct route/page/section
+4. Preserves the target routing data all the way from push payload to app router
+
+Important:
+- implement correct notificationclick handling in the service worker if this is a PWA/web push setup
+- if an app window already exists, focus it and send the route payload into the app
+- if no window exists, open a new one with the correct deep link URL
+- if using query params/state, make sure the app reads them correctly on load
+
+==================================================
+OBJECTIVE 5 — APP ROUTER / PAGE LOAD HANDLING
+==================================================
+
+When the site opens from a push click:
+
+1. Read the deep link parameters safely
+2. Navigate to the correct page/section automatically
+3. If needed, wait until auth/user state/admin state is loaded before routing
+4. If the user is not logged in:
+   - redirect to login if required
+   - after successful login, continue to the originally requested target page
+5. Do not send the user to the home page unless there is no valid target
+
+==================================================
+OBJECTIVE 6 — HIGHLIGHT / AUTO-OPEN THE EXACT ITEM
+==================================================
+
+When possible, do not just open the general section:
+open the exact relevant item too.
+
+Examples:
+- chat_message -> open exact conversation
+- contact_request -> open exact request thread
+- new_registered_user -> open/highlight the new account row
+- new_purchase -> open/highlight the relevant purchase row/order
+- course notification -> open exact course or related notification item
+
+If exact highlight is difficult, at minimum:
+- open the correct section
+- scroll/select the correct item using ID from payload
+
+==================================================
+OBJECTIVE 7 — IMPORTANT SAFETY RULES
+==================================================
+
+- DO NOT break existing push delivery
+- DO NOT break existing in-app notifications
+- DO NOT break current chat opening logic
+- DO NOT break admin routing
+- DO NOT change unrelated pages
+- DO NOT remove current unread/read logic
+- DO NOT rely on fragile text parsing
+- Reuse the current routing/navigation system where possible
+
+==================================================
+OBJECTIVE 8 — FALLBACK RULES
+==================================================
+
+If the exact target item no longer exists:
+1. open the most relevant parent section instead
+2. do not crash
+3. optionally show a small feedback message like:
+   - “Contenuto non trovato, aperta la sezione correlata”
+
+Fallback examples:
+- missing conversationId -> open Messaggi or Chat Clienti
+- missing purchaseId -> open Acquisti
+- missing userId -> open Account Registrati
+- missing contact thread -> open Richieste di Contatto
+
+==================================================
+MANDATORY TEST CASES
+==================================================
+
+Test all these cases:
+
+CUSTOMER
+1. Customer receives push for admin/IUSMK chat message
+2. Customer taps push
+3. Correct chat opens directly
+
+4. Customer receives push for course-related event
+5. Customer taps push
+6. Correct course-related section opens
+
+ADMIN
+7. Admin receives push for customer chat message
+8. Admin taps push
+9. “Chat Clienti” opens with correct conversation selected
+
+10. Admin receives push for new contact request
+11. Admin taps push
+12. “Richieste di Contatto” opens with correct request selected
+
+13. Admin receives push for new registered user
+14. Admin taps push
+15. “Account Registrati” opens and shows the correct account
+
+16. Admin receives push for new purchase
+17. Admin taps push
+18. “Acquisti” opens and shows the correct purchase
+
+GENERAL
+19. If app is closed, push tap opens correct target
+20. If app is already open, push tap focuses existing app and routes correctly
+21. If target item is missing, fallback section opens without errors
+22. Nothing else in notifications/chat/admin dashboard is broken
+
+At the end, show me clearly:
+- which files you changed
+- how push payload routing metadata is structured
+- how notification click is handled in the service worker
+- how app routing resolves the correct destination after click

@@ -1,0 +1,161 @@
+C’è un problema importante con le notifiche dell’admin nel sito IUSMK.
+
+PROBLEMA ATTUALE
+Quando un cliente invia un messaggio dal modulo contatti, la notifica non arriva davvero all’admin se il sito non è già aperto.
+
+Attualmente succede questo:
+- se il sito/admin non è aperto, non arriva nessuna notifica
+- se apro il sito come web app e poi entro nella dashboard / sezione “Richieste di contatto”, allora la notifica compare
+- quindi il sistema attuale NON è una vera push notification, ma sembra una notifica in-app o legata al fatto che la pagina sia aperta
+
+Questo non va bene.
+
+==================================================
+OBIETTIVO
+==================================================
+
+Voglio che l’admin riceva una VERA notifica push anche quando:
+- non è dentro il sito
+- non è nella dashboard
+- non ha aperto la sezione “Richieste di contatto”
+- il sito non è attivamente aperto in primo piano
+
+La notifica deve arrivare davvero come push web/browser notification, se il dispositivo/browser lo supporta.
+
+==================================================
+COSA DEVI CONTROLLARE
+==================================================
+
+Analizza l’implementazione attuale e verifica se oggi il sistema usa solo:
+- polling frontend
+- refresh automatico
+- notifica in-app
+- realtime solo con pagina aperta
+- Notification API senza service worker
+- aggiornamento solo quando l’admin visita la dashboard
+
+Se è così, va trasformato in una VERA PUSH.
+
+==================================================
+SOLUZIONE RICHIESTA
+==================================================
+
+Implementa vere web push notifications per l’admin.
+
+La soluzione deve includere correttamente:
+
+1. SERVICE WORKER
+- registra un service worker reale per il sito
+- il service worker deve gestire la ricezione delle push
+- deve poter mostrare notification anche quando la pagina non è aperta in primo piano
+
+2. PUSH SUBSCRIPTION
+- l’admin deve poter concedere il permesso notifiche
+- salva la push subscription dell’admin nel database in modo persistente
+- assicurati che la subscription sia associata all’admin corretto
+
+3. BACKEND / INVIO PUSH
+Quando un cliente invia un messaggio dal modulo contatti:
+- il backend deve creare/salvare la richiesta di contatto
+- subito dopo deve inviare una push reale alla subscription dell’admin
+- la push deve contenere almeno:
+  - titolo tipo “Nuova richiesta di contatto”
+  - nome del cliente
+  - oggetto del messaggio
+  - testo breve
+
+4. CLICK SULLA NOTIFICA
+Quando l’admin tocca/clicca la notifica:
+- deve aprirsi il sito
+- idealmente direttamente sulla dashboard o sulla sezione “Richieste di contatto”
+
+==================================================
+IMPORTANTE
+==================================================
+
+NON voglio una finta push che funziona solo:
+- con il sito aperto
+- con la dashboard aperta
+- con polling nella pagina
+
+Voglio una vera notifica push browser/webapp.
+
+==================================================
+COMPATIBILITÀ
+==================================================
+
+Controlla bene la compatibilità reale:
+- browser desktop
+- Android Chrome
+- eventuale PWA / aggiunta alla schermata home
+- iPhone / iOS Safari (se supportato in quel contesto)
+
+Se ci sono limitazioni reali per alcuni ambienti, spiegale chiaramente.
+
+Ma per gli ambienti supportati, deve funzionare davvero.
+
+==================================================
+GESTIONE PERMESSI
+==================================================
+
+- implementa correttamente la richiesta di permesso notifiche per l’admin
+- assicurati che la subscription venga fatta solo dopo consenso
+- se manca il consenso, mostra un flusso chiaro per abilitarle
+- evita richieste duplicate inutili
+
+==================================================
+CONTROLLO TECNICO
+==================================================
+
+Verifica che esistano e siano corretti:
+- service worker registrato
+- push subscription valida
+- chiavi VAPID se necessarie
+- endpoint push corretti
+- salvataggio subscription nel database
+- invio push dal backend dopo nuovo messaggio
+- gestione click notification
+- gestione errori e renewal subscription
+
+==================================================
+LOG E DEBUG
+==================================================
+
+Aggiungi log chiari per capire:
+- quando l’admin si iscrive alle push
+- quando la subscription viene salvata
+- quando arriva un nuovo messaggio
+- quando il backend prova a inviare la push
+- se l’invio fallisce
+- se ci sono subscription scadute/non valide
+
+==================================================
+NON TOCCARE ALTRO
+==================================================
+
+- non cambiare inutilmente grafica del sito
+- non modificare logiche che già funzionano se non necessario
+- concentra la correzione solo sul sistema reale di push notification per le richieste di contatto
+
+==================================================
+TEST OBBLIGATORI
+==================================================
+
+Verifica davvero questo scenario:
+1. admin concede permesso notifiche
+2. admin chiude il sito o non resta nella dashboard
+3. un cliente invia un messaggio dal modulo contatti
+4. l’admin riceve la push comunque
+5. cliccando la notifica si apre il sito nella sezione corretta
+
+==================================================
+OUTPUT FINALE
+==================================================
+
+Alla fine voglio un riepilogo chiaro con:
+- perché prima la notifica arrivava solo con sito/dashboard aperti
+- cosa hai implementato per renderla una vera push
+- come hai gestito service worker e subscription
+- dove vengono salvate le subscription admin
+- su quali dispositivi/browser funziona davvero
+- eventuali limiti reali di compatibilità

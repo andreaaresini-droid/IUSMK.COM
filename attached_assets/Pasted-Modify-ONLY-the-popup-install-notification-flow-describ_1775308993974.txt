@@ -1,0 +1,157 @@
+Modify ONLY the popup/install-notification flow described below.
+Do NOT change anything else that is already working.
+
+==================================================
+OBJECTIVE 1 — REMOVE FALSE “BROWSER NOT SUPPORTED” MESSAGE
+==================================================
+
+In the popup shown after the intro, remove the current message that says the browser does not support push notifications.
+
+Specifically:
+- remove any text like:
+  “Il tuo browser non supporta le notifiche push. Prova con Chrome o Safari.”
+- do not show that warning in the popup anymore
+
+Reason:
+the popup must no longer try to activate push notifications directly from there.
+
+==================================================
+OBJECTIVE 2 — CHANGE THE NOTIFICATIONS TAB IN THE POPUP
+==================================================
+
+Update the “Notifiche” tab inside the popup so it explains the correct flow to the customer.
+
+New logic:
+the popup must tell the user that push notifications are activated only AFTER adding the site to the home screen and then opening the site from the home screen like an app.
+
+Replace the current notification text with a clear Italian explanation like this:
+
+“Per attivare le notifiche push:
+1. aggiungi prima IUSMK alla schermata Home del tuo telefono
+2. apri il sito dalla schermata Home come se fosse un’app
+3. entra nel menu del sito
+4. vai nella sezione ‘Notifiche’
+5. premi il tasto per attivare le notifiche push”
+
+You can improve formatting visually, but keep this meaning exactly.
+
+==================================================
+OBJECTIVE 3 — ADD A REAL BUTTON IN THE NOTIFICHE PAGE/SECTION
+==================================================
+
+Add a real button in the site’s “Notifiche” section/page (customer side) that allows the user to activate push notifications.
+
+Button label:
+“Attiva notifiche push”
+
+Required behavior:
+1. This button must exist inside the customer “Notifiche” section in the menu
+2. When clicked:
+   - request push notification permission
+   - register push subscription properly
+   - save/update the subscription for that logged-in user
+3. If permission is already granted:
+   - show a proper success / already active state
+4. If permission is denied:
+   - show a clear message explaining that notifications were blocked and may need browser/device settings
+5. If push is activated successfully:
+   - show success feedback in Italian, e.g.:
+     “Notifiche push attivate con successo”
+6. Keep the current in-app notification section working
+
+==================================================
+OBJECTIVE 4 — OPTIONAL DEACTIVATE BUTTON
+==================================================
+
+If your current push system supports it cleanly, also add:
+- “Disattiva notifiche push”
+
+But only if this can be done without breaking anything.
+If not, at minimum add the activation button and proper active state.
+
+==================================================
+OBJECTIVE 5 — POPUP TEXT MUST MATCH REAL APP FLOW
+==================================================
+
+The popup must no longer imply:
+- that push can be activated immediately there
+- that the browser is unsupported
+- that the user should use another browser
+
+Instead, it must clearly explain:
+- first add to home screen
+- then open from home screen
+- then go to menu > Notifiche
+- then press the activation button there
+
+==================================================
+OBJECTIVE 6 — KEEP THE SAME POPUP DESIGN
+==================================================
+
+Keep the popup design style the same as much as possible:
+- same modal
+- same tabs
+- same branding
+- same dark style
+
+Only update:
+- the notification text
+- the notification logic
+- remove the false unsupported message
+
+==================================================
+OBJECTIVE 7 — IMPORTANT SAFETY RULES
+==================================================
+
+- DO NOT break the intro
+- DO NOT break add-to-home popup behavior
+- DO NOT break existing notification center
+- DO NOT break push delivery already working
+- DO NOT remove current menu structure
+- DO NOT change unrelated pages
+- DO NOT show fake errors
+- Reuse existing push/service worker/subscription logic if already present
+
+==================================================
+OBJECTIVE 8 — NOTIFICHE SECTION UX
+==================================================
+
+Inside the customer “Notifiche” section, show a clear block/card for push activation with:
+- title
+- short explanation
+- activation button
+- current status if available
+
+Suggested Italian content:
+Title:
+“Notifiche push”
+
+Description:
+“Attiva le notifiche push per ricevere aggiornamenti su messaggi, corsi e novità IUSMK direttamente sul tuo dispositivo.”
+
+Button:
+“Attiva notifiche push”
+
+Optional active status:
+“Le notifiche push sono attive su questo dispositivo”
+
+==================================================
+MANDATORY TESTS
+==================================================
+
+1. Popup no longer shows fake unsupported browser message
+2. Popup explains the correct path:
+   add to home -> open from home -> menu -> notifiche -> activate push
+3. Customer can open the “Notifiche” section from the menu
+4. Customer sees the new “Attiva notifiche push” button
+5. Clicking the button requests permission correctly
+6. Successful activation stores/registers push correctly
+7. Success message is shown
+8. Existing in-app notifications still work
+9. Nothing else in the app is broken
+
+At the end, show me clearly:
+- which files you changed
+- where you added the “Attiva notifiche push” button
+- how push activation now works step by step
+- how the popup text was updated

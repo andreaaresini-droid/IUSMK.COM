@@ -1,0 +1,112 @@
+C’è un bug nella logica dei corsi acquistati su IUSMK.
+
+PROBLEMA ATTUALE
+Su un account utente il corso compare correttamente nella sezione “I miei corsi”, quindi l’accesso esiste ed è attivo.
+Però nella sezione “Academy” lo stesso corso mostra ancora il pulsante “Acquista”, quindi il controllo frontend/backend non sta usando correttamente lo stesso stato di possesso corso.
+
+OBIETTIVO
+Se un corso è presente in “I miei corsi” come attivo per quell’utente, allora in “Academy” e nella pagina dettaglio corso NON deve mai comparire il pulsante “Acquista”.
+Al suo posto devono comparire:
+- badge “Già acquistato” oppure “Attivo”
+- pulsante “Accedi al corso”
+
+Il pulsante “Acquista” deve tornare visibile solo se l’admin revoca davvero l’accesso o il codice.
+
+CORREZIONE DA FARE
+
+1. USA UN’UNICA FONTE DATI
+La sezione Academy, la pagina dettaglio corso e la sezione I miei corsi devono basarsi sulla STESSA query / stessa tabella / stesso stato.
+Non voglio logiche separate.
+Se il corso risulta attivo in “I miei corsi”, allora deve risultare posseduto anche in “Academy”.
+
+2. DEFINISCI CHIARAMENTE COSA SIGNIFICA “CORSO POSSEDUTO”
+Un corso è da considerare posseduto se esiste per quell’utente un record attivo, ad esempio in studentCourseAccess, enrollments o tabella equivalente, con condizioni tipo:
+- userId = utente loggato
+- courseId = corso corrente
+- status = active
+oppure
+- revoked = false
+oppure comunque il flag reale che usate per accesso attivo
+
+La logica deve usare i dati REALI già esistenti nel database, non supposizioni.
+
+3. FIX FRONTEND ACADEMY
+Nella pagina Academy:
+- per ogni corso controlla se il courseId è tra quelli già posseduti attivamente dall’utente
+- se sì:
+  - nascondi completamente il bottone “Acquista”
+  - nascondi anche ogni CTA di checkout collegata
+  - mostra pulsante “Accedi al corso”
+  - mostra badge “Già acquistato” o “Attivo”
+- se no:
+  - mostra “Acquista”
+  - mostra “Sblocca con codice”
+
+4. FIX PAGINA DETTAGLIO CORSO
+Anche nella pagina singola del corso:
+- se il corso è già posseduto attivamente, non mostrare “Acquista”
+- mostra invece “Accedi al corso”
+
+5. FIX BACKEND CHECKOUT
+Nel backend del checkout, prima di creare la sessione Stripe:
+- controlla se esiste già un accesso attivo per quel corso e quell’utente
+- se esiste, blocca il checkout
+- restituisci errore 409 con messaggio: “Hai già acquistato questo corso”
+
+Quindi:
+- frontend corretto
+- backend protetto
+entrambi obbligatori
+
+6. ALLINEA “I MIEI CORSI” E “ACADEMY”
+Controlla perché adesso risultano disallineati.
+Probabili cause da verificare:
+- “I miei corsi” legge da una tabella diversa rispetto ad “Academy”
+- “Academy” controlla purchase/payment invece di course access
+- “Academy” usa course.id mentre l’accesso salvato usa un altro campo
+- problema di tipo tra string e number negli id
+- filtro su role o status sbagliato
+- query non aggiornata dopo login o dopo fetch
+- cache frontend/stale query
+- il controllo usa codice attivo invece che accesso corso attivo
+- il corso è in dashboard ma non viene incluso in ownedCourseIds
+
+7. DEBUG OBBLIGATORIO
+Aggiungi log temporanei per capire il mismatch:
+- utente loggato: userId
+- lista ownedCourseIds letta in Academy
+- lista corsi mostrati in I miei corsi
+- courseId del corso corrente
+- esito del controllo isOwned per ogni corso
+
+Voglio vedere chiaramente perché un corso presente in “I miei corsi” non viene marcato come acquistato in Academy.
+
+8. COMPORTAMENTO FINALE ATTESO
+Caso corretto:
+- l’utente ha il corso in “I miei corsi”
+- in “Academy” sullo stesso corso vede “Accedi al corso”
+- NON vede “Acquista”
+
+Solo se l’admin revoca accesso/codice:
+- il corso sparisce o diventa non attivo in “I miei corsi”
+- in “Academy” torna “Acquista”
+
+9. NON TOCCARE IL RESTO
+Non modificare:
+- grafica generale
+- notifiche
+- video
+- chat
+- altre logiche del sito
+Intervieni solo su possesso corso, Academy, dettaglio corso e checkout.
+
+10. TEST FINALI DA FARE
+Verifica questi casi:
+- utente senza corso -> vede “Acquista”
+- utente con corso attivo -> vede “Accedi al corso”
+- utente con corso attivo non può aprire checkout
+- admin revoca accesso -> torna “Acquista”
+- stesso comportamento sia in Academy che in dettaglio corso
+
+IMPORTANTE
+Prima individua la causa del disallineamento tra “I miei corsi” e “Academy”, poi correggila usando un’unica logica condivisa.

@@ -1,0 +1,205 @@
+C’è un problema da risolvere nel sito/app IUSMK relativo alle notifiche push verso i clienti.
+
+PROBLEMA
+Quando un cliente:
+1. accede al sito
+2. aggiunge il sito alla home come applicazione/PWA
+3. accetta le notifiche push
+
+se poi io, come admin, invio un messaggio a quel cliente, al cliente NON arriva nessuna notifica push.
+
+OBIETTIVO
+Voglio che ogni volta che l’admin invia un messaggio a un cliente, il cliente riceva una vera notifica push sul dispositivo, purché:
+- abbia effettuato l’accesso
+- abbia aggiunto il sito alla home, se necessario per il sistema attuale
+- abbia concesso il permesso notifiche
+- abbia una sottoscrizione push valida salvata nel database
+
+COSA DEVI FARE
+
+1. Controllo completo del flusso push
+Verifica tutto il flusso end-to-end:
+- richiesta permesso notifiche lato client
+- registrazione service worker
+- creazione subscription push
+- salvataggio subscription nel database associata all’utente corretto
+- recupero subscription quando l’admin invia un messaggio
+- invio effettivo della push tramite server
+- ricezione e visualizzazione della notifica nel service worker
+
+2. Verifica registrazione service worker
+Controlla che:
+- il service worker sia registrato correttamente
+- sia attivo in produzione
+- abbia scope corretto
+- non ci siano errori di path
+- il file service worker venga servito con status 200
+- non ci siano errori nella console del browser
+
+3. Verifica richiesta permessi
+Controlla che il sito chieda correttamente il permesso notifiche.
+Se il permesso è già concesso, verifica che il sistema tenti davvero di creare la push subscription.
+Se il permesso è negato, mostra un messaggio chiaro all’utente.
+
+4. Verifica push subscription
+Controlla che quando il cliente abilita le notifiche:
+- venga chiamato pushManager.subscribe()
+- venga generata una subscription valida
+- endpoint, keys e dati necessari vengano salvati nel database
+- la subscription sia collegata all’utente giusto
+- non venga sovrascritta o persa ai successivi login/logout
+- se l’utente cambia dispositivo o browser, venga gestita una nuova subscription
+
+5. Database
+Controlla se esiste una tabella o collection per le push subscriptions.
+Se non esiste, creala.
+Ogni subscription deve includere almeno:
+- userId
+- endpoint
+- p256dh
+- auth
+- userAgent opzionale
+- createdAt
+- updatedAt
+- active true/false
+
+Se un utente ha più dispositivi, il sistema deve supportare più subscriptions per lo stesso utente.
+
+6. Invio notifica quando admin manda un messaggio
+Quando l’admin invia un messaggio a un cliente:
+- salva prima il messaggio nel database/chat
+- poi cerca tutte le push subscriptions attive del cliente
+- invia una push a tutte le subscription valide
+- non limitarti a salvare il messaggio nella chat: deve partire anche la push
+
+Titolo notifica:
+Nuovo messaggio da IUSMK
+
+Testo notifica:
+Hai ricevuto un nuovo messaggio. Tocca per aprire la chat.
+
+Dati della notifica:
+- tipo: chat_message
+- userId del destinatario
+- eventualmente chatId o conversationId
+- url da aprire direttamente nella chat corretta
+
+7. Service worker: gestione notifica
+Nel service worker implementa o correggi:
+- listener push
+- parsing sicuro del payload
+- showNotification()
+- click sulla notifica con apertura del sito/app
+- se possibile, apertura diretta alla sezione messaggi/chat del cliente
+
+Comportamento desiderato:
+- se l’app è chiusa, la push deve comunque arrivare
+- se l’app è in background, la push deve arrivare
+- cliccando la notifica si deve aprire la chat corretta o l’area notifiche/messaggi
+
+8. VAPID keys / configurazione server
+Controlla che la configurazione web push lato server sia corretta:
+- VAPID public key usata nel client
+- VAPID private key usata nel server
+- chiavi coerenti tra client e server
+- nessun env mancante
+- nessun invio silenziosamente fallito
+
+Se mancano chiavi VAPID, generarle e collegarle correttamente.
+
+9. Logging serio
+Aggiungi log dettagliati in ogni fase:
+CLIENT
+- service worker registered
+- permission status
+- subscription creata
+- subscription inviata al backend
+- eventuali errori di subscribe
+
+SERVER
+- messaggio admin salvato
+- subscriptions trovate
+- tentativo invio push per ogni endpoint
+- successo o errore dettagliato
+- rimozione automatica subscriptions non valide (es. 404/410)
+
+SERVICE WORKER
+- push ricevuta
+- payload letto
+- notifica mostrata
+- click sulla notifica intercettato
+
+10. Gestione errori reali
+Se una subscription non è più valida:
+- marcarla come inactive oppure eliminarla
+- non bloccare l’invio alle altre subscriptions
+
+Se non esiste nessuna subscription per il cliente:
+- il messaggio deve comunque arrivare nella chat
+- ma nei log admin/server deve risultare chiaramente che non è stata inviata push perché manca subscription attiva
+
+11. Test automatici e manuali
+Dopo la correzione, esegui questi test reali:
+TEST 1
+- login cliente
+- abilitazione notifiche
+- verifica subscription salvata nel db
+
+TEST 2
+- invio messaggio da admin
+- verifica chiamata server push
+- verifica comparsa push sul dispositivo cliente
+
+TEST 3
+- click sulla notifica
+- apertura della chat corretta
+
+TEST 4
+- utente con due dispositivi
+- invio push a entrambe le subscriptions
+
+TEST 5
+- subscription scaduta/non valida
+- errore gestito senza rompere il flusso
+
+12. UI lato cliente
+Nell’area account o impostazioni cliente aggiungi uno stato visibile:
+- Notifiche push attive
+oppure
+- Notifiche push non attive
+
+E un pulsante:
+- Attiva notifiche
+- Riattiva notifiche
+
+Così possiamo capire subito se il cliente è registrato correttamente al sistema push.
+
+13. UI lato admin
+Nel pannello admin, se possibile, mostra per ogni cliente:
+- push attive sì/no
+- numero dispositivi registrati
+
+Almeno come informazione tecnica minima.
+
+14. Compatibilità PWA
+Controlla che il sistema funzioni davvero come PWA installata.
+Verifica anche che non dipenda solo dal fatto che il sito sia aperto in foreground.
+La push deve essere una vera web push, non solo un aggiornamento interno della chat.
+
+15. Importantissimo
+Non limitarti a controllare il frontend.
+Trova il punto esatto in cui il flusso si interrompe e correggilo davvero.
+
+Voglio che alla fine:
+- l’admin mandi un messaggio
+- il cliente riceva subito la notifica push
+- clicchi la notifica
+- si apra direttamente la chat o la sezione messaggi
+
+OUTPUT CHE VOGLIO DA TE
+Alla fine dammi:
+1. elenco preciso dei problemi trovati
+2. file modificati
+3. spiegazione breve delle correzioni
+4. conferma dei test eseguiti
+5. eventuali istruzioni se serve rigenerare VAPID keys o impostare variabili ambiente

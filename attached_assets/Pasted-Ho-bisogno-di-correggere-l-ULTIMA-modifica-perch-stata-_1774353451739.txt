@@ -1,0 +1,90 @@
+Ho bisogno di correggere l’ULTIMA modifica perché è stata applicata alla parte sbagliata.
+
+ATTENZIONE:
+NON devi modificare l’intro.
+NON devi cambiare l’immagine di sfondo dell’intro.
+NON devi toccare:
+- intro
+- rasoio
+- audio
+- overlay iniziale
+- testo “Tocca per entrare nel mondo di IUSMK”
+
+La modifica va fatta nella HOME, nella sezione dove compare il logo/immagine con la scritta:
+“Transforming Scalps into Canvases”
+e sotto c’è il pulsante:
+“Entra all’Academy”.
+
+==================================================
+COSA VOGLIO DAVVERO
+==================================================
+
+1. La scritta/logo “Transforming Scalps into Canvases” deve stare PIÙ IN BASSO
+- deve avvicinarsi al pulsante “Entra all’Academy”
+- NON deve allontanarsi verso l’alto
+- NON deve sovrapporsi al pulsante
+- deve semplicemente scendere un po’ rispetto ad ora
+
+2. L’immagine da cambiare NON è quella dell’intro
+- devi cambiare SOLO l’immagine di sfondo che sta DIETRO alla scritta/logo “Transforming Scalps into Canvases” nella HOME
+- cioè l’immagine visibile sotto quel nuovo logo che mi hai fatto creare
+- l’intro iniziale non va toccata
+
+==================================================
+COSA NON TOCCARE
+==================================================
+
+NON modificare:
+- intro
+- animazioni iniziali
+- audio
+- rasoio
+- overlay
+- navbar
+- footer
+- altre sezioni
+- struttura generale del sito
+- dimensione del logo “Transforming Scalps into Canvases” se non necessario
+
+==================================================
+COSA FARE
+==================================================
+
+A. Nella HOME:
+- trova il contenitore dove c’è il logo/immagine “Transforming Scalps into Canvases”
+- abbassalo leggermente usando margin-top o translateY
+- deve essere più vicino al pulsante “Entra all’Academy”
+
+B. Sempre nella HOME:
+- trova l’immagine di sfondo che si vede dietro questo logo
+- sostituisci SOLO quella immagine con quella che ti allegherò
+- NON cambiare l’immagine dell’intro iniziale
+
+==================================================
+OBIETTIVO VISIVO
+==================================================
+
+- vedere meglio il nuovo sfondo dietro il logo nella HOME
+- avere il logo un po’ più in basso
+- renderlo più vicino al pulsante “Entra all’Academy”
+- mantenere tutto pulito e premium
+
+==================================================
+TEST FINALI
+==================================================
+
+Verifica che:
+- l’intro iniziale sia rimasta identica
+- nella HOME il logo sia più in basso
+- nella HOME il logo sia più vicino al pulsante “Entra all’Academy”
+- l’immagine cambiata sia quella dietro il logo nella HOME
+- nessun altro elemento sia stato modificato
+
+==================================================
+OUTPUT
+==================================================
+
+Fammi vedere solo:
+- dove hai abbassato il logo (valore margin-top o translateY)
+- quale file immagine hai sostituito nella HOME
+- conferma esplicita che l’intro NON è stata toccata

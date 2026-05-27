@@ -1,0 +1,119 @@
+MODIFICA SOLO IL FLUSSO DI ACCESSO AI CORSI E DI ACQUISTO, SENZA TOCCARE O ROMPERE NULLA DI CIÒ CHE GIÀ FUNZIONA.
+
+OBIETTIVO
+Prima di poter acquistare un corso, ogni cliente deve obbligatoriamente creare un account personale.
+L’account deve essere creato usando:
+- nome
+- cognome
+- email
+- password
+
+Dopo la registrazione e il login, nel menu dell’area cliente deve comparire la voce:
+“Notifiche”
+
+In questa sezione il cliente dovrà ricevere il codice di accesso al corso dopo aver completato il pagamento.
+
+MODIFICHE RICHIESTE
+
+1) REGISTRAZIONE OBBLIGATORIA PRIMA DELL’ACQUISTO
+Modifica il flusso in modo che:
+- nessun utente non registrato possa acquistare un corso
+- se un utente prova ad acquistare un corso senza essere autenticato, deve essere reindirizzato alla pagina di registrazione/login
+- solo dopo aver creato l’account ed effettuato l’accesso può procedere al checkout del corso
+
+2) CREAZIONE ACCOUNT CLIENTE
+Crea o modifica il sistema di registrazione cliente in modo che il form contenga obbligatoriamente:
+- nome
+- cognome
+- email
+- password
+
+REGOLE:
+- email univoca
+- password salvata in modo sicuro con hash, mai in chiaro
+- validazione campi obbligatori
+- messaggi di errore chiari
+- dopo registrazione, possibilità di login immediato oppure accesso automatico se già previsto dal sistema
+
+3) STRUTTURA DATI UTENTE
+Assicurati che ogni cliente abbia almeno questi campi:
+- id
+- firstName
+- lastName
+- fullName
+- email
+- passwordHash
+- role = customer
+- createdAt
+- updatedAt
+
+Se esiste già un modello utenti, estendilo senza rompere nulla.
+NON duplicare sistemi già esistenti se possono essere riutilizzati.
+
+4) LOGIN NECESSARIO PER ACQUISTARE
+Nel pulsante “Acquista corso”:
+- se il cliente non è loggato, non aprire subito Stripe
+- mostra invece reindirizzamento o popup verso registrazione/login
+- se il cliente è loggato, allora può procedere normalmente al checkout
+
+5) MENU CLIENTE
+Quando il cliente è autenticato, nel menu o nell’area personale devono comparire chiaramente queste voci:
+- I miei corsi
+- Notifiche
+- Logout
+
+La voce “Notifiche” deve essere visibile solo all’utente loggato e deve portare alla pagina dove il cliente visualizza tutte le notifiche ricevute.
+
+6) NOTIFICHE CON CODICE ACCESSO
+Dopo il pagamento completato con successo:
+- il sistema deve creare una notifica interna associata all’utente che ha acquistato
+- nella sezione “Notifiche” il cliente deve vedere il codice di accesso ricevuto
+- il codice deve arrivare solo dopo conferma reale del pagamento
+
+Ogni notifica relativa ai corsi deve contenere:
+- userId
+- titolo
+- messaggio
+- courseId
+- accessCode
+- isRead
+- createdAt
+
+TESTO ESEMPIO:
+Titolo: “Acquisto corso completato”
+Messaggio: “Il pagamento è stato completato con successo. Il tuo codice di accesso al corso [NOME CORSO] è: [CODICE].”
+
+7) ASSOCIAZIONE CODICE ALL’ACCOUNT GIUSTO
+Il codice accesso deve arrivare solo all’account del cliente che ha acquistato il corso.
+Nessun altro utente deve poter vedere notifiche o codici non suoi.
+
+8) SICUREZZA E PERMESSI
+- solo utenti autenticati possono acquistare corsi
+- solo il proprietario dell’account può vedere le proprie notifiche
+- solo il proprietario dell’account può vedere i propri corsi acquistati
+- proteggi backend e frontend contro accessi non autorizzati
+
+9) COSA NON DEVI TOCCARE
+NON modificare o rompere:
+- Stripe già configurato
+- dashboard admin
+- creazione corsi
+- sconti e coupon
+- acquisti corsi già funzionanti
+- grafica generale del sito
+- altre funzionalità già stabili
+
+10) RISULTATO FINALE
+Alla fine deve funzionare così:
+- il cliente vede i corsi
+- clicca acquista
+- se non ha account, deve registrarsi con nome, cognome, email e password
+- poi effettua il login
+- poi può acquistare il corso
+- dopo il pagamento trova il codice nella sezione “Notifiche” del suo account
+
+IMPORTANTE
+Fai una modifica precisa e mirata.
+Non cambiare altre logiche che già funzionano.
+Non usare dati placeholder o flussi finti.
+Tutto deve essere realmente collegato al sistema utenti e alle notifiche reali del sito.

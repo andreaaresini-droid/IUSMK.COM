@@ -1,0 +1,71 @@
+Devo semplificare il modal/form di creazione nuovo corso nella dashboard admin di IUSMK, nella parte Stripe Payment Link.
+
+MODIFICHE RICHIESTE
+
+1. Selezione link pagamento
+Nel campo dove l’admin seleziona il link di pagamento salvato:
+- NON voglio che compaia l’ID tecnico tra parentesi
+- quindi non voglio più vedere cose tipo:
+  (plink_...)
+- l’admin deve vedere solo una dicitura pulita e leggibile, ad esempio:
+  - nome del link
+  - prezzo
+  - eventuale descrizione utile
+- niente ID tecnici visibili nella select
+
+2. Nascondere campi tecnici inutili
+Nel form nuovo corso NON voglio più che si vedano questi due campi:
+- URL Payment Link
+- ID Payment Link
+
+Perché:
+- sono già legati al link selezionato
+- l’admin non deve vederli né modificarli
+- devono essere gestiti internamente in automatico
+
+Quindi:
+- rimuovi questi campi dalla UI
+- mantieni però la logica interna corretta
+- quando l’admin seleziona il link, URL e paymentLinkId devono continuare a essere salvati dietro le quinte senza essere mostrati
+
+3. Prezzo corso
+Voglio eliminare completamente anche la sezione/campo dove l’admin scrive il prezzo del corso.
+
+Nuova logica:
+- il prezzo deve essere preso automaticamente dal Payment Link selezionato
+- l’admin non deve inserirlo manualmente
+- quando sceglie il link, il sistema deve leggere il prezzo associato a quel link e salvarlo nel corso
+
+4. Comportamento finale desiderato
+Quando l’admin crea un corso:
+- seleziona un Payment Link da una lista pulita
+- il sistema compila automaticamente dietro le quinte:
+  - URL payment link
+  - paymentLinkId
+  - prezzo del corso
+- l’admin vede solo ciò che gli serve davvero
+- niente campi tecnici inutili
+
+5. UI/UX
+- rendi il blocco Stripe Payment Link molto più pulito
+- niente informazioni confuse
+- design coerente con il resto del pannello admin
+- tutto ben visibile sia da desktop sia da mobile
+
+6. Compatibilità
+- non rompere:
+  - salvataggio corsi
+  - webhook Stripe
+  - assegnazione automatica corso post-pagamento
+  - link pagamenti già esistenti
+  - gestione admin corsi
+
+7. Se serve
+- usa nel select solo etichette user-friendly
+- ma conserva internamente ID e URL per il backend
+
+Alla fine dimmi:
+1. quali file hai modificato
+2. come hai nascosto URL Payment Link e ID Payment Link
+3. come hai fatto a prendere automaticamente il prezzo dal link selezionato
+4. come hai semplificato le etichette visibili nella select

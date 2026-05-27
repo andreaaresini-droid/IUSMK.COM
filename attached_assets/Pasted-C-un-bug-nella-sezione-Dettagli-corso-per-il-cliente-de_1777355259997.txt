@@ -1,0 +1,61 @@
+C’è un bug nella sezione “Dettagli corso per il cliente” dei corsi IUSMK: i video vengono aggiunti ma non si vede la copertina/anteprima e, quando clicco sul video, il lightbox si apre nero e il video non parte.
+
+Devi correggere SOLO questo problema, senza modificare altre sezioni.
+
+PROBLEMA ATTUALE:
+- Nel layout della galleria del corso compare uno spazio vuoto dove dovrebbe esserci il video.
+- Cliccando sullo spazio vuoto si apre il viewer, ma rimane schermata nera.
+- Il contatore mostra il video come elemento presente, quindi il media esiste, ma non viene renderizzato correttamente.
+
+CORREZIONI RICHIESTE:
+1. Controlla come vengono salvati i media nei “Dettagli corso per il cliente”.
+   - Ogni media deve avere un tipo corretto: image oppure video.
+   - Ogni video deve avere un URL valido e accessibile.
+   - Se il tipo non viene salvato, rilevalo automaticamente dal mime type o dall’estensione file: .mp4, .mov, .webm.
+
+2. Nel grid della sezione cliente:
+   - Le immagini devono continuare a vedersi come ora.
+   - I video devono mostrare una vera anteprima video, non un box nero/vuoto.
+   - Usa un tag video per la preview:
+     video src corretto
+     muted
+     loop
+     playsInline
+     preload="metadata"
+   - Fai partire automaticamente solo i primi 2 secondi in loop.
+   - Se il browser blocca autoplay, mostra almeno il primo frame del video e un’icona play sopra.
+
+3. Nel lightbox/viewer:
+   - Se il media è immagine, apri l’immagine come prima.
+   - Se il media è video, apri un tag video vero con:
+     controls
+     autoplay
+     playsInline
+     preload="auto"
+     src corretto
+   - Il video deve essere visibile e riproducibile, con barra per andare avanti/indietro.
+   - Non deve aprirsi una schermata nera.
+   - Il contenuto deve essere centrato e adattarsi bene allo schermo mobile.
+
+4. Fix importante:
+   - Non usare il componente immagine per renderizzare i video.
+   - Non passare URL video dentro tag img.
+   - Non usare thumbnail vuote o poster inesistenti.
+   - Se il video non ha poster, deve comunque usare il video stesso come anteprima.
+
+5. Debug:
+   - Aggiungi controlli in console solo temporanei o non invasivi per verificare:
+     - tipo media
+     - URL media
+     - errore di caricamento video
+   - Gestisci onError del video mostrando un messaggio tipo “Video non disponibile” invece di box nero.
+
+6. Non toccare:
+   - galleria principale se funziona già
+   - stile generale del sito
+   - login
+   - corsi già pubblicati
+   - immagini già presenti
+
+Obiettivo finale:
+nella sezione “Dettagli corso per il cliente”, i video devono vedersi nella griglia con anteprima funzionante e, cliccandoci sopra, devono aprirsi nel lightbox e riprodursi correttamente.

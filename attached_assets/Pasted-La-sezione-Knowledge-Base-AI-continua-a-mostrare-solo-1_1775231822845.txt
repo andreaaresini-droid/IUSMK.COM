@@ -1,0 +1,128 @@
+La sezione “Knowledge Base AI” continua a mostrare solo 1 voce, ma il sistema dice di averne aggiunte molte altre.
+
+Quindi il problema NON è creare nuove voci.
+Il problema è che le voci create non stanno comparendo davvero nella lista della Knowledge Base AI.
+
+Voglio che tu controlli e corregga SOLO questo problema, senza toccare altre funzioni del sito.
+
+OBIETTIVO
+La pagina “Knowledge Base AI” deve mostrare realmente tutte le voci attive e pubblicate già create nel database.
+
+PROBLEMA DA RISOLVERE
+Attualmente il sistema dice:
+- “18 nuove voci aggiunte”
+- “Totale KB: 49 voci attive e pubblicate”
+ma nella schermata della Knowledge Base AI ne appare solo 1.
+
+Quindi voglio un controllo completo del flusso:
+- database reale
+- query della lista
+- filtri frontend/backend
+- refresh/cache
+- source corretta dei dati
+
+CONTROLLI OBBLIGATORI
+
+1) CONTROLLA DOVE VENGONO SALVATE LE VOCI
+Verifica che le nuove voci siano state salvate davvero nella stessa tabella/collezione usata dalla pagina “Knowledge Base AI”.
+Controlla se per errore:
+- vengono salvate in una tabella diversa
+- vengono salvate in un ambiente diverso
+- vengono salvate in memoria temporanea
+- vengono salvate in un JSON/mock e non nel database reale
+- vengono salvate in una collection diversa da quella letta dalla dashboard
+
+2) CONTROLLA LA QUERY DELLA PAGINA KNOWLEDGE BASE AI
+Verifica la query usata dalla schermata admin.
+La lista deve leggere TUTTE le voci con:
+- isPublished = true
+- isActive = true
+oppure, se la schermata mostra “Tutte”, deve leggere tutte le voci senza nasconderle.
+
+Controlla che la query non abbia per errore:
+- limit 1
+- pagination rotta
+- offset errato
+- order/filter sbagliati
+- filtro categoria che blocca i risultati
+- filtro testuale iniziale non vuoto
+- filtro solo “manual_entry”
+- filtro su createdBy o sourceType che esclude le nuove voci
+
+3) CONTROLLA IL FRONTEND DELLA LISTA
+Verifica se i dati arrivano davvero al frontend ma vengono mostrati male.
+Controlla:
+- rendering della lista
+- map sui record
+- key duplicate
+- slicing accidentale
+- stato React/Vue non aggiornato
+- cache non invalidata
+- fetch che usa dati vecchi
+- revalidation non eseguita
+- useEffect / loader / state che sovrascrivono i record
+
+4) CONTROLLA I FILTRI DELLA PAGINA
+Nella schermata vedo:
+- Cerca...
+- Tutte categorie
+- Tutte / Attive / Inattive
+
+Verifica che i filtri non stiano bloccando i risultati appena creati.
+Quando apro la pagina in modalità “Tutte”, devo vedere tutti i record.
+Se necessario, correggi i filtri in modo che al primo caricamento:
+- non venga applicato nessun filtro nascosto
+- non venga mostrato solo il primo record
+
+5) AGGIUNGI DEBUG TEMPORANEO
+Aggiungi un controllo tecnico temporaneo nella pagina admin Knowledge Base AI:
+- totale record letti dal database
+- totale record dopo i filtri
+- totale record renderizzati
+
+Per esempio:
+- Record nel DB: 49
+- Record dopo filtro: 49
+- Record mostrati: 49
+
+Questo debug può essere anche piccolo e solo admin.
+Serve per capire subito dove si rompe il flusso.
+
+6) FAI UN TEST DIRETTO
+Esegui un test reale:
+- leggi direttamente dal database tutte le voci Knowledge Base
+- stampa gli ID e i titoli
+- confrontali con quelli mostrati nella UI
+
+Se nel DB ci sono 49 record ma in UI ne compare 1, correggi subito la parte di fetch/render.
+Se nel DB non ci sono davvero, correggi la parte di salvataggio.
+
+7) INVALIDAZIONE CACHE / REFRESH
+Dopo la creazione o aggiornamento di una voce:
+- la lista Knowledge Base deve aggiornarsi davvero
+- invalida cache
+- rifai fetch
+- aggiorna lo stato frontend
+- non lasciare la UI bloccata con dati vecchi
+
+8) NON TOCCARE ALTRO
+- non modificare la chat widget
+- non modificare il resto del sito
+- non cambiare il design se non necessario
+- non cambiare la logica AI generale
+- correggi solo la visualizzazione reale delle voci nella sezione Knowledge Base AI
+
+9) RISULTATO FINALE
+Voglio aprire la schermata Knowledge Base AI e vedere davvero tutte le voci create, non una sola.
+
+La pagina deve mostrare:
+- tutte le voci pubblicate e attive
+- con titolo, categoria e azioni corrette
+- senza dover fare workaround manuali
+
+10) VERIFICA FINALE OBBLIGATORIA
+Alla fine del fix controlla e conferma con test reale:
+- quanti record esistono davvero nel DB
+- quanti vengono restituiti dalla query della pagina
+- quanti vengono renderizzati nella lista
+- che i numeri coincidano

@@ -1,0 +1,136 @@
+C’è ancora un problema serio con l’upload dei video nella sezione Galleria della dashboard admin.
+
+Problema attuale
+
+Quando provo a caricare un video compare:
+
+Errore di caricamento
+Errore 413 durante il caricamento
+
+Quindi il sistema sta ancora bloccando i video lato server o lato endpoint, nonostante la UI li accetti.
+
+OBIETTIVO
+
+Voglio che l’upload dei video funzioni davvero nella galleria admin, anche con file abbastanza pesanti.
+
+1. Risolvere l’errore 413
+
+L’errore 413 indica quasi certamente che:
+
+il body della richiesta è troppo grande
+oppure il server / proxy / middleware upload sta rifiutando il file
+Devi controllare e correggere tutti i punti possibili:
+API route che riceve il file
+limite body parser
+middleware upload
+server config
+reverse proxy / edge config se presente
+piattaforma storage
+limite del form multipart
+eventuale parser di Replit / Express / Next / ecc.
+
+Non voglio una soluzione solo grafica: devi eliminare la vera causa del 413.
+
+2. Separare bene upload immagini e upload video
+
+Voglio una gestione distinta:
+
+Immagini
+endpoint immagini
+limiti immagini separati
+Video
+endpoint video dedicato oppure logica separata
+limiti video più alti
+gestione pensata per file pesanti
+
+Per i video non usare una strada pensata solo per immagini.
+
+3. Limiti realistici per i video
+
+Imposta un limite video almeno di:
+
+150MB
+oppure comunque abbastanza alto da permettere caricamenti normali dalla dashboard admin
+
+Se la piattaforma attuale non regge bene i video grandi tramite body classico:
+
+usa upload diretto allo storage
+oppure upload in streaming
+oppure soluzione più robusta per multipart pesante
+4. Se necessario cambia architettura upload video
+
+Se il problema è strutturale, allora voglio una soluzione corretta.
+
+Ad esempio:
+
+upload diretto a storage/bucket
+signed upload URL
+caricamento senza passare il file completo dal body dell’API principale
+salvataggio metadati nel database solo dopo upload riuscito
+
+L’importante è che i video si carichino davvero.
+
+5. UI upload video
+
+Quando carico un video voglio:
+
+stato “Caricamento in corso…”
+eventuale barra progresso
+messaggio di successo vero
+messaggio d’errore preciso se qualcosa fallisce
+
+Niente errore generico inutile.
+
+6. Verifica database / salvataggio contenuto
+
+Una volta caricato il video:
+
+deve essere salvato correttamente
+deve comparire nella galleria admin
+deve avere:
+tipo video
+categoria
+titolo/didascalia se inserito
+URL file corretto
+eventuale thumbnail se prevista
+7. Non rompere gli upload immagini
+
+Gli upload immagini devono continuare a funzionare perfettamente.
+
+Quindi:
+
+non modificare in peggio la parte immagini
+risolvi specificamente la parte video
+8. Controlli da fare obbligatoriamente
+
+Dopo la correzione, fai test reali:
+
+Test 1
+
+Carica un video piccolo → deve funzionare
+
+Test 2
+
+Carica un video medio/pesante → deve funzionare
+
+Test 3
+
+Verifica che il video:
+
+venga salvato
+compaia nella griglia admin
+sia filtrabile con il filtro “Video”
+9. Voglio sapere dove stava il problema
+
+Alla fine dimmi chiaramente:
+
+quale parte causava il 413
+cosa hai modificato
+se hai creato un endpoint upload video dedicato
+qual è il nuovo limite effettivo per i video
+IMPORTANTE
+
+Adesso il problema non è la selezione del file:
+il video viene scelto ma fallisce durante il caricamento con errore 413.
+
+Quindi devi correggere il backend/upload system in modo reale e definitivo.

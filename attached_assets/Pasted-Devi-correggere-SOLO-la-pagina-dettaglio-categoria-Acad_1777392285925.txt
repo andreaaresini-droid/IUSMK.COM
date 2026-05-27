@@ -1,0 +1,80 @@
+Devi correggere SOLO la pagina dettaglio categoria Academy.
+
+NON modificare altre sezioni.
+
+PROBLEMA 1 - TASTO “SCOPRI TUTTI I CORSI”
+Il tasto fluttuante va bene, però NON deve scomparire appena il cliente scorre.
+
+Nuovo comportamento:
+- Il tasto deve restare visibile mentre il cliente guarda descrizione, trailer, cosa imparerai e gallery.
+- Deve scomparire SOLO quando il cliente arriva sopra o vicino alla sezione dei video corsi disponibili.
+- Se il cliente clicca il tasto:
+  - fai scroll fluido fino alla sezione video corsi
+  - il tasto scompare
+- Se il cliente scorre manualmente:
+  - il tasto scompare solo quando la sezione video corsi entra nel viewport.
+
+Implementazione consigliata:
+- Mantieni id/ref sulla sezione video corsi, tipo `academy-course-videos`.
+- Usa IntersectionObserver per rilevare quando la sezione video corsi è visibile.
+- Nascondi il tasto solo quando `academy-course-videos` entra nel viewport.
+- Non nasconderlo al primo scroll generico.
+
+PROBLEMA 2 - MEDIA GALLERY CATEGORIA CHE SPARISCONO
+Nella gallery della categoria Academy alcune immagini/video spariscono improvvisamente e compare “Media non disponibile”.
+NON deve succedere.
+
+Le immagini e i video caricati nella categoria devono:
+- restare sempre salvati sul sito
+- non sparire dopo refresh
+- non sparire dopo modifica categoria
+- non sparire lato cliente
+- caricarsi velocemente
+- vedersi sempre correttamente
+
+CORREZIONI RICHIESTE:
+1. Controlla il salvataggio dei media categoria Academy:
+   - ogni media deve salvare url definitivo stabile
+   - type corretto: image/video
+   - mimeType se disponibile
+   - poster/thumbnail se disponibile
+   - non salvare blob URL temporanei tipo blob:
+   - non salvare preview URL temporanei generati dal browser
+   - non salvare file locali non persistenti
+
+2. Se l’admin aggiorna la categoria:
+   - NON ricaricare media già esistenti
+   - NON sovrascrivere la gallery con array vuoti
+   - NON eliminare media se l’admin modifica solo testo, titolo, descrizione o ordine
+   - mantieni i media già salvati finché l’admin non li elimina manualmente
+
+3. Lato cliente:
+   - se media è immagine usa img con url stabile
+   - se media è video usa video preview
+   - niente box nero se il media è valido
+   - niente “Media non disponibile” se l’URL è corretto
+   - aggiungi fallback solo se il file è davvero irraggiungibile
+
+4. Performance:
+   - usa lazy loading per immagini sotto la piega
+   - usa immagini ottimizzate/compresse come nella galleria principale
+   - usa preload metadata per video
+   - non scaricare video interi nella griglia
+   - mostra preview veloce
+
+5. Debug:
+   - verifica perché alcuni media diventano non disponibili
+   - controlla se l’URL salvato cambia o sparisce dopo update
+   - controlla se viene salvato un URL temporaneo invece del file caricato
+   - controlla se la risposta upload non viene mappata correttamente nei media Academy
+
+IMPORTANTE:
+- Non modificare galleria principale se funziona.
+- Non modificare corsi/video corsi se funzionano.
+- Riutilizza la logica stabile della galleria/corsi anche per Academy.
+- Non rompere login, chat, acquisti, notifiche o dashboard.
+- Testa mobile e desktop.
+
+RISULTATO FINALE:
+Il tasto “Scopri tutti i corsi” resta visibile finché il cliente non arriva alla sezione video corsi.
+La gallery della categoria Academy mostra sempre immagini e video corretti, stabili e veloci, senza sparizioni improvvise.

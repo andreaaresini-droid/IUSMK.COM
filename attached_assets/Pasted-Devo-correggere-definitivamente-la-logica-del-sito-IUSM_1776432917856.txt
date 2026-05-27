@@ -1,0 +1,93 @@
+Devo correggere definitivamente la logica del sito IUSMK tra Academy, I miei corsi e Codici admin.
+
+PROBLEMI ATTUALI
+1. In “I miei corsi” continuano a comparire corsi/codici in modo sbagliato
+2. Anche se un codice è revocato, il corso continua a comparire al cliente
+3. Quando creo un nuovo codice e il cliente lo inserisce, il corso non viene mostrato correttamente come corso guardabile
+4. In “I miei corsi” non voglio vedere il codice del corso con il bottone “Accedi al corso” come adesso
+5. Voglio che in admin, vicino ai codici, oltre a “Revoca” ci sia anche un tasto “Elimina” per cancellarli definitivamente
+
+LOGICA CORRETTA DESIDERATA
+
+A. Academy
+- La sezione “Academy” è l’unico posto in cui il cliente può sbloccare i corsi con un codice
+- In Academy devono vedersi i corsi disponibili e, per quelli non ancora sbloccati, il campo/bottone per inserire il codice
+- Quando il cliente inserisce il codice corretto nel corso giusto:
+  1. il codice viene validato
+  2. il corso viene sbloccato davvero nel database
+  3. il codice viene segnato come usato/attivato
+  4. il cliente viene reindirizzato automaticamente a “I miei corsi”
+
+B. I miei corsi
+- La sezione “I miei corsi” deve mostrare SOLO corsi già sbloccati, già attivi, già accessibili
+- Non deve mostrare codici
+- Non deve mostrare corsi pending
+- Non deve mostrare corsi solo assegnati ma non sbloccati
+- Non deve mostrare corsi con codici revocati/eliminati se non sono stati davvero sbloccati
+- Deve mostrare solo corsi che il cliente può già guardare
+- Dentro ogni corso devono esserci direttamente i contenuti (video/foto/moduli) oppure il bottone che porta ai contenuti del corso, non il codice
+
+C. Codici admin
+Nella sezione admin > account registrati > codici:
+- mantieni il tasto “Revoca”
+- aggiungi anche il tasto “Elimina”
+- “Elimina” deve rimuovere definitivamente il codice dal database
+- se il codice eliminato non ha mai sbloccato un corso, non deve più influenzare nulla lato cliente
+- se il codice era già stato usato per sbloccare un corso, gestisci correttamente il caso:
+  - il corso già sbloccato può restare attivo solo se questa è la regola corretta del sistema
+  - altrimenti definisci chiaramente la logica e applicala in modo coerente
+- in ogni caso niente comportamenti incoerenti o duplicati
+
+D. Correzione struttura dati / stati
+Separa chiaramente questi concetti nel database e nella logica:
+1. codice assegnato
+2. codice revocato
+3. codice eliminato
+4. corso sbloccato
+5. corso attivo/accessibile
+6. corso visibile in “I miei corsi”
+
+La regola deve essere:
+- “I miei corsi” legge solo corsi con stato sbloccato/attivo/accessibile
+- Academy gestisce i corsi ancora da sbloccare
+- i codici revocati o eliminati non devono comparire nei corsi del cliente
+- nessun corso deve apparire in “I miei corsi” solo perché è stato assegnato un codice
+
+E. UX corretta lato cliente
+Dopo inserimento codice corretto:
+- messaggio: “Corso sbloccato con successo”
+- redirect automatico a “I miei corsi”
+- lì il cliente deve trovare il corso già attivo
+- cliccando il corso deve accedere ai contenuti veri del corso
+
+F. Debug obbligatorio
+Aggiungi log chiari:
+- [CODE] assigned
+- [CODE] revoked
+- [CODE] deleted
+- [UNLOCK] activation requested
+- [UNLOCK] code valid
+- [UNLOCK] course unlocked
+- [UNLOCK] redirect to my-courses
+- [MY COURSES] fetched active/unlocked courses only
+- [ADMIN CODES] hard delete executed
+- [BUG] if a revoked/deleted code still appears in my-courses
+
+G. Pulizia dati incoerenti già esistenti
+Controlla se nel database esistono record sporchi/vecchi che fanno comparire corsi sbagliati in “I miei corsi”.
+Ripulisci o migra i dati incoerenti in modo sicuro.
+
+IMPORTANTISSIMO
+- Non rompere notifiche
+- Non rompere admin account registrati
+- Non rompere i pagamenti Stripe
+- Non rompere la sezione Academy
+- Non rompere i contenuti dei corsi
+- Tutto deve funzionare bene anche da mobile
+
+Alla fine dimmi:
+1. quali file hai modificato
+2. qual era il bug logico preciso
+3. come hai separato Academy da I miei corsi
+4. come hai implementato il tasto Elimina definitivo sui codici
+5. come hai fatto in modo che “I miei corsi” mostri solo corsi davvero sbloccati e guardabili

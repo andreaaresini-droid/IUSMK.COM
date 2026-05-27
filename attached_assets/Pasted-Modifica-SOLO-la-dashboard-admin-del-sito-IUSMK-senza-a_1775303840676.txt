@@ -1,0 +1,103 @@
+Modifica SOLO la dashboard admin del sito IUSMK, senza alterare nulla che già funziona nel resto dell’app.
+
+OBIETTIVO 1 — sezione “Chat clienti”
+Nella pagina “Chat clienti” della dashboard admin aggiungi un pulsante ben visibile:
+“+ Crea nuova chat”
+
+Funzionamento richiesto:
+1. Quando l’admin clicca “Crea nuova chat”, si apre una modale/popup.
+2. Nella modale l’admin deve poter:
+   - cercare tra tutti gli account registrati sul sito
+   - selezionare un utente registrato
+   - facoltativamente scrivere un primo messaggio
+   - cliccare “Crea chat”
+3. Se esiste già una chat tra admin e quell’utente:
+   - NON crearne una duplicata
+   - aprire direttamente la chat esistente
+   - mostrare un piccolo messaggio tipo “Chat già esistente, apertura in corso”
+4. Se non esiste:
+   - creare una nuova conversazione
+   - assegnarla correttamente tra admin e utente selezionato
+   - salvarla nello stesso sistema già usato dalle chat attuali
+   - mostrare subito la nuova chat nell’elenco “Chat clienti”
+5. Dopo la creazione, l’admin deve essere reindirizzato direttamente dentro la conversazione appena creata.
+6. La UI deve restare coerente con lo stile attuale IUSMK admin (dark, elegante, mobile friendly).
+
+Dettagli tecnici:
+- Usa gli utenti registrati reali del sito
+- Aggiungi campo ricerca per nome / email / username
+- Gestisci stato loading, errore e successo
+- La lista chat deve aggiornarsi subito senza bisogno di refresh manuale
+- Non rompere la logica esistente di visualizzazione conversazioni
+- Mantieni compatibilità completa mobile
+
+OBIETTIVO 2 — notifiche messaggi interattive
+Nella sezione “Notifiche”, quando arriva una notifica di nuovo messaggio, l’admin deve poter interagire e rispondere.
+
+Funzionamento richiesto:
+1. Ogni notifica relativa a un messaggio ricevuto deve essere cliccabile.
+2. Quando l’admin clicca la notifica:
+   - deve aprirsi direttamente la conversazione corretta
+   OPPURE
+   - deve aprirsi una modale rapida di risposta
+3. Preferenza:
+   - clic sulla notifica => apre la chat completa con quell’utente
+   - dentro la chat l’admin può leggere e rispondere normalmente
+4. In alternativa, se implementi anche risposta rapida:
+   - aggiungi pulsante “Rispondi” sulla card notifica
+   - apre una mini modale con campo testo e pulsante invio
+   - il messaggio inviato deve finire nella conversazione corretta
+5. Quando l’admin risponde:
+   - il messaggio deve comparire nella chat reale
+   - l’utente deve riceverlo nel suo sistema messaggi / notifiche
+   - la notifica admin può essere marcata come letta
+6. Le notifiche messaggio devono contenere metadati completi:
+   - conversationId
+   - senderId
+   - senderName
+   - preview del messaggio
+   - timestamp
+   così da poter aprire la conversazione esatta senza errori
+
+OBIETTIVO 3 — comportamento corretto delle notifiche
+Sistema la logica delle notifiche messaggi in modo che:
+1. le notifiche di tipo “nuovo messaggio” siano distinte dalle altre notifiche di sistema
+2. ogni notifica messaggio porti sempre alla chat giusta
+3. una volta aperta la chat, la notifica possa essere segnata come letta
+4. se arrivano più messaggi dalla stessa conversazione, le notifiche restino coerenti
+5. non venga persa la possibilità di visualizzare cronologia e timestamp
+
+REQUISITI IMPORTANTI
+- NON modificare altre sezioni dell’admin
+- NON cambiare il design globale del sito
+- NON rompere login, utenti, notifiche esistenti o chat già presenti
+- NON creare nuove strutture inutili se esiste già un modello dati per chat e notifiche
+- Riutilizza il sistema esistente di conversazioni, utenti e notifiche
+- Se serve, aggiungi solo i campi minimi necessari
+- Tutto deve funzionare bene anche da mobile
+
+DA FARE ANCHE
+- Se nella pagina “Chat clienti” attualmente si vede solo l’elenco, rendi cliccabile ogni conversazione per aprirla
+- Se una notifica messaggio oggi è solo visiva, trasformala in azione reale
+- Aggiungi empty state elegante se non ci sono utenti o conversazioni
+- Aggiungi toast o feedback visivi per:
+  - chat creata
+  - chat già esistente
+  - messaggio inviato
+  - errore caricamento
+  - errore invio
+
+TEST FINALI OBBLIGATORI
+Verifica questi casi:
+1. Admin crea una nuova chat con un utente registrato che non ha mai scritto
+2. Admin prova a creare una chat con un utente con cui esiste già una conversazione
+3. Arriva un nuovo messaggio e compare notifica
+4. Admin clicca la notifica e si apre la conversazione corretta
+5. Admin risponde e il messaggio viene salvato nella chat giusta
+6. Da mobile tutto è utilizzabile e leggibile
+7. Nessuna regressione nelle chat già esistenti
+
+Alla fine mostrami chiaramente:
+- quali file hai modificato
+- quali campi o funzioni hai aggiunto
+- come hai collegato notifica -> conversazione -> risposta

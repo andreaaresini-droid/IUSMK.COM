@@ -1,0 +1,77 @@
+Voglio sostituire la scritta attuale della HERO nella home del sito IUSMK:
+
+“Transforming scalps into canvases”
+
+con un’immagine che ti ho allegato (la scritta nello stile 3D del logo IUSMK).
+
+OBIETTIVO
+- rimuovere completamente il testo attuale (sia titolo che sottotitolo se necessario)
+- inserire al suo posto l’immagine allegata
+- mantenere lo stesso posizionamento centrale nella HERO
+
+COSA FARE:
+
+1. SOSTITUZIONE TESTO → IMMAGINE
+- trova la sezione HERO della homepage
+- individua la scritta:
+  - “Transforming scalps”
+  - “into canvases”
+- rimuovi questi elementi testuali
+- sostituiscili con un <img> usando l’immagine che ti ho allegato
+
+2. POSIZIONAMENTO
+- l’immagine deve stare esattamente dove prima c’era la scritta
+- centrata orizzontalmente
+- ben allineata sopra i bottoni:
+  - “Contattami su WhatsApp”
+  - “Entra all’academy”
+
+3. DIMENSIONI
+- deve essere grande e impattante come la scritta originale
+- ma non deve uscire dallo schermo
+- imposta:
+  - width: 100%
+  - max-width: (valore ottimale tipo 700–1000px, adattalo bene)
+  - height: auto
+
+4. TRASPARENZA
+- l’immagine deve mantenere lo sfondo trasparente
+- non aggiungere sfondi dietro
+- deve integrarsi con la background image della hero
+
+5. RESPONSIVE (IMPORTANTISSIMO)
+- su mobile:
+  - l’immagine deve ridimensionarsi correttamente
+  - non deve sovrapporsi ai bottoni
+  - non deve uscire dai margini
+- usa:
+  - max-width: 90% su mobile se necessario
+  - margin/padding corretti
+
+6. QUALITÀ
+- assicurati che:
+  - l’immagine sia nitida
+  - non venga compressa male
+  - non sia sfocata
+
+7. NON CAMBIARE ALTRO
+- non modificare navbar
+- non modificare bottoni
+- non modificare layout generale
+- non toccare altre sezioni
+
+8. EVENTUALE MIGLIORIA
+Se serve per leggibilità:
+- aggiungi un leggero drop-shadow all’immagine
+- ma molto leggero (effetto premium, non pesante)
+
+TEST FINALI
+- verifica su desktop
+- verifica su mobile
+- verifica che i bottoni siano ancora cliccabili e ben visibili
+- verifica che l’immagine sia perfettamente centrata
+
+Alla fine fammi un riepilogo con:
+- dove hai inserito l’immagine
+- dimensioni utilizzate
+- eventuali aggiustamenti responsive

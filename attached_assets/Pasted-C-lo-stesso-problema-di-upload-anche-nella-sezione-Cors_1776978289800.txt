@@ -1,0 +1,164 @@
+C’è lo stesso problema di upload anche nella sezione Corsi della dashboard admin, non solo nella Galleria.
+
+Problema attuale
+
+Nel form “Nuovo Corso”:
+
+Copertina corso
+
+compare ancora:
+
+“File troppo grande. Massimo 10MB”
+File video lezione
+
+compare:
+
+“File troppo grande. Massimo 500MB”
+
+Quindi la gestione upload dei corsi non è ancora robusta e va sistemata davvero, sia per:
+
+immagini copertina
+video delle lezioni
+OBIETTIVO
+
+Voglio che nella sezione Corsi l’admin possa caricare senza problemi:
+
+copertine immagini abbastanza grandi
+video corsi molto più pesanti
+senza errori inutili o blocchi lato server.
+1. Sistemare upload copertina corso
+Problema
+
+Il limite da 10MB per la copertina è troppo basso.
+
+Voglio:
+aumentare il limite immagini copertina ad almeno 30MB
+meglio ancora 50MB
+supporto stabile per:
+JPG
+PNG
+WEBP
+Da controllare:
+validazione frontend
+validazione backend
+middleware upload
+body size limit
+storage upload
+endpoint del corso
+
+Non voglio solo cambiare il testo “10MB”: voglio che il caricamento funzioni davvero.
+
+2. Sistemare upload video lezioni corso
+Problema
+
+Anche i video dei corsi stanno dando problemi o hanno una gestione non abbastanza solida.
+
+Anche se in UI compare 500MB, voglio che tu verifichi che:
+
+il backend lo supporti davvero
+non ci siano errori 413 o blocchi server
+il caricamento sia reale e stabile
+Voglio:
+supporto reale almeno fino a 500MB
+se possibile anche superiore, ma senza rompere nulla
+upload stabile anche per file pesanti
+3. Se necessario, separare gli endpoint
+
+Non usare la stessa logica semplice per tutto.
+
+Voglio una gestione separata per:
+
+A. Copertina corso
+upload immagini
+limiti immagini dedicati
+B. Video lezione
+upload video dedicato
+gestione più robusta
+niente blocco per body troppo grande
+
+Se serve, crea endpoint distinti.
+
+4. Se necessario, cambia architettura upload video corsi
+
+Se il problema è strutturale, voglio una soluzione corretta.
+
+Per i video corso usa una soluzione robusta, ad esempio:
+
+upload diretto su storage
+signed URL
+upload streaming / multipart serio
+salvataggio nel database solo dopo successo upload
+
+L’importante è che i video delle lezioni si carichino davvero.
+
+5. Migliorare UX del form “Nuovo Corso”
+
+Quando l’admin carica una copertina o un video voglio:
+
+Per la copertina:
+preview chiara
+messaggio “caricamento in corso”
+eventuale compressione solo se serve
+niente errore inutile prematuro
+Per i video:
+stato caricamento
+barra di progresso o feedback visivo
+messaggi d’errore reali
+conferma upload completato
+6. Controllare tutte le validazioni corsi
+
+Verifica tutto il flusso della sezione corsi:
+
+creazione nuovo corso
+upload copertina
+aggiunta lezioni
+upload video lezione
+salvataggio corso finale
+modifica corso esistente
+
+Perché non voglio che sembri accettare i file e poi fallisca dopo.
+
+7. Non rompere ciò che già funziona
+
+Mantieni funzionanti:
+
+struttura corsi
+creazione lezioni
+titoli/descriptions
+ordine lezioni
+modifica corso
+codici accesso collegati ai corsi
+8. Controlli reali obbligatori
+
+Dopo la modifica fai test veri:
+
+Test copertina
+carica un’immagine sopra 10MB
+verifica che venga accettata davvero
+Test video corso
+carica un video lezione pesante
+verifica che non dia errore 413
+verifica che venga salvato correttamente
+Test salvataggio finale
+crea un corso completo con copertina + almeno una lezione video
+verifica che il corso si salvi senza errori
+9. Voglio sapere dove stava il problema
+
+Alla fine dimmi chiaramente:
+
+quale parte bloccava le immagini copertina
+quale parte bloccava i video corso
+cosa hai modificato
+quali sono ora i limiti reali effettivi
+se hai creato endpoint upload separati
+IMPORTANTE
+
+Il problema non è solo nella Galleria:
+anche nella sezione Corsi gli upload non sono gestiti bene.
+
+Quindi voglio una correzione completa della parte upload per:
+
+copertine corsi
+video lezioni
+
+Non una modifica visiva, ma una soluzione reale e definitiva.

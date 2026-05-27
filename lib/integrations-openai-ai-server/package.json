@@ -1,0 +1,24 @@
+{
+  "name": "@workspace/integrations-openai-ai-server",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    ".": {
+      "default": "./src/index.ts"
+    },
+    "./batch": {
+      "default": "./src/batch/index.ts"
+    },
+    "./image": {
+      "default": "./src/image/index.ts"
+    },
+    "./audio": {
+      "default": "./src/audio/index.ts"
+    }
+  },
+  "dependencies": {
+    "openai": "^6.27.0",
+    "p-limit": "^7.3.0",
+    "p-retry": "^7.1.1"
+  }
+}

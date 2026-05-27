@@ -1,0 +1,83 @@
+Devo aggiungere lo stesso funzionamento del logo 3D anche al logo nero in alto a sinistra del sito IUSMK.
+
+OBIETTIVO:
+Sostituire il logo nero 2D in alto a sinistra con un logo 3D nero che allegherò a Replit.
+Il logo 3D deve girare lentamente da solo a 360 gradi, proprio come il logo 3D centrale.
+
+ISTRUZIONI:
+
+1. FILE LOGO 3D NERO:
+- Caricherò un nuovo file .glb del logo nero negli assets/public del progetto.
+- Usa questo file per il logo in alto a sinistra.
+- Imposta una variabile facile da modificare:
+  const HEADER_LOGO_3D_SRC = "/logo-3d-nero.glb"
+
+2. SOSTITUZIONE LOGO HEADER:
+- Trova il logo nero attuale in alto a sinistra.
+- Sostituiscilo con il modello 3D nero.
+- Non lasciare più il logo 2D in quella posizione.
+
+3. POSIZIONE:
+- Il logo 3D deve rimanere esattamente nella zona del logo attuale: alto a sinistra.
+- Non deve spostare il menu, il pulsante Accedi, la lingua o altri elementi.
+- Deve essere ben allineato con la navbar/header.
+
+4. DIMENSIONE:
+- Deve essere piccolo e proporzionato come logo di header.
+- Non deve essere grande come il logo centrale.
+- Su mobile deve essere visibile ma non invadente.
+- Deve occupare circa lo stesso spazio del logo 2D attuale.
+
+5. ROTAZIONE AUTOMATICA:
+- Il logo deve ruotare lentamente da solo a 360 gradi.
+- Rotazione continua, fluida e premium.
+- Deve ruotare sull’asse verticale Y.
+- Velocità consigliata: 1 giro completo ogni 12–18 secondi.
+
+6. INTERAZIONE UTENTE:
+- Anche il logo in alto a sinistra deve poter essere ruotato dal cliente con dito o mouse.
+- Quando il cliente lo ruota manualmente, la rotazione automatica si ferma temporaneamente.
+- Quando il cliente smette di toccarlo, dopo circa 1 secondo deve riprendere a girare automaticamente.
+
+7. BLOCCA SPOSTAMENTO:
+- Il logo NON deve potersi spostare.
+- Disattiva pan e zoom:
+  enableZoom={false}
+  enablePan={false}
+  enableRotate={true}
+
+8. CENTRO DI ROTAZIONE:
+- Il logo deve ruotare intorno al suo centro reale.
+- Non deve ruotare da un lato.
+- Usa la stessa logica già corretta per il logo 3D centrale:
+  calcola bounding box
+  centra il modello su (0,0,0)
+  ruota un group esterno centrato
+
+9. CANVAS:
+- Il Canvas deve essere trasparente.
+- Non deve apparire nessun riquadro visibile.
+- Il contenitore deve essere abbastanza grande per evitare tagli mentre ruota.
+- Non usare overflow hidden.
+
+10. PERFORMANCE:
+- Il logo header deve essere leggero e fluido.
+- Non deve rallentare il sito.
+- Usa dpr={[1, 2]}.
+- Usa luci leggere.
+
+11. NON MODIFICARE:
+- logo 3D centrale già funzionante
+- intro video
+- galleria
+- homepage layout generale
+- menu
+- login
+- corsi
+- admin
+- chat
+- pagamenti
+
+RISULTATO FINALE:
+Il logo nero in alto a sinistra viene sostituito con il nuovo logo 3D nero.
+Resta piccolo, ben posizionato nell’header, ruota lentamente da solo a 360 gradi, può essere ruotato dal cliente, ma non si sposta mai dalla sua posizione.

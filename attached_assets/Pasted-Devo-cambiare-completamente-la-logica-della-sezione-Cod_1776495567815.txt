@@ -1,0 +1,108 @@
+Devo cambiare completamente la logica della sezione “Codici sconto” del sito IUSMK.
+
+NUOVA LOGICA DESIDERATA
+
+1. Nella sezione admin “Codici sconto” NON voglio più creare i codici sconto direttamente dal mio sito.
+2. Voglio invece un pulsante ben visibile tipo:
+   - “Crea coupon su Stripe”
+3. Quando l’admin clicca quel pulsante, deve essere reindirizzato direttamente a questa pagina:
+   https://dashboard.stripe.com/acct_1TH79cE4SaTY9Ult/coupons/create
+
+OBIETTIVO
+L’admin crea il coupon direttamente sulla dashboard Stripe.
+Poi, tornando nella dashboard del sito IUSMK, deve poter inviare quel coupon ai clienti.
+
+FUNZIONI RICHIESTE NELLA SEZIONE “CODICI SCONTO”
+A. Pulsante collegamento Stripe
+- aggiungi in alto un pulsante “Crea coupon su Stripe”
+- deve aprire il link:
+  https://dashboard.stripe.com/acct_1TH79cE4SaTY9Ult/coupons/create
+- se possibile aprilo in nuova scheda
+- stile coerente con la dashboard admin
+
+B. Gestione invio coupon ai clienti
+Dopo che l’admin ha creato il coupon su Stripe e torna sul sito:
+- deve poter inviare manualmente il coupon a:
+  1. un singolo cliente
+  2. più clienti selezionati
+  3. opzionalmente tutti i clienti
+- non serve più la creazione del coupon lato sito
+- il sito deve solo gestire l’invio/comunicazione del coupon ai clienti
+
+C. Dati coupon da inviare
+Nel pannello admin “Codici sconto” voglio una UI semplice per creare una “campagna di invio coupon”, con campi tipo:
+- nome/codice coupon Stripe
+- descrizione facoltativa
+- percentuale o importo sconto (testo informativo)
+- eventuale scadenza
+- eventuale messaggio personalizzato admin
+- selezione destinatari
+
+D. Invio al cliente
+Quando l’admin invia il coupon:
+- il cliente deve ricevere una notifica sul sito
+- il cliente deve ricevere anche la push notification se già supportata
+- nella notifica deve comparire:
+  - nome/codice coupon
+  - valore sconto
+  - eventuale scadenza
+  - testo che dice chiaramente che il coupon va inserito nel checkout Stripe
+- aggiungi anche un pulsante “Copia codice”
+- se utile, aggiungi anche un pulsante “Vai al checkout” oppure “Vai ai corsi” se esiste una destinazione sensata
+
+E. Badge notifiche lato cliente
+Dal lato clienti voglio che:
+- quando arrivano una o più notifiche non lette
+- sopra l’icona / sezione notifiche compaia un pallino rosso con il numero delle notifiche non lette
+- quando il cliente apre o segna come lette le notifiche, il contatore si aggiorna correttamente
+- deve funzionare bene sia da desktop che da mobile
+
+F. Regole del contatore notifiche
+- mostra il numero notifiche non lette
+- se zero, nessun badge
+- se 1 o più, mostra badge rosso
+- aggiorna il badge in tempo reale o al refresh coerente dell’app
+- includi anche le notifiche coupon tra quelle conteggiate
+
+G. Compatibilità
+- non rompere il sistema notifiche già esistente
+- non rompere le push notification
+- non rompere i corsi
+- non rompere la dashboard admin
+- non rompere la UI mobile
+
+H. Pulizia sezione codici sconto
+Dato che il coupon viene creato direttamente su Stripe:
+- semplifica la sezione “Codici sconto” del sito
+- rimuovi o disattiva la logica vecchia che tentava di creare coupon via API Stripe dal sito
+- mantieni solo la parte di:
+  - collegamento a Stripe
+  - invio coupon ai clienti
+  - storico invii coupon se utile
+
+I. Debug/log
+Aggiungi log chiari:
+- [COUPON SEND] create campaign
+- [COUPON SEND] recipients selected
+- [COUPON SEND] site notification sent
+- [COUPON SEND] push sent
+- [NOTIFICATIONS] unread count updated
+- [NOTIFICATIONS ERROR] ...
+
+RISULTATO FINALE DESIDERATO
+1. L’admin clicca “Crea coupon su Stripe”
+2. Crea il coupon su Stripe
+3. Torna sul sito IUSMK
+4. Inserisce il codice coupon nel pannello admin
+5. Seleziona uno o più clienti
+6. Invia il coupon
+7. I clienti ricevono:
+   - notifica sul sito
+   - push notification
+8. Sul lato cliente compare il pallino rosso con il numero di notifiche non lette
+
+Alla fine dimmi:
+1. quali file hai modificato
+2. come hai semplificato la sezione “Codici sconto”
+3. come funziona l’invio coupon ai clienti
+4. come hai implementato il badge rosso con conteggio notifiche non lette

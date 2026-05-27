@@ -1,0 +1,125 @@
+Correggi il progetto esistente IUSMK SENZA cambiare branding, layout, colori, font o stile grafico. Devi sistemare un bug reale del login admin su mobile.
+
+==================================================
+PROBLEMA REALE
+==================================================
+
+Da telefono, nella pagina login admin:
+- inserisco credenziali corrette
+- ma il sistema restituisce:
+  “Login Failed / Invalid credentials”
+- quindi da mobile non riesco ad accedere alla dashboard admin
+
+Questo è un bug critico perché il pannello admin deve funzionare perfettamente da telefono.
+
+==================================================
+OBIETTIVO
+==================================================
+
+Voglio che il login admin funzioni correttamente anche da smartphone, con le stesse credenziali valide che funzionano da desktop.
+
+==================================================
+1. CONTROLLA IL FORM LOGIN MOBILE
+==================================================
+
+Verifica se il problema è nel form mobile, ad esempio:
+- trim/spazi automatici nei campi
+- maiuscole/minuscole gestite male
+- autofill mobile che altera i valori
+- submit che invia valori diversi da quelli digitati
+- password manager / keyboard mobile che modifica l’input
+- valori non aggiornati nello state React
+- problemi di controlled/uncontrolled input
+
+DEVI:
+- controllare che username e password inviati dal frontend siano esattamente quelli inseriti
+- fare trim solo se sensato sul nome utente
+- NON alterare la password
+- verificare che su mobile il submit invii il payload corretto
+
+==================================================
+2. CONTROLLA LA CHIAMATA API LOGIN
+==================================================
+
+Verifica:
+- route login corretta
+- metodo HTTP corretto
+- body JSON corretto
+- parsing corretto lato server
+- nessuna differenza tra desktop e mobile nel payload inviato
+
+Controlla se il backend si aspetta:
+- username
+oppure
+- email
+oppure
+- case sensitive exact match
+
+Assicurati che il login admin usi i campi giusti.
+
+==================================================
+3. CONTROLLA COOKIE / SESSIONE SU MOBILE
+==================================================
+
+Potrebbe esserci un problema di sessione/cookie, quindi verifica:
+- set cookie dopo login
+- secure / sameSite / path / domain
+- persistenza sessione su mobile Safari/Chrome
+- eventuale blocco dei cookie
+- redirect dopo login
+
+OBIETTIVO:
+- dopo login corretto, la sessione deve essere creata davvero anche da telefono
+- il redirect alla dashboard admin deve funzionare
+
+==================================================
+4. CREDENZIALI ADMIN
+==================================================
+
+Verifica che il sistema stia leggendo davvero le credenziali salvate correnti nel database/config.
+
+Assicurati che:
+- le credenziali admin attuali siano davvero valide
+- il login mobile usi la stessa fonte dati del login desktop
+- non esistano confronti rotti tipo:
+  username.toLowerCase() da una parte ma non dall’altra
+  oppure password alterata lato mobile
+
+==================================================
+5. UX MIGLIORE SU MOBILE
+==================================================
+
+Già che correggi il bug:
+- mostra errore solo se davvero le credenziali sono sbagliate
+- se il problema è tecnico/sessione, mostra messaggio corretto e non “Invalid credentials”
+- assicura che il bottone “Accedi” sia realmente funzionante da telefono
+- disabilita doppio submit mentre sta caricando
+- aggiungi stato loading se utile
+
+==================================================
+6. TEST OBBLIGATORI
+==================================================
+
+Fai davvero questi test:
+
+TEST 1
+- login admin da desktop con credenziali corrette → deve funzionare
+
+TEST 2
+- login admin da telefono con le stesse credenziali corrette → deve funzionare
+
+TEST 3
+- credenziali errate → deve mostrare errore coerente
+
+TEST 4
+- login corretto → redirect alla dashboard admin funzionante anche da mobile
+
+==================================================
+7. IMPORTANTE
+==================================================
+
+- fai modifiche reali nel codice esistente
+- non limitarti a descrivere
+- non cambiare il design
+- correggi davvero il bug mobile del login admin
+- il pannello admin deve essere completamente usabile da telefono

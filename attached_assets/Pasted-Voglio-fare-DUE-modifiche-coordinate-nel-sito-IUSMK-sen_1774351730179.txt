@@ -1,0 +1,143 @@
+Voglio fare DUE modifiche coordinate nel sito IUSMK, senza cambiare layout, struttura o animazioni se non dove strettamente necessario.
+
+IMPORTANTE:
+- ti allegherò una nuova immagine/logo graffito rosso
+- usa quel file come riferimento visivo principale per colore e stile
+- voglio un risultato coerente in tutto il sito
+- non rompere responsive, intro, hero, navbar, sezioni o dashboard
+
+==================================================
+1. SOSTITUIRE IL TESTO ATTUALE CON L’IMMAGINE ALLEGATA
+==================================================
+
+Voglio sostituire il testo attuale della HERO / sezione dove ora compare la scritta “Transforming scalps into canvases” con l’immagine che ti allegherò.
+
+OBIETTIVO:
+- rimuovere il testo attuale
+- inserire al suo posto l’immagine allegata
+- mantenere il posizionamento generale già esistente
+- mantenere l’effetto premium del sito
+
+REQUISITI:
+- usa l’immagine allegata come asset principale
+- deve essere centrata
+- deve adattarsi bene sia desktop che mobile
+- non deve uscire dai margini
+- non deve essere tagliata male
+- mantieni sfondo trasparente se presente
+- usa max-width, height auto, object-fit contain se serve
+- non modificare inutilmente il contenitore o le spaziature globali
+
+IMPORTANTE:
+- rimuovi SOLO il testo attuale relativo a quella scritta
+- non toccare altri testi del sito
+- non spostare i contenuti più del necessario
+
+==================================================
+2. CAMBIARE TUTTI GLI ACCENT COLOR ORO CON IL ROSSO DEL NUOVO LOGO
+==================================================
+
+Voglio che TUTTI i punti del sito dove ora viene usato il colore oro/giallo del brand vengano sostituiti con lo stesso rosso presente nel nuovo logo allegato.
+
+ATTENZIONE:
+- il rosso va ricavato dal logo allegato
+- scegli il rosso principale più coerente e usalo come nuovo accent color del sito
+- se necessario, crea anche varianti:
+  - rosso principale
+  - rosso hover
+  - rosso più scuro per bordi/shadow
+ma tutto deve restare coerente con il logo allegato
+
+DOVE CAMBIARE IL COLORE ORO:
+Controlla e aggiorna tutti i punti dove compare l’accent color oro/giallo, ad esempio:
+- intro del sito con il rasoio
+- scritta “Chi è IUSMK”
+- scritta “Formazione”
+- badge tipo “Beginner”
+- pulsanti principali
+- link attivi / evidenziati
+- hover della navbar
+- eventuali bordi, glow, icone o accenti grafici
+- pulsante Dashboard se usa il colore accent
+- footer se ci sono parti in oro
+- tutti gli elementi brandizzati che ora usano quel giallo/oro
+
+OBIETTIVO:
+- sostituire l’oro con il rosso del logo
+- mantenere il look premium, forte, street-luxury
+- evitare punti dove rimane il vecchio oro
+
+==================================================
+3. METODO CORRETTO
+==================================================
+
+Voglio una modifica pulita:
+- se esistono variabili globali di colore / theme tokens, aggiorna quelle
+- se il colore è sparso in più componenti, unificalo dove possibile
+- non fare fix casuali solo in alcuni punti
+- rendi il rosso il nuovo accent color del sito
+
+Se il progetto usa:
+- CSS variables
+- Tailwind config
+- theme constants
+- design tokens
+aggiorna la fonte principale del colore per riflettere il nuovo brand
+
+==================================================
+4. VINCOLI IMPORTANTI
+==================================================
+
+NON cambiare:
+- layout generale
+- font
+- struttura delle sezioni
+- logica intro
+- logica dashboard
+- animazioni esistenti
+- responsive
+- contenuti non richiesti
+
+Modifica SOLO:
+- l’asset della scritta sostituita
+- il sistema di accent color da oro a rosso
+
+==================================================
+5. RESPONSIVE E RESA VISIVA
+==================================================
+
+Verifica bene:
+- desktop
+- mobile
+- tablet
+
+Su tutti:
+- l’immagine sostitutiva della scritta deve vedersi bene
+- il rosso deve avere buon contrasto
+- i pulsanti devono restare leggibili
+- hover e stati attivi devono essere coerenti
+- niente elementi invisibili o troppo scuri
+
+==================================================
+6. TEST FINALI
+==================================================
+
+Verifica davvero:
+- scritta sostituita correttamente con l’immagine allegata
+- nessuna parte importante dell’immagine viene tagliata
+- tutti i punti oro/gialli principali sono diventati rossi
+- intro coerente con il nuovo rosso
+- “Chi è IUSMK”, “Formazione”, pulsanti, badge e accenti aggiornati
+- nessun bug grafico
+- sito coerente visivamente
+
+==================================================
+7. OUTPUT FINALE
+==================================================
+
+Alla fine voglio un riepilogo chiaro con:
+- dove hai sostituito il testo con l’immagine
+- quale rosso hai estratto/usato dal logo
+- quali variabili globali / file / componenti hai aggiornato
+- elenco delle principali aree del sito dove l’oro è stato sostituito con il rosso
+- eventuali micro adattamenti fatti per contrasto o hover

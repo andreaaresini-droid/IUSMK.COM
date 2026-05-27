@@ -1,0 +1,122 @@
+Apporta queste modifiche al sito IUSMK SENZA cambiare layout, colori, font o struttura del sito. Voglio aggiornare tutte le icone/logo del sito usando l’immagine che caricherò su Replit.
+
+OBIETTIVO
+Usare la nuova immagine/logo che caricherò per:
+1. il logo/icona che compare nella scheda del browser
+2. il logo che compare su Google nei risultati di ricerca, dove applicabile
+3. l’icona quando il sito viene aggiunto alla schermata Home del telefono come web app
+4. le icone PWA / favicon / apple touch icon / manifest icon
+
+==================================================
+1. FAVICON BROWSER
+==================================================
+
+Sostituisci l’icona attuale della tab/browser con la nuova immagine caricata.
+
+Devi:
+- aggiornare la favicon principale
+- generare i formati corretti se servono
+- assicurarti che si veda bene nella tab del browser
+- eliminare riferimenti alla vecchia icona
+
+Controlla:
+- favicon.ico
+- favicon.png
+- eventuali riferimenti in index.html o nel layout principale
+- cache busting se necessario
+
+==================================================
+2. ICONA QUANDO IL SITO VIENE AGGIUNTO AL TELEFONO
+==================================================
+
+Quando un utente aggiunge il sito alla schermata Home del telefono, voglio che venga usata la nuova immagine/logo.
+
+Devi:
+- aggiornare il web app manifest
+- aggiornare le icone PWA
+- aggiornare apple-touch-icon
+- assicurarti che la nuova icona venga usata su:
+  - iPhone
+  - Android
+  - browser mobile compatibili
+
+Controlla:
+- manifest.webmanifest oppure manifest.json
+- apple-touch-icon
+- icone 192x192
+- icone 512x512
+- eventuali maskable icons se utili
+
+==================================================
+3. RICERCA GOOGLE / META ICON
+==================================================
+
+Aggiorna anche tutti i metadata utili affinché il sito mostri il nuovo logo/icona dove possibile nei motori di ricerca e nella condivisione.
+
+Controlla e aggiorna:
+- favicon dichiarata
+- apple touch icon
+- manifest icons
+- Open Graph image se utile
+- metadata base del sito
+- structured data / organization logo se presente
+- rel="icon"
+- rel="shortcut icon"
+- rel="apple-touch-icon"
+
+IMPORTANTE:
+So che Google può impiegare tempo per aggiornare la cache, ma il sito deve essere configurato correttamente da subito.
+
+==================================================
+4. GENERAZIONE FILE CORRETTI
+==================================================
+
+Partendo dall’immagine che caricherò:
+- crea i file icona nei formati corretti
+- ottimizza senza perdere qualità
+- mantieni il logo leggibile
+- se serve, centra il soggetto nell’icona per evitare tagli brutti nelle versioni piccole
+
+Formati consigliati:
+- 16x16
+- 32x32
+- 48x48
+- 180x180
+- 192x192
+- 512x512
+
+==================================================
+5. NON USARE ANCORA LE VECCHIE ICONE
+==================================================
+
+Rimuovi o sostituisci tutti i riferimenti alle vecchie icone/loghi, così il sito non continua a mostrare il vecchio simbolo in:
+- browser tab
+- scorciatoie telefono
+- app installata
+- cache del manifest
+
+Se necessario:
+- rinomina i file
+- aggiorna i path
+- aggiungi versioning per forzare il refresh
+
+==================================================
+6. TEST FINALE
+==================================================
+
+Verifica davvero che:
+- nella tab del browser compaia la nuova icona
+- nell’anteprima del sito come app sul telefono compaia la nuova icona
+- il manifest punti alla nuova icona
+- non ci siano più riferimenti alla vecchia icona
+- nessun errore console relativo a icone/manifest
+
+==================================================
+7. IMPORTANTE
+==================================================
+
+- usa l’immagine che caricherò io
+- fai modifiche reali nel progetto
+- non limitarti a descrivere
+- non cambiare il design del sito
+- aggiorna tutti i riferimenti favicon/PWA/meta

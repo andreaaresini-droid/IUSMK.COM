@@ -1,0 +1,99 @@
+Modifica SOLO l’intro/hero animation del sito IUSMK, senza toccare login, corsi, Stripe, notifiche, admin o altre funzioni.
+
+OBIETTIVO
+Voglio che l’animazione del rasoio sia molto più realistica e premium.
+
+PROBLEMA ATTUALE
+Adesso l’immagine viene tagliata tutta insieme o comunque solo dopo il passaggio del rasoio.
+Non va bene.
+
+RISULTATO CHE VOGLIO
+Il rasoio deve tagliare l’immagine ESATTAMENTE mentre passa sopra.
+Quindi:
+- la parte “tagliata” deve comparire progressivamente
+- il taglio deve seguire in tempo reale la posizione del rasoio
+- l’immagine NON deve tagliarsi in ritardo
+- l’effetto deve sembrare fisico, come se il rasoio stesse davvero rasando l’immagine
+
+EFFETTO VISIVO RICHIESTO
+Voglio un effetto più 3D e realistico, non piatto.
+
+DETTAGLI TECNICI DESIDERATI
+
+1. SINCRONIZZAZIONE TAGLIO + RASOIO
+- il bordo di taglio deve essere perfettamente allineato alla lama del rasoio
+- mentre il rasoio avanza, il taglio avanza con lui
+- nessun ritardo tra movimento del rasoio e porzione rimossa
+- nessun “salto” finale
+
+2. EFFETTO 3D DEL RASOIO
+Rendi il rasoio più tridimensionale con:
+- ombre realistiche
+- leggera profondità
+- piccolo highlight/lucido metallico
+- lieve rotazione o prospettiva coerente col movimento
+- eventuale drop shadow morbida ma visibile
+- movimento fluido, premium
+
+3. EFFETTO TAGLIO PIÙ REALISTICO
+Il taglio dell’immagine deve dare la sensazione di rasatura vera:
+- bordo di separazione netto ma credibile
+- eventuale lieve sfumatura/micro-ombra sul bordo appena tagliato
+- eventuale particella/polvere/piccoli residui molto leggeri e puliti, se migliora l’effetto
+- niente effetti cartoon
+- niente glitch
+- niente flash improvvisi
+
+4. PRESTAZIONI
+L’animazione deve restare fluida anche su mobile.
+Quindi:
+- usa un approccio efficiente
+- evita animazioni pesanti inutili
+- mantieni ottima resa su iPhone/mobile browser
+
+5. MOBILE
+Su mobile deve essere perfetta:
+- il rasoio visibile bene
+- il taglio deve seguire esattamente la sua posizione
+- nessun problema di offset tra grafica e area tagliata
+- nessuna desincronizzazione tra viewport e maschera di taglio
+
+6. IMPLEMENTAZIONE
+Correggi la logica dell’animazione in modo che:
+- la maschera o clipping area venga aggiornata in tempo reale sulla base della posizione attuale del rasoio
+- il rasoio sia il riferimento del taglio
+- il movimento e il reveal siano legati alla stessa progressione temporale/posizione
+- il punto di contatto del rasoio sia il punto che determina il taglio
+
+7. STILE
+L’effetto finale deve risultare:
+- premium
+- moderno
+- cinematografico
+- più 3D
+- coerente con il branding IUSMK
+
+8. COSA NON TOCCARE
+NON modificare:
+- testi
+- login
+- registrazione
+- reset password
+- corsi
+- checkout
+- notifiche
+- admin
+- altre sezioni del sito
+
+9. RISULTATO FINALE
+Quando vedo l’intro:
+- il rasoio entra
+- passa sull’immagine
+- l’immagine si taglia in tempo reale sotto la lama
+- il rasoio ha un aspetto più 3D e realistico
+- l’intera intro sembra più professionale e d’impatto
+
+IMPORTANTE
+Fai una modifica precisa e visiva, non un workaround.
+Se necessario, migliora sia la logica di clipping sia il rendering del rasoio.
+Non lasciare il taglio desincronizzato.

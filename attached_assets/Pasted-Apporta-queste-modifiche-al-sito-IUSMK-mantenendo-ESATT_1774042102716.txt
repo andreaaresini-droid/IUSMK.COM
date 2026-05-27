@@ -1,0 +1,86 @@
+Apporta queste modifiche al sito IUSMK mantenendo ESATTAMENTE lo stesso design, layout, font e stile grafico.
+
+==================================================
+1. SOSTITUZIONE IMMAGINE SEZIONE HOME (L’ARTISTA)
+==================================================
+
+OBIETTIVO
+Voglio sostituire l’immagine attuale della sezione "L’artista" (quella a sinistra nella homepage) con una nuova immagine che caricherò su Replit.
+
+DEVI FARE QUESTO:
+- rimuovi l’immagine attuale
+- collega l’immagine a un file caricato dal progetto (non URL esterno)
+- usa lo stesso comportamento delle altre immagini già gestite (come copertine corsi)
+- mantieni:
+  - dimensioni
+  - proporzioni
+  - posizione
+  - overlay e stile attuale
+
+IMPORTANTE:
+- l’immagine deve essere facilmente sostituibile anche in futuro (quindi gestita da file o config, non hardcoded male)
+
+==================================================
+2. MODIFICA TESTO SEZIONE "L’ARTISTA"
+==================================================
+
+Sostituisci tutto il testo attuale con:
+
+Titolo grande:
+SCOLPIRE CON PRECISIONE ASSOLUTA
+
+Testo descrizione:
+descrizione di IUSMK
+
+Rimuovi completamente:
+- il testo lungo attuale
+- eventuali riferimenti a Londra/Milano ecc.
+
+Mantieni invece:
+- stile tipografico
+- spaziature
+- animazioni
+- il link “Leggi la Biografia Completa” (solo se già presente e funzionante)
+
+==================================================
+3. SEZIONE "CHI È IUSMK"
+==================================================
+
+OBIETTIVO
+Anche nella pagina/sezione “Chi è IUSMK” voglio lo stesso comportamento.
+
+DEVI FARE QUESTO:
+- sostituisci il testo attuale con:
+  descrizione di IUSMK
+
+- se c’è un’immagine:
+  - rendila gestibile come file interno (upload)
+  - NON usare URL manuali
+
+- mantieni tutto il design identico:
+  - layout
+  - font
+  - colori
+  - spaziature
+
+==================================================
+4. STRUTTURA FUTURA (IMPORTANTE)
+==================================================
+
+Prepara il codice in modo che in futuro io possa:
+- cambiare immagine facilmente (senza toccare codice)
+- cambiare testo facilmente (tipo da config o CMS)
+
+==================================================
+5. CONTROLLO FINALE
+==================================================
+
+Verifica che:
+
+- la nuova immagine venga caricata correttamente
+- non ci siano errori console
+- il layout non si rompa su:
+  - desktop
+  - telefono
+- il testo sia esattamente:
+  "descrizione di IUSMK"

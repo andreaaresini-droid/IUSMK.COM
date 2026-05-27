@@ -1,0 +1,366 @@
+C’è da fare un aggiornamento importante al sistema notifiche del sito/app IUSMK.
+
+PROBLEMA ATTUALE
+Al momento funzionano solo le notifiche push relative ai messaggi chat.
+Se invece dal pannello admin, nella sezione "Account registrati", seleziono un cliente e uso il tasto rapido per inviargli una notifica (non una chat), questa notifica NON arriva come push sul dispositivo del cliente.
+
+OBIETTIVO
+Voglio che TUTTE le notifiche generate dal sito vengano inviate anche come vere notifiche push, non solo quelle della chat.
+
+Questo vale per:
+- notifiche inviate manualmente dall’admin
+- notifiche rapide dalla sezione "Account registrati"
+- notifiche relative a nuovi messaggi chat
+- notifiche di sistema
+- notifiche indirizzate ai clienti
+- notifiche indirizzate agli admin
+
+In pratica, ogni notifica che oggi viene salvata o mostrata nel sito deve anche poter generare una push notification reale sul dispositivo dell’utente destinatario, se ha le notifiche attive.
+
+RISULTATO DESIDERATO
+1. Se invio una notifica manuale a un cliente, il cliente deve riceverla anche come push.
+2. Se parte una notifica di sistema per il cliente, deve arrivargli anche come push.
+3. Se parte una notifica per l’admin, deve arrivare anche come push all’admin.
+4. Ogni push deve specificare chiaramente di che tipo di notifica si tratta.
+5. Nel pannello admin, nella sezione "Invio notifiche", devo poter allegare anche un’immagine o un video.
+
+====================================
+PARTE 1 — UNIFICARE IL SISTEMA NOTIFICHE
+====================================
+
+Voglio che il sistema venga riorganizzato in modo centralizzato.
+
+Crea o correggi un flusso unico di notifiche con questa logica:
+
+- ogni evento del sito che genera una notifica deve passare da un unico servizio centrale, ad esempio:
+  createNotification(...)
+  sendNotification(...)
+  dispatchNotification(...)
+
+Questo servizio centrale deve:
+1. salvare la notifica nel database
+2. determinare il destinatario
+3. determinare il tipo di notifica
+4. inviare la push a tutte le subscription attive del destinatario
+5. gestire eventuale immagine/video allegati
+6. gestire link di destinazione e click action
+
+IMPORTANTE:
+Non voglio più avere la chat come unico flusso che invia push.
+La chat deve diventare solo UNO dei tipi di notifica.
+Anche le notifiche rapide/admin/devono usare lo stesso motore push.
+
+====================================
+PARTE 2 — TIPI DI NOTIFICA
+====================================
+
+Aggiungi una classificazione chiara per ogni notifica.
+Ogni notifica deve avere un campo tipo, ad esempio:
+
+- chat_message
+- admin_notification
+- system_notification
+- order_update
+- account_update
+- course_update
+- promo_notification
+- reminder
+- generic_notification
+
+Se esistono già altri tipi nel progetto, mantienili o integrali.
+
+Ogni push deve mostrare anche il contesto del tipo.
+
+ESEMPI TITOLI PUSH
+- Nuovo messaggio da IUSMK
+- Nuova notifica da IUSMK
+- Aggiornamento del tuo account
+- Aggiornamento corso
+- Promemoria
+- Notifica amministrativa
+
+ESEMPI TESTI PUSH
+- Hai ricevuto un nuovo messaggio.
+- Hai ricevuto una nuova notifica.
+- C’è un aggiornamento importante sul tuo account.
+- È disponibile un aggiornamento relativo al tuo corso.
+- Tocca per aprire il dettaglio.
+
+Quindi NON voglio più notifiche push generiche tutte uguali.
+Ogni notifica deve specificare chiaramente di che notifica si tratta.
+
+====================================
+PARTE 3 — DATABASE NOTIFICHE
+====================================
+
+Controlla la struttura dati delle notifiche.
+
+Ogni notifica deve avere almeno questi campi:
+- id
+- recipientUserId
+- senderUserId opzionale
+- senderRole opzionale
+- title
+- message/body
+- type
+- imageUrl opzionale
+- videoUrl opzionale
+- linkUrl opzionale
+- relatedEntityId opzionale
+- relatedEntityType opzionale
+- isRead
+- createdAt
+- updatedAt
+- pushSent
+- pushSentAt opzionale
+- pushError opzionale
+- metadata opzionale json
+
+Se manca una tabella/collection adeguata, aggiornala.
+
+====================================
+PARTE 4 — PUSH PER TUTTE LE NOTIFICHE
+====================================
+
+Ogni volta che una notifica viene creata, il backend deve:
+- cercare tutte le push subscriptions attive del destinatario
+- inviare la push notification a tutte le subscription valide
+- non limitarsi al salvataggio nel database
+
+Quindi, se l’admin usa il pulsante rapido dalla sezione “Account registrati”, il sistema deve:
+1. creare la notifica nel database
+2. assegnarle type = admin_notification oppure generic_notification
+3. inviare la push
+4. far comparire la notifica anche nel centro notifiche interno del cliente
+
+Stessa logica lato admin:
+se una notifica è destinata all’admin, deve:
+1. essere salvata nel database
+2. comparire nel pannello admin
+3. arrivare anche come push se l’admin ha una subscription attiva
+
+====================================
+PARTE 5 — SERVICE WORKER E PAYLOAD
+====================================
+
+Aggiorna il service worker per supportare tutte le tipologie di notifica.
+
+Il payload push deve poter contenere:
+- title
+- body
+- type
+- icon opzionale
+- badge opzionale
+- image opzionale
+- videoUrl opzionale se utile come dato
+- url di apertura
+- recipientUserId
+- notificationId
+- metadata
+
+Il service worker deve:
+- ricevere correttamente il payload
+- mostrare la notifica con showNotification()
+- usare image quando disponibile
+- gestire il click
+- aprire la pagina corretta del sito/app
+- se possibile aprire direttamente la sezione corretta:
+  - chat se type = chat_message
+  - centro notifiche se type = admin_notification o generic_notification
+  - dettaglio corso se type = course_update
+  - altra sezione se linkUrl presente
+
+Se esiste già una gestione limitata solo ai messaggi chat, estendila a tutto il sistema notifiche.
+
+====================================
+PARTE 6 — SUPPORTO IMMAGINI E VIDEO NELLE NOTIFICHE ADMIN
+====================================
+
+Nel pannello admin, nella sezione "Invio notifiche", aggiungi la possibilità di allegare:
+
+- immagine
+- video
+
+REQUISITI UI ADMIN
+Aggiungi:
+- campo titolo notifica
+- campo testo notifica
+- selezione destinatario/i
+- upload immagine
+- upload video
+- anteprima allegato
+- rimozione allegato
+- tipo notifica
+- eventuale link di apertura
+
+REGOLE
+- la notifica può avere solo testo
+- oppure testo + immagine
+- oppure testo + video
+- oppure testo + link
+- se sia immagine che video sono supportati contemporaneamente, gestisci bene la UI
+- se preferisci limitare a un solo allegato per notifica, va bene, ma fallo chiaramente
+
+BACKEND
+- salva il file correttamente
+- genera un URL persistente
+- associa imageUrl o videoUrl alla notifica
+- includi imageUrl nel payload push quando possibile
+
+IMPORTANTE
+Nelle web push standard l’immagine può essere mostrata direttamente nella notifica se supportata dal browser.
+Il video normalmente non viene riprodotto dentro la push.
+Quindi per i video voglio questo comportamento:
+- la push indica chiaramente che la notifica contiene un video
+- cliccando la push si apre la sezione notifiche o il dettaglio dove il video si può vedere nel sito
+
+ESEMPIO
+Titolo: Nuova notifica da IUSMK
+Testo: Hai ricevuto una notifica con contenuto multimediale. Tocca per visualizzarla.
+
+====================================
+PARTE 7 — DISTINZIONE CHIARA DELLA NOTIFICA
+====================================
+
+Ogni notifica push deve far capire all’utente cosa sta ricevendo.
+
+Esempi:
+- Nuovo messaggio da IUSMK
+- Nuova comunicazione dell’amministrazione
+- Notifica sul tuo account
+- Aggiornamento disponibile
+- Nuovo contenuto ricevuto
+- Notifica con immagine
+- Notifica con video
+
+Aggiungi nel payload e nella UI un campo leggibile “tipo visualizzato” oppure una funzione che costruisce automaticamente titolo e testo in base al tipo.
+
+====================================
+PARTE 8 — CENTRO NOTIFICHE CLIENTE E ADMIN
+====================================
+
+Controlla che lato cliente e lato admin esista un centro notifiche coerente.
+
+Voglio che:
+- le notifiche push corrispondano a notifiche realmente presenti nell’interfaccia
+- cliccando sulla push si apra la notifica corretta
+- se la notifica viene letta dal centro notifiche, lo stato si aggiorni
+- se la notifica non è stata letta, resti non letta fino all’apertura
+
+Aggiungi, se manca:
+- badge contatore notifiche non lette
+- filtro per tipo notifica
+- mini anteprima allegato immagine/video nel centro notifiche
+
+====================================
+PARTE 9 — LOG E DEBUG
+====================================
+
+Aggiungi log seri per capire ogni fase.
+
+CLIENT
+- permission status
+- service worker registered
+- subscription attiva
+- ricezione push
+- click sulla push
+
+SERVER
+- notifica creata
+- destinatario trovato
+- tipo notifica
+- subscriptions trovate
+- push inviata con successo
+- errori invio push
+- subscription non valida rimossa/disattivata
+
+ADMIN ACTIONS
+- notifica rapida inviata dalla sezione account registrati
+- notifica manuale inviata dalla sezione invio notifiche
+- allegato caricato correttamente
+
+====================================
+PARTE 10 — CONTROLLO PUNTO ESATTO DEL BUG
+====================================
+
+Trova esattamente dove si interrompe il flusso delle notifiche rapide admin.
+
+Molto probabilmente oggi succede questo:
+- la chat usa un metodo che chiama davvero il servizio push
+- la notifica rapida admin salva solo una notifica interna e NON chiama l’invio push
+
+Verifica se è così.
+Se sì, correggi il codice facendo usare anche alla notifica rapida lo stesso motore centralizzato di invio push.
+
+Non voglio una patch temporanea.
+Voglio una correzione strutturale.
+
+====================================
+PARTE 11 — COMPATIBILITÀ MULTI-DISPOSITIVO
+====================================
+
+Se un utente ha più dispositivi o più browser registrati:
+- la notifica deve essere inviata a tutte le subscription attive
+
+Se una subscription fallisce con 404/410:
+- disattivala automaticamente
+- continua con le altre
+
+====================================
+PARTE 12 — TEST OBBLIGATORI
+====================================
+
+Esegui e verifica questi test:
+
+TEST 1
+Cliente con notifiche attive:
+- admin invia notifica rapida dalla sezione “Account registrati”
+- il cliente riceve push reale
+
+TEST 2
+Admin invia notifica dalla sezione “Invio notifiche”
+- il cliente riceve push reale
+
+TEST 3
+Admin invia notifica con immagine
+- il cliente riceve push
+- se il browser supporta image, mostrarla
+- cliccando apre la notifica completa nel sito
+
+TEST 4
+Admin invia notifica con video
+- il cliente riceve push che segnala contenuto video
+- cliccando apre la notifica con video nel sito
+
+TEST 5
+Nuovo messaggio chat
+- continua a funzionare come prima
+- ma ora passa dal sistema centralizzato
+
+TEST 6
+Notifica destinata all’admin
+- arriva anche come push all’admin se ha subscription attiva
+
+TEST 7
+Utente con due dispositivi
+- la notifica arriva su entrambi
+
+====================================
+PARTE 13 — OUTPUT FINALE CHE VOGLIO
+====================================
+
+Quando hai finito, dammi:
+1. elenco preciso dei problemi trovati
+2. file modificati
+3. modifiche fatte al backend
+4. modifiche fatte al service worker
+5. modifiche fatte al frontend/admin
+6. conferma che tutte le notifiche ora usano il motore push centralizzato
+7. conferma che si possono allegare immagine/video dalla sezione invio notifiche
+8. conferma dei test eseguiti e del risultato
+
+IMPORTANTE
+Non limitarti ad analizzare.
+Applica direttamente le modifiche al codice e lascia il sistema notifiche realmente funzionante.
+
+Se trovi codice duplicato o flussi separati tra chat e notifiche normali, rifattorizza tutto in un sistema unico e pulito.

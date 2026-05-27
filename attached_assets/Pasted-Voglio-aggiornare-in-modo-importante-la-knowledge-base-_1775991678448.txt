@@ -1,0 +1,274 @@
+Voglio aggiornare in modo importante la knowledge base dell’assistente AI del sito IUSMK.
+
+OBIETTIVO
+L’assistente sta dando una risposta falsa quando gli viene chiesto dove si trova lo studio di IUSMK. Attualmente risponde che “lo studio ha base a Milano e a Londra”, ma questa informazione NON è vera.
+
+CORREZIONE FONDAMENTALE
+IUSMK NON ha uno studio fisico da indicare pubblicamente sul sito.
+NON devi più far dire all’assistente che esiste uno studio a Milano o Londra.
+NON devi più far dire all’assistente che IUSMK riceve clienti in uno studio fisico.
+NON devi più far inventare indirizzi, sedi, città o luoghi non presenti realmente sul sito.
+
+REGOLA ASSOLUTA PER L’ASSISTENTE
+L’assistente deve rispondere SOLO con informazioni realmente presenti e verificate sul sito / nella knowledge base.
+Se una risposta non è disponibile con certezza, deve dire chiaramente che l’informazione non è specificata sul sito e invitare l’utente a usare la sezione Contatto.
+Non deve mai inventare, dedurre o “riempire i vuoti”.
+
+TONO
+Risposte brevi, chiare, professionali, naturali.
+Niente informazioni inventate.
+Niente riferimenti a Milano o Londra come base operativa/studio.
+Se necessario, specificare che IUSMK è in Italia, ma senza inventare indirizzi precisi se non sono presenti sul sito.
+
+AZIONI DA FARE
+1. Trova ed elimina/sostituisci nella knowledge base tutte le risposte che parlano di:
+   - studio a Milano
+   - studio a Londra
+   - sede a Milano e Londra
+   - indirizzo fisico non verificato
+   - appuntamenti in studio non confermati
+2. Aggiorna la logica dell’assistente in modo che:
+   - non inventi mai luoghi
+   - se manca una risposta certa, dica: “Non trovo questa informazione sul sito. Ti consiglio di usare la sezione Contatto per ricevere una risposta diretta.”
+3. Aggiungi le seguenti FAQ e risposte alla knowledge base.
+4. Dai priorità a queste FAQ rispetto a eventuali vecchie risposte in conflitto.
+5. Se esiste un file JSON / database / collection / seed file della knowledge base, aggiornalo direttamente.
+6. Se esiste un sistema di embeddings o training interno, rigenera/refresh l’indice dopo l’aggiornamento.
+7. Assicurati che la nuova risposta venga usata subito anche nelle conversazioni già aperte, se tecnicamente possibile.
+8. Se esiste caching delle risposte AI, svuota la cache relativa alla knowledge base.
+
+FAQ DA AGGIUNGERE ALLA KNOWLEDGE BASE
+
+1)
+Domanda: Dove si trova lo studio di IUSMK?
+Risposta: Sul sito non è indicato uno studio fisico aperto al pubblico. Se hai bisogno di informazioni precise o vuoi metterti in contatto con IUSMK, usa la sezione Contatto.
+
+2)
+Domanda: IUSMK ha uno studio a Milano?
+Risposta: No, il sito non indica uno studio pubblico a Milano. Per informazioni ufficiali aggiornate, contatta IUSMK tramite la sezione Contatto.
+
+3)
+Domanda: IUSMK ha uno studio a Londra?
+Risposta: No, questa informazione non è corretta. Il sito non indica uno studio pubblico a Londra. Per chiarimenti ufficiali, usa la sezione Contatto.
+
+4)
+Domanda: IUSMK è in Italia?
+Risposta: Sì, IUSMK è in Italia. Se ti servono dettagli specifici, usa la sezione Contatto del sito.
+
+5)
+Domanda: Posso prenotare un taglio dal sito?
+Risposta: No, il sito IUSMK non è pensato per prenotare tagli o appuntamenti da barber. Il sito è dedicato principalmente alla presentazione del barber artist e all’acquisto dei videocorsi Academy.
+
+6)
+Domanda: A cosa serve il sito IUSMK?
+Risposta: Il sito serve a presentare IUSMK, mostrare la galleria dei lavori, permettere l’acquisto dei videocorsi Academy e mettere gli utenti in contatto tramite la sezione Contatto.
+
+7)
+Domanda: Posso comprare videocorsi sul sito?
+Risposta: Sì, sul sito puoi acquistare i videocorsi disponibili nella sezione Academy.
+
+8)
+Domanda: Dove trovo i corsi?
+Risposta: Puoi trovare i corsi nella sezione Academy del sito.
+
+9)
+Domanda: Come faccio ad acquistare un corso?
+Risposta: Devi entrare nella sezione Academy, scegliere il corso disponibile e completare l’acquisto tramite il sito.
+
+10)
+Domanda: Devo registrarmi per comprare un corso?
+Risposta: Sì, per acquistare i corsi è prevista la registrazione con nome, cognome, email e password.
+
+11)
+Domanda: Come ricevo l’accesso al corso dopo l’acquisto?
+Risposta: Dopo l’acquisto, il codice di accesso viene inviato nell’area notifiche del sito.
+
+12)
+Domanda: Dove trovo il codice del corso acquistato?
+Risposta: Il codice viene inviato nell’area notifiche del tuo account sul sito.
+
+13)
+Domanda: Il codice del corso arriva via email?
+Risposta: La procedura principale prevista sul sito è la ricezione del codice nell’area notifiche dell’account.
+
+14)
+Domanda: Dove posso vedere i corsi che ho comprato?
+Risposta: I corsi acquistati sono visibili nella sezione “I miei corsi” del tuo account.
+
+15)
+Domanda: Posso vedere solo i corsi che ho acquistato?
+Risposta: Sì, nella sezione “I miei corsi” trovi i corsi acquistati sul tuo account.
+
+16)
+Domanda: Posso usare un codice corso più di una volta?
+Risposta: I codici sono pensati come codici di accesso singolo, salvo eventuali impostazioni diverse gestite dall’amministrazione del sito.
+
+17)
+Domanda: Posso condividere il mio codice corso con altre persone?
+Risposta: No, il codice è personale e l’accesso ai contenuti è riservato all’utente che ha acquistato il corso.
+
+18)
+Domanda: Posso salvare un videocorso sul telefono?
+Risposta: No, i videocorsi non possono essere salvati, scaricati o registrati. I contenuti sono protetti e destinati esclusivamente alla visione autorizzata sul sito.
+
+19)
+Domanda: Posso scaricare i video dei corsi?
+Risposta: No, i video non sono scaricabili.
+
+20)
+Domanda: Posso registrare lo schermo mentre guardo un corso?
+Risposta: No, non è consentito registrare o copiare i contenuti. I videocorsi sono protetti e soggetti ai diritti d’autore.
+
+21)
+Domanda: Posso condividere i video acquistati con un amico?
+Risposta: No, i contenuti acquistati sono personali e non possono essere condivisi.
+
+22)
+Domanda: I video si aprono su un altro sito?
+Risposta: No, la visione dei videocorsi è prevista direttamente all’interno del sito.
+
+23)
+Domanda: Come funziona la password dimenticata?
+Risposta: Se hai dimenticato la password, utilizza la funzione “password dimenticata” presente nel sito per avviare il recupero dell’account.
+
+24)
+Domanda: Ho dimenticato la password, cosa devo fare?
+Risposta: Usa la funzione di recupero password presente nel sito.
+
+25)
+Domanda: Posso contattare IUSMK dal sito?
+Risposta: Sì, puoi contattare IUSMK tramite la sezione Contatto del sito.
+
+26)
+Domanda: Dove trovo i contatti?
+Risposta: Trovi i contatti nella sezione Contatto del sito.
+
+27)
+Domanda: Posso scrivere direttamente a IUSMK?
+Risposta: Sì, usa la sezione Contatto del sito per inviare la tua richiesta.
+
+28)
+Domanda: Posso chiedere informazioni sui corsi prima di comprarli?
+Risposta: Sì, puoi usare la sezione Contatto per chiedere informazioni prima dell’acquisto.
+
+29)
+Domanda: Posso chiedere assistenza se ho problemi con un corso?
+Risposta: Sì, per assistenza puoi usare la sezione Contatto o i canali previsti dal sito.
+
+30)
+Domanda: Ci sono rimborsi per i corsi acquistati?
+Risposta: I rimborsi vengono valutati caso per caso da Giuseppe.
+
+31)
+Domanda: La politica di rimborso è automatica?
+Risposta: No, i rimborsi non sono automatici: vengono valutati caso per caso da Giuseppe.
+
+32)
+Domanda: Chi decide eventuali rimborsi?
+Risposta: Eventuali rimborsi vengono valutati caso per caso da Giuseppe.
+
+33)
+Domanda: Il sito serve anche per prenotare servizi barber?
+Risposta: No, il sito non è impostato come piattaforma di prenotazione per servizi barber.
+
+34)
+Domanda: Posso prendere appuntamento per un taglio?
+Risposta: Il sito non è strutturato per prenotare appuntamenti di taglio. Per richieste specifiche usa la sezione Contatto.
+
+35)
+Domanda: Che cosa mostra la galleria?
+Risposta: La galleria mostra i lavori e lo stile artistico di IUSMK.
+
+36)
+Domanda: Posso vedere i lavori di IUSMK sul sito?
+Risposta: Sì, puoi vedere i lavori nella sezione Galleria.
+
+37)
+Domanda: IUSMK vende corsi online?
+Risposta: Sì, il sito include una sezione Academy dedicata ai videocorsi online.
+
+38)
+Domanda: I corsi sono online?
+Risposta: Sì, i corsi sono fruibili online tramite il sito.
+
+39)
+Domanda: Come accedo all’area personale?
+Risposta: Devi registrarti o accedere con il tuo account dal sito.
+
+40)
+Domanda: Serve un account per vedere i miei acquisti?
+Risposta: Sì, i tuoi acquisti e i tuoi corsi sono collegati al tuo account.
+
+41)
+Domanda: Dove vedo le notifiche del mio account?
+Risposta: Le notifiche sono disponibili nell’area personale del sito.
+
+42)
+Domanda: Ricevo il codice corso nelle notifiche?
+Risposta: Sì, il codice di accesso al corso viene inviato nelle notifiche del tuo account.
+
+43)
+Domanda: Posso comprare più di un corso?
+Risposta: Sì, puoi acquistare i corsi disponibili sul sito e consultarli poi nella sezione “I miei corsi”.
+
+44)
+Domanda: Posso usare il sito anche da telefono?
+Risposta: Sì, il sito è utilizzabile anche da dispositivi mobili.
+
+45)
+Domanda: L’assistente può rispondere a tutto?
+Risposta: L’assistente risponde in base alle informazioni realmente presenti sul sito e nella knowledge base. Se un’informazione non è disponibile, invita a usare la sezione Contatto.
+
+46)
+Domanda: Se l’assistente non sa una cosa, cosa deve dire?
+Risposta: Deve dire chiaramente che non trova l’informazione sul sito e consigliare di contattare IUSMK tramite la sezione Contatto. Non deve mai inventare.
+
+47)
+Domanda: L’assistente può inventare indirizzi o sedi?
+Risposta: No, non deve mai inventare indirizzi, sedi, città o dettagli non verificati.
+
+48)
+Domanda: Posso trovare l’indirizzo preciso di IUSMK sul sito?
+Risposta: Se non è mostrato nella sezione Contatto o in altre sezioni del sito, l’assistente non deve inventarlo. In quel caso deve invitare l’utente a contattare IUSMK direttamente.
+
+49)
+Domanda: IUSMK lavora anche all’estero?
+Risposta: Questa informazione non deve essere inventata. Se non è specificata chiaramente sul sito, l’assistente deve invitare l’utente a usare la sezione Contatto.
+
+50)
+Domanda: Posso avere informazioni personalizzate direttamente dall’assistente?
+Risposta: L’assistente può aiutarti con le informazioni presenti sul sito. Per richieste specifiche o non presenti pubblicamente, ti consiglierà di usare la sezione Contatto.
+
+REGOLE EXTRA DA AGGIUNGERE AL PROMPT DELL’ASSISTENTE
+Aggiungi queste istruzioni di comportamento al system prompt / prompt interno dell’assistente AI:
+
+- Rispondi solo con informazioni realmente presenti nel sito e nella knowledge base.
+- Non inventare mai indirizzi, città, sedi operative, contatti, prezzi, orari o disponibilità.
+- Se una risposta non è verificabile, scrivi: “Non trovo questa informazione sul sito. Ti consiglio di usare la sezione Contatto per ricevere una risposta diretta.”
+- Non dire mai che IUSMK ha uno studio a Milano o Londra.
+- Non dire mai che il sito serve per prenotare tagli, a meno che questa funzione venga introdotta davvero.
+- Per domande su download, salvataggio o registrazione dei corsi, rispondi sempre che non è consentito.
+- Per domande sui rimborsi, rispondi che sono valutati caso per caso da Giuseppe.
+
+TEST OBBLIGATORI DOPO L’AGGIORNAMENTO
+Dopo aver aggiornato la knowledge base, esegui test interni con queste domande e verifica che le risposte siano corrette:
+
+- Dove si trova lo studio di IUSMK?
+- IUSMK ha uno studio a Milano?
+- IUSMK ha uno studio a Londra?
+- Posso prenotare un taglio?
+- Posso comprare un videocorso?
+- Dove arriva il codice del corso?
+- Posso scaricare i video?
+- Posso registrare lo schermo?
+- Come funziona il rimborso?
+- Ho dimenticato la password, cosa faccio?
+
+RISULTATO ATTESO
+Alla fine voglio:
+- knowledge base aggiornata
+- vecchie risposte false rimosse
+- assistente che non inventa più nulla
+- FAQ inserite
+- comportamento prudente e realistico
+- risposta corretta immediata sulla domanda relativa allo studio/sede

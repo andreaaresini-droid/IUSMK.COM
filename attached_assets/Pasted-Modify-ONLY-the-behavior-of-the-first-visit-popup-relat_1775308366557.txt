@@ -1,0 +1,112 @@
+Modify ONLY the behavior of the first-visit popup related to:
+- “Aggiungi alla Home”
+- “Attiva notifiche push”
+
+Do NOT change anything else in the app.
+
+==================================================
+OBJECTIVE — CHANGE POPUP DISPLAY LOGIC
+==================================================
+
+Current behavior:
+- popup shows only the first time
+
+New required behavior:
+- popup must show EVERY TIME the user opens the site
+- BUT only if the user has NOT chosen “Non mostrare più”
+
+==================================================
+OBJECTIVE 1 — SHOW AFTER INTRO (NOT DURING)
+==================================================
+
+The popup must:
+1. NEVER appear during the intro animation
+2. Appear ONLY after the intro has fully finished
+3. If intro has a completion event, hook into it
+4. If not, trigger popup after intro state becomes “completed”
+
+==================================================
+OBJECTIVE 2 — SHOW ON EVERY VISIT (DEFAULT)
+==================================================
+
+Change logic so that:
+1. By default, popup appears every time the site is opened
+2. This includes:
+   - page refresh
+   - new session
+   - returning users
+
+==================================================
+OBJECTIVE 3 — “NON MOSTRARE PIÙ” BUTTON
+==================================================
+
+Inside the popup add a button:
+
+“Non mostrare più”
+
+Behavior:
+1. When user clicks it:
+   - save a flag (localStorage or similar) like:
+     hideInstallPopup = true
+2. From that moment:
+   - popup must NEVER show again for that user
+3. This must persist across sessions
+
+==================================================
+OBJECTIVE 4 — CLOSE BUTTON (TEMPORARY)
+==================================================
+
+If user clicks:
+- “Chiudi” (or X)
+
+Then:
+- popup should close ONLY for that session
+- it must appear again on next visit
+
+Do NOT treat close as “Non mostrare più”
+
+==================================================
+OBJECTIVE 5 — STORAGE LOGIC
+==================================================
+
+Use localStorage (or equivalent):
+
+- hideInstallPopup = true  → never show again
+- if NOT present → show popup every visit
+
+Do NOT use the old “first visit only” logic anymore
+
+==================================================
+OBJECTIVE 6 — UX DETAILS
+==================================================
+
+Keep everything else the same:
+- same design
+- same content (iPhone + Android instructions)
+- same push activation logic
+
+Just update:
+- timing (after intro)
+- frequency (every visit unless disabled)
+- “Non mostrare più” behavior
+
+==================================================
+OBJECTIVE 7 — SAFETY RULES
+==================================================
+
+- DO NOT break intro animation
+- DO NOT show popup during intro
+- DO NOT affect push notification logic
+- DO NOT affect install functionality
+- DO NOT change styles unless necessary
+- DO NOT break mobile layout
+
+==================================================
+MANDATORY TESTS
+==================================================
+
+1. Open site → intro plays → popup appears AFTER intro
+2. Refresh page → popup appears again
+3. Close popup with X → refresh → popup appears again
+4. Click “Non mostrare più” → refresh → popup does NOT appear anymore
+5. Works correctly on mobile (iPhone + Android)

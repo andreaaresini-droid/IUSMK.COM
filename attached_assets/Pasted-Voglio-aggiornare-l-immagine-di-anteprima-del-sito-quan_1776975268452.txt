@@ -1,0 +1,82 @@
+Voglio aggiornare l’immagine di anteprima del sito (quando condivido il link) e anche l’icona dell’app (quando viene aggiunta alla home).
+
+1. Nuova immagine da usare
+
+Usa il logo che ti allego (terza immagine) come base.
+
+Modifica richiesta:
+Crea una versione con:
+sfondo completamente bianco
+logo centrato
+margini equilibrati (non troppo attaccato ai bordi)
+Il logo deve essere:
+ben visibile
+non tagliato
+non deformato
+2. Aggiornare immagine di condivisione (Open Graph)
+
+Sostituisci l’immagine che appare quando si condivide il sito (es. WhatsApp, Instagram, Telegram, ecc.)
+
+Aggiorna i meta tag:
+
+<meta property="og:image" content="/path-nuova-immagine.jpg" />
+<meta property="og:title" content="IUSMK — Barber Artist" />
+<meta property="og:description" content="IUSMK Barber Artist — Milan & London. Corsi professionali di barberia e hair art." />
+
+Aggiungi anche:
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="/path-nuova-immagine.jpg" />
+Importante:
+L’immagine deve essere ottimizzata (consigliato 1200x630)
+Deve caricarsi correttamente da URL pubblico
+3. Aggiornare icona app (PWA / Home screen)
+
+Sostituisci l’icona che viene usata quando:
+
+si aggiunge il sito alla home del telefono
+si installa come web app
+Aggiorna:
+manifest.json
+tutte le icone presenti
+
+Esempio:
+
+"icons": [
+  {
+    "src": "/icon-192.png",
+    "sizes": "192x192",
+    "type": "image/png"
+  },
+  {
+    "src": "/icon-512.png",
+    "sizes": "512x512",
+    "type": "image/png"
+  }
+]
+Requisiti icona:
+sfondo bianco
+logo centrato
+formato quadrato
+senza bordi strani
+ben leggibile anche piccolo
+4. Rimuovere completamente la vecchia immagine
+Elimina o non usare più la vecchia immagine preview
+Assicurati che non venga più caricata da nessuna parte
+5. Cache e aggiornamento
+Forza aggiornamento asset (nuovo nome file)
+Verifica che la nuova immagine venga presa dai social
+6. Controllo finale
+
+Verifica che:
+
+condividendo il link su WhatsApp esce la nuova immagine
+aggiungendo alla home esce la nuova icona
+non compaia più la vecchia preview
+⚠️ IMPORTANTE
+
+Se necessario:
+
+usa tool di debug Open Graph
+svuota cache build
+assicurati che l’immagine sia accessibile pubblicamente

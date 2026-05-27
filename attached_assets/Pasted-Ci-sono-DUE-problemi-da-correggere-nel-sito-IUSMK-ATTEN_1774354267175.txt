@@ -1,0 +1,133 @@
+Ci sono DUE problemi da correggere nel sito IUSMK.
+
+ATTENZIONE:
+voglio che tu corregga SOLO questi due problemi, senza toccare inutilmente il resto del sito.
+
+NON modificare:
+- intro grafica
+- audio intro
+- logo centrale
+- immagini
+- navbar
+- colori
+- testi
+- altre sezioni
+
+==================================================
+PROBLEMA 1 — IL TASTO “ENTRA ALL’ACADEMY” SU MOBILE ESCE TAGLIATO
+==================================================
+
+Situazione:
+su dispositivi piccoli / mobile il pulsante “Entra all’Academy” risulta tagliato o parzialmente fuori dal layout.
+
+OBIETTIVO:
+voglio che il pulsante si veda interamente su telefono, ben centrato e senza tagli.
+
+COSA FARE:
+- controlla il contenitore del pulsante nella HOME
+- verifica:
+  - larghezza del bottone
+  - max-width
+  - padding orizzontale
+  - margin
+  - overflow del parent
+  - eventuali width fisse troppo grandi
+- correggi il layout mobile in modo che:
+  - il pulsante sia completamente visibile
+  - resti centrato
+  - non esca dai margini
+  - non venga tagliato a destra o a sinistra
+
+SOLUZIONE DESIDERATA:
+- su mobile usa una width responsiva corretta
+- se serve:
+  - width: 100%
+  - max-width ragionevole
+  - padding container corretto
+  - box-sizing corretto
+- il testo del bottone deve restare leggibile
+- il bottone deve mantenere lo stesso stile attuale
+
+IMPORTANTE:
+- non cambiare il design del pulsante
+- non cambiare colore, bordo, font o stile
+- correggi solo il responsive/layout
+
+==================================================
+PROBLEMA 2 — L’INTRO NON DEVE RIPARTIRE QUANDO CAMBIO PAGINA DAL MENU
+==================================================
+
+Situazione:
+se dal menu vado, ad esempio, da “Galleria” a “Home”, l’intro non deve ripartire.
+
+Voglio che l’intro riparta SOLO in questi casi:
+- quando chiudo e riapro il sito
+- quando aggiorno la pagina (refresh)
+- quando apro una nuova sessione del sito
+
+NON deve ripartire:
+- quando navigo internamente tra le pagine del sito
+- quando passo da Galleria a Home
+- quando passo da Academy a Home
+- quando uso il menu del sito in generale
+
+OBIETTIVO:
+fare in modo che l’intro venga mostrata una sola volta per caricamento/sessione del tab, ma non ad ogni navigazione interna.
+
+LOGICA RICHIESTA:
+- se il sito usa navigazione interna / router / link del menu:
+  l’intro non deve riattivarsi quando cambio route
+- l’intro deve attivarsi solo su vero page load iniziale o refresh
+- se serve, usa una logica robusta basata su sessione/tab corrente per distinguere:
+  - prima apertura / refresh
+  - navigazione interna
+
+IMPORTANTE:
+- il comportamento finale deve essere:
+  - apro il sito → intro parte
+  - navigo tra Home / Galleria / Academy / Contatto → intro NON riparte
+  - aggiorno la pagina → intro riparte
+  - chiudo il sito e lo riapro → intro riparte
+
+IMPLEMENTAZIONE:
+- controlla dove oggi viene triggerata l’intro
+- correggi la logica in modo che non venga montata o rilanciata ad ogni cambio pagina interno
+- mantieni invariato:
+  - audio
+  - animazione
+  - overlay
+  - tempi
+  - contenuti intro
+
+==================================================
+TEST FINALI OBBLIGATORI
+==================================================
+
+1. MOBILE
+- apri Home da telefono
+- verifica che il pulsante “Entra all’Academy” sia completamente visibile
+- verifica che non sia tagliato
+
+2. NAVIGAZIONE INTERNA
+- vai da Home a Galleria
+- poi torna a Home
+- l’intro NON deve partire
+
+3. REFRESH
+- fai refresh della pagina
+- l’intro DEVE partire
+
+4. RIAPERTURA SITO
+- chiudi e riapri il sito
+- l’intro DEVE partire
+
+==================================================
+OUTPUT FINALE
+==================================================
+
+Alla fine voglio un riepilogo chiaro con:
+- quale problema causava il taglio del pulsante su mobile
+- cosa hai modificato nel layout responsive del bottone
+- come hai corretto la logica dell’intro
+- conferma che l’intro ora non parte più durante la navigazione interna
+- conferma che l’intro parte solo su apertura/refresh

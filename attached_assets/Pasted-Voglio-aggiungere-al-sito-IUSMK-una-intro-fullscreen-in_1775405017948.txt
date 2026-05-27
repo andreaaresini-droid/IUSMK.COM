@@ -1,0 +1,99 @@
+Voglio aggiungere al sito IUSMK una intro fullscreen iniziale, elegante e cinematografica, senza rompere nessuna funzionalità esistente del sito.
+
+OBIETTIVO
+- Quando un utente entra nel sito, deve vedere una schermata iniziale a schermo intero sopra tutto il resto del sito.
+- In questa schermata deve esserci SEMPRE visibile il logo IUSMK.
+- Sotto o vicino al logo deve esserci la scritta:
+  "Tocca per entrare nel mondo di IUSMK"
+- Questa schermata iniziale deve avere uno sfondo nero pulito, premium, minimale.
+- Il sito sotto non deve essere ancora interagibile finché l’intro non è finita.
+
+INTERAZIONE
+- Quando l’utente tocca/clicca la schermata iniziale, deve partire il video intro che allegherò io.
+- Appena l’utente clicca/tocca:
+  - la scritta e il logo possono dissolversi velocemente oppure sparire con una leggera fade
+  - parte il video in fullscreen
+  - parte anche l’audio del video (oppure un file audio separato che allegherò io)
+- L’avvio deve avvenire solo dopo interazione utente, così l’audio viene riprodotto correttamente anche su mobile/iPhone.
+
+COMPORTAMENTO VIDEO
+- Il video deve coprire tutto lo schermo, in modo responsive, senza distorsioni.
+- Usa object-fit: cover.
+- Il video deve stare sopra il sito come overlay fisso.
+- Se c’è un file audio separato, sincronizzalo con il video e fallo partire nello stesso momento del play.
+- Il video NON deve mostrare controlli nativi.
+- Disabilita download/PiP/controlli visibili.
+- preload del video se possibile per rendere la partenza fluida.
+- Il video deve poter funzionare bene sia su desktop che mobile.
+
+FINE INTRO
+- Quando il video finisce:
+  - l’intero overlay dell’intro deve dissolversi in modo fluido
+  - deve apparire il sito sotto con una transizione fade-in elegante
+  - dopo la dissolvenza, l’intro deve essere rimossa o resa non interagibile
+- Nessun refresh automatico.
+- Nessun ritorno dell’intro durante la normale navigazione interna nel sito.
+
+PERSISTENZA
+- L’intro deve comparire solo:
+  - al primo caricamento della sessione
+  - oppure ogni volta che l’utente ricarica completamente il sito / chiude e riapre il sito
+- NON deve riapparire quando l’utente naviga tra pagine interne se il sito è SPA o usa routing client-side.
+- Usa sessionStorage per segnare che l’intro di questa sessione è già stata mostrata.
+
+ACCESSIBILITÀ E FALLBACK
+- Se video o audio non si caricano:
+  - mostra comunque la schermata nera con logo e scritta
+  - al click prova a entrare nel sito con una semplice dissolvenza
+- Aggiungi gestione errori robusta nel console log.
+- Aggiungi fallback per autoplay bloccato: il click utente deve essere sufficiente a far partire tutto.
+- Su iPhone/Safari assicurati che il video usi playsinline.
+
+DESIGN
+- Schermata molto premium, pulita, coerente con il brand IUSMK.
+- Sfondo nero.
+- Logo centrato.
+- Testo “Tocca per entrare nel mondo di IUSMK” elegante, ben leggibile, non troppo grande.
+- Aggiungi una leggera animazione breathing/pulse sulla scritta o sul logo prima del click, molto raffinata, non eccessiva.
+- Quando parte il video, la transizione deve essere cinematografica e fluida.
+
+IMPLEMENTAZIONE TECNICA
+- Crea un componente/overlay dedicato all’intro, separato e ordinato.
+- Non rompere header, routing, contenuti e funzionalità già esistenti.
+- Mantieni il sito sottostante montato, ma non cliccabile finché l’intro è attiva.
+- Usa z-index molto alto per l’intro.
+- Blocca scroll del body mentre l’intro è visibile.
+- Quando l’intro finisce, ripristina lo scroll normale.
+
+FILE DA COLLEGARE
+- Prevedi una struttura semplice per sostituire facilmente:
+  - file video intro
+  - eventuale file audio
+  - logo
+- Usa nomi variabili chiari e commentati.
+- Voglio poter cambiare facilmente i file senza riscrivere il codice.
+
+RICHIESTA CODICE
+- Implementa tutto direttamente nel progetto.
+- Dammi codice pulito, commentato e pronto all’uso.
+- Se il progetto usa React/Next/Vite, integra l’intro nel punto corretto dell’app.
+- Se serve, crea:
+  - componente IntroOverlay
+  - logica play/finish
+  - gestione sessionStorage
+  - stili responsive
+- Aggiungi commenti chiari su dove inserire:
+  - video
+  - audio
+  - logo
+
+DETTAGLI IMPORTANTI
+- Il testo iniziale deve essere esattamente:
+  "Tocca per entrare nel mondo di IUSMK"
+- Il logo deve restare visibile nella schermata iniziale prima del click.
+- Solo dopo il click parte il video con audio.
+- Alla fine del video: dissolvenza morbida e comparsa del sito.
+- Nessun elemento del sito deve apparire sopra l’intro.
+- Voglio un risultato visivamente premium, fluido e professionale.
+
+Se nel progetto c’è già un vecchio sistema intro o splash screen, sostituiscilo con questo senza lasciare codice sporco o duplicato.

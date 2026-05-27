@@ -1,0 +1,82 @@
+Devo correggere il punto di rotazione del logo 3D IUSMK.
+
+PROBLEMA:
+Il logo 3D ruota bene, però il centro di rotazione è sbagliato: sembra ruotare dal lato del logo invece che dal suo centro reale.
+
+OBIETTIVO:
+Il logo deve ruotare intorno al suo centro geometrico, circa nella zona della prima linea/asta della lettera “M”, non da un lato.
+
+ISTRUZIONI:
+
+1. CORREGGI IL PIVOT DEL MODELLO:
+- Il punto di rotazione deve essere al centro del logo.
+- Non deve ruotare come se fosse agganciato a un lato.
+- Il modello deve girare su sé stesso, non orbitare intorno a un punto esterno.
+
+2. CENTRATURA GEOMETRIA:
+- Dopo aver caricato il file .glb, calcola il bounding box del modello.
+- Trova il centro reale del bounding box.
+- Sposta la scena/mesh in modo che il centro del modello sia su (0, 0, 0).
+
+Esempio logica:
+const box = new THREE.Box3().setFromObject(model);
+const center = box.getCenter(new THREE.Vector3());
+model.position.sub(center);
+
+3. WRAPPER DI ROTAZIONE:
+- Crea un gruppo esterno <group ref={modelRef}>.
+- Inserisci il modello centrato dentro questo gruppo.
+- Applica la rotazione automatica SOLO al gruppo, non direttamente al modello decentrato.
+
+Esempio:
+<group ref={modelRef}>
+  <primitive object={centeredScene} scale={...} />
+</group>
+
+4. ROTAZIONE AUTOMATICA:
+- Mantieni la rotazione automatica lenta a 360 gradi.
+- La rotazione deve avvenire sull’asse Y del gruppo centrato.
+- Il logo deve restare fisso nello stesso punto visivo mentre gira.
+
+useFrame(() => {
+  if (modelRef.current && !isInteracting) {
+    modelRef.current.rotation.y += 0.003;
+  }
+});
+
+5. ORBIT CONTROLS:
+- Anche la rotazione manuale dell’utente deve usare il centro corretto.
+- Imposta il target degli OrbitControls al centro del logo:
+controls.target.set(0, 0, 0);
+controls.update();
+
+Impostazioni:
+enableZoom={false}
+enablePan={false}
+enableRotate={true}
+
+6. NON DEVE SPOSTARSI:
+- Quando gira automaticamente, il logo non deve traslare.
+- Quando l’utente lo ruota, non deve spostarsi.
+- Deve restare sempre centrato nella intro e nella home.
+
+7. APPLICA OVUNQUE:
+- Applica questa correzione sia al logo 3D nella schermata intro sia al logo 3D nella home.
+- Usa lo stesso componente Logo3D corretto per entrambi, se possibile.
+
+8. NON MODIFICARE:
+- dimensione attuale del logo
+- velocità di rotazione
+- intro video
+- testo intro
+- sfondo
+- galleria
+- corsi
+- admin
+- chat
+- login
+- pagamenti
+
+RISULTATO FINALE:
+Il logo 3D IUSMK ruota esattamente intorno al suo centro reale, circa sulla zona della prima linea della M.
+Non deve più ruotare dal lato o sembrare decentrato.

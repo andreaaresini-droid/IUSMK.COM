@@ -1,0 +1,100 @@
+Devo migliorare SOLO la sezione Academy/Corsi del sito IUSMK.
+
+OBIETTIVO:
+Ogni corso deve avere una pagina/sezione di dettaglio dove il cliente può capire bene cosa sta comprando prima dell’acquisto.
+
+MODIFICHE LATO CLIENTE:
+
+1. CARD CORSO NELLA SEZIONE ACADEMY:
+- Sotto ogni corso aggiungi un tasto chiaro e visibile.
+- Testo consigliato del tasto:
+  “Scopri il corso”
+- Il tasto deve essere elegante, coerente con lo stile IUSMK.
+- Deve stare sotto titolo/prezzo/descrizione breve del corso.
+- Non deve sostituire il tasto acquisto, ma affiancare il percorso informativo.
+
+2. CLICK SU “SCOPRI IL CORSO”:
+Quando il cliente clicca, deve aprirsi una pagina o modal di dettaglio corso.
+
+La pagina/modal deve mostrare:
+- titolo del corso
+- immagine copertina del corso
+- descrizione completa
+- cosa imparerai
+- a chi è adatto
+- contenuti inclusi
+- foto aggiuntive
+- video trailer/anteprima se presente
+- tasto finale “Acquista corso” o “Compra ora”
+
+3. UX:
+- Il cliente deve capire chiaramente cosa sta comprando.
+- La pagina dettaglio deve essere professionale, premium e ordinata.
+- Da mobile deve essere molto leggibile.
+- Foto e video devono caricarsi in modo ottimizzato/lazy load.
+- Il video trailer non deve partire con audio automatico.
+
+MODIFICHE LATO ADMIN:
+
+4. PUBBLICAZIONE / MODIFICA CORSO:
+Nel pannello admin, durante la creazione o modifica di un corso, aggiungi una sezione chiamata:
+“Dettagli corso per il cliente”
+
+In questa sezione l’admin deve poter inserire:
+
+- descrizione completa del corso
+- elenco “Cosa imparerai”
+- elenco “A chi è adatto”
+- elenco “Contenuti inclusi”
+- foto aggiuntive del corso
+- video trailer/anteprima del corso
+- eventuale testo finale promozionale
+
+5. CAMPI CONSIGLIATI:
+Aggiungi questi campi al modello corso:
+
+courseDetails: {
+  fullDescription: string,
+  whatYouWillLearn: string[],
+  targetAudience: string[],
+  includedContent: string[],
+  promoText: string,
+  galleryImages: string[],
+  trailerVideoUrl: string,
+  trailerPosterUrl: string
+}
+
+Se il progetto usa un database diverso, adatta la struttura mantenendo questi dati.
+
+6. UPLOAD MEDIA ADMIN:
+- L’admin deve poter caricare foto e video direttamente dal dispositivo.
+- Le foto devono essere ottimizzate come già fatto per la galleria.
+- Il video trailer deve avere poster/thumbnail.
+- Non usare solo URL manuali, deve essere possibile uploadare file.
+
+7. MODIFICA CORSO:
+- Gli stessi campi devono essere modificabili anche dopo la pubblicazione.
+- L’admin deve poter aggiungere, eliminare o sostituire foto/video.
+- L’admin deve poter modificare testi e liste.
+
+8. FALLBACK:
+Se un corso non ha ancora dettagli compilati:
+- Il tasto “Scopri il corso” può comunque aprire una pagina semplice con titolo, copertina e descrizione base.
+- Non deve dare errore.
+- Non deve mostrare sezioni vuote.
+
+9. NON MODIFICARE:
+- intro video
+- logo 3D
+- galleria
+- chat
+- login
+- pagamenti
+- codici corso già esistenti
+- accesso ai corsi acquistati
+- logica acquisto attuale
+
+RISULTATO FINALE:
+Nella sezione Academy ogni corso avrà un tasto “Scopri il corso”.
+Il cliente potrà aprire una pagina dettaglio professionale con testo, foto e video per capire cosa sta comprando.
+L’admin potrà gestire questi contenuti durante la pubblicazione o modifica del corso.

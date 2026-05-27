@@ -1,0 +1,115 @@
+Devo correggere la visualizzazione della galleria nel lato admin del sito IUSMK.
+
+PROBLEMA:
+Nella galleria pubblica ora immagini e video si vedono bene, ma nel pannello admin i riquadri della galleria risultano vuoti o mostrano icone rotte.
+Nel lato admin devo vedere le anteprime delle immagini e dei video esattamente come nella galleria pubblica.
+
+OBIETTIVO:
+Far visualizzare correttamente immagini e video anche nella dashboard/admin, dentro i riquadri di gestione, mantenendo i pulsanti “Modifica” ed “Elimina”.
+
+ISTRUZIONI:
+
+1. RIUTILIZZA LA STESSA LOGICA DELLA GALLERIA PUBBLICA:
+- Copia o centralizza la funzione usata nella galleria pubblica per trovare l’URL corretto dei media.
+- Non usare solo imageUrl o url se nel database ora esistono anche thumbnailUrl / optimizedUrl / mobileUrl / originalUrl.
+
+Per immagini usa questa priorità:
+const imageSrc =
+  item.thumbnailUrl ||
+  item.optimizedUrl ||
+  item.mobileUrl ||
+  item.originalUrl ||
+  item.imageUrl ||
+  item.url;
+
+Per video usa questa priorità:
+const videoSrc =
+  item.optimizedUrl ||
+  item.videoOptimizedUrl ||
+  item.originalUrl ||
+  item.videoUrl ||
+  item.url;
+
+Per poster video usa questa priorità:
+const posterSrc =
+  item.posterUrl ||
+  item.thumbnailUrl ||
+  item.mobileUrl ||
+  item.optimizedUrl ||
+  item.originalUrl;
+
+2. ADMIN IMMAGINI:
+- Nei riquadri admin, se il media è un’immagine, mostra un vero tag <img>.
+- L’immagine deve riempire il box.
+- Non deve apparire l’icona rotta.
+
+CSS consigliato:
+.admin-gallery-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+3. ADMIN VIDEO:
+- Nei riquadri admin, se il media è un video, mostra una preview video o almeno il poster.
+- Se possibile, usa un tag <video> muted playsInline preload="metadata" senza controls.
+- Deve mostrare il primo frame o una mini-preview.
+- Non lasciare il box nero/vuoto.
+
+Esempio:
+<video
+  src={videoSrc}
+  poster={posterSrc}
+  muted
+  playsInline
+  preload="metadata"
+  controls={false}
+  className="admin-gallery-video-preview"
+/>
+
+4. FALLBACK OBBLIGATORIO:
+- Se thumbnailUrl non funziona, prova optimizedUrl.
+- Se optimizedUrl non funziona, prova originalUrl.
+- Se originalUrl esiste, non mostrare mai box vuoto.
+- Solo se non esiste nessun URL valido mostra placeholder “Media non disponibile”.
+
+5. URL/PATH:
+- Controlla che nel lato admin gli URL vengano costruiti correttamente.
+- Se un URL relativo non inizia con "/", correggilo.
+- Se il file è dentro uploads/assets/public, assicurati che il path pubblico sia corretto.
+- La stessa immagine/video che si vede nel sito pubblico deve vedersi anche in admin.
+
+6. CSS:
+Controlla che nel pannello admin i media non abbiano:
+- opacity: 0
+- visibility: hidden
+- display: none
+- height: 0
+- width: 0
+- z-index sbagliato
+
+7. DEBUG TEMPORANEO:
+Aggiungi temporaneamente console.log nel componente admin:
+- item.id
+- item.type / item.fileType
+- imageSrc
+- videoSrc
+- posterSrc
+
+Così possiamo verificare se il problema è src vuoto o CSS.
+
+8. NON MODIFICARE:
+- galleria pubblica che ora funziona
+- upload admin
+- pulsanti Modifica/Elimina
+- intro video
+- homepage
+- corsi
+- login
+- chat
+- pagamenti
+
+RISULTATO FINALE:
+Nel pannello admin ogni riquadro deve mostrare l’anteprima corretta dell’immagine o del video, mantenendo sotto i pulsanti Modifica ed Elimina.
+Nessun riquadro vuoto, nessuna icona rotta.

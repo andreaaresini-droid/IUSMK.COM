@@ -1,0 +1,200 @@
+Apporta queste modifiche al progetto esistente SENZA cambiare branding, colori, font, stile generale e identità visiva del sito IUSMK. Voglio correggere alcune funzioni admin e migliorare il comportamento mobile/public del sito.
+
+IMPORTANTE:
+fai modifiche reali nel codice esistente, non solo descrittive.
+
+==================================================
+1. CODICI DI ACCESSO — AGGIUNGERE ELIMINAZIONE COMPLETA
+==================================================
+
+Nella sezione admin “Codici di Accesso” voglio aggiungere anche il tasto per eliminare completamente un codice creato.
+
+REQUISITI:
+- aggiungi un’azione “Elimina” per ogni codice
+- deve essere separata da “Revoca”
+- “Revoca” deve continuare a esistere come disattivazione logica
+- “Elimina” invece deve rimuovere davvero il codice dal sistema/database
+- prima dell’eliminazione mostra conferma chiara tipo:
+  “Sei sicuro di voler eliminare definitivamente questo codice?”
+- se il codice è collegato a relazioni, gestisci correttamente la cancellazione:
+  - elimina o aggiorna le relazioni collegate senza rompere il sistema
+- dopo eliminazione:
+  - la lista deve aggiornarsi subito
+  - quel codice non deve più essere utilizzabile
+  - la dashboard studente non deve più leggerlo
+
+==================================================
+2. CORSI — SISTEMARE IL TASTO ELIMINA
+==================================================
+
+Nella sezione admin “Corsi” il tasto per eliminare un corso non funziona.
+Devi correggerlo davvero.
+
+REQUISITI:
+- il pulsante elimina deve funzionare realmente
+- deve rimuovere il corso dal database
+- prima di eliminare mostra conferma chiara
+- se il corso ha:
+  - codici associati
+  - video associati
+  - copertina associata
+  - relazioni con studenti
+gestisci correttamente la cancellazione
+
+COMPORTAMENTO DESIDERATO:
+- se esistono codici o accessi collegati, puoi:
+  1. bloccare l’eliminazione con messaggio chiaro
+  oppure
+  2. chiedere conferma forte e cancellare/archiviare le relazioni in modo sicuro
+
+Scegli la soluzione più robusta, ma il tasto deve funzionare davvero e non restare morto.
+
+==================================================
+3. DASHBOARD ADMIN — ELIMINARE RIQUADRO “INFORMAZIONI DI SISTEMA”
+==================================================
+
+Nella dashboard admin elimina completamente il riquadro/sezione:
+- “Informazioni di sistema”
+
+REQUISITI:
+- rimuovi il box dal layout
+- non lasciare spazi vuoti strani
+- ricompattare bene la dashboard
+- mantieni il resto della dashboard invariato
+
+==================================================
+4. MOBILE — FAR VEDERE IL TASTO “ACCEDI AI CORSI”
+==================================================
+
+Da telefono non compare bene il tasto “Accedi ai Corsi”.
+
+DEVI:
+- rendere il pulsante visibile e accessibile anche su mobile
+- deve essere presente nella navbar/menu mobile
+- deve essere facilmente cliccabile
+- se lo spazio in header è poco, inseriscilo dentro il menu hamburger mobile in posizione evidente
+- il percorso deve funzionare davvero e portare alla sezione/pagina corretta
+
+==================================================
+5. PAGINA ACADEMY / CORSI — CAMBIARE IL COMPORTAMENTO DEL CLICK SUL CORSO
+==================================================
+
+PROBLEMA ATTUALE
+Se da telefono entro in Academy e premo su un corso, esce una pagina “Corso Non Trovato”.
+
+QUESTO NON VA BENE.
+
+COMPORTAMENTO DESIDERATO
+Quando l’utente clicca su un corso nella sezione Academy:
+- NON deve uscire “Corso Non Trovato”
+- deve invece aprirsi un banner / modal / drawer / popup elegante per l’accesso al corso
+- dentro quel banner devono esserci i campi per inserire:
+  - nome completo
+  - email
+  - codice di accesso
+- più pulsante tipo:
+  - “Accedi al Corso”
+  oppure
+  - “Sblocca Corso”
+
+OBIETTIVO:
+i corsi pubblici in Academy devono funzionare come porta di accesso ai corsi protetti
+
+==================================================
+6. BANNER ACCESSO CORSO — REGOLE
+==================================================
+
+Il banner/modal che si apre cliccando sul corso deve:
+
+- essere elegante e coerente col design IUSMK
+- funzionare bene sia su desktop sia su mobile
+- aprirsi sopra la pagina Academy senza errori
+- avere chiusura chiara (X o Annulla)
+- mostrare il nome del corso selezionato
+- permettere l’inserimento di:
+  - nome completo
+  - email
+  - codice
+- avere validazione minima frontend
+- se il codice è corretto e associato a quel corso:
+  - sbloccare il corso
+  - portare l’utente alla dashboard studente o direttamente al contenuto del corso
+- se il codice è errato/non valido/non associato a quel corso:
+  - mostrare messaggio chiaro
+
+==================================================
+7. CLICK SU CORSO IN ACADEMY — LOGICA CORRETTA
+==================================================
+
+Nuova logica richiesta:
+
+- clic su card corso in Academy
+= apri modal/banner accesso corso relativo a QUEL corso
+
+NON:
+- pagina vuota
+- pagina “Corso Non Trovato”
+- route rotta
+- slug inesistente
+
+SE il sistema usa route dinamiche tipo /academy/:slug:
+- correggile
+oppure
+- evita la route rotta e usa direttamente un modal
+ma il risultato deve essere quello richiesto: richiesta codice + dati + accesso corso
+
+==================================================
+8. UX MOBILE DEL MODAL/BANNER
+==================================================
+
+Poiché il sito è usato soprattutto da telefono:
+- il modal/banner deve essere perfetto da mobile
+- niente contenuti tagliati
+- niente pulsanti fuori schermo
+- input grandi e leggibili
+- tasto submit ben visibile
+- chiusura semplice
+- scroll interno corretto se serve
+
+==================================================
+9. CONTROLLI FINALI
+==================================================
+
+Verifica e correggi davvero questi flussi:
+
+TEST 1
+- crea un codice
+- verifica che ora compaiano sia “Revoca” sia “Elimina”
+- elimina il codice
+- controlla che sparisca davvero dal sistema
+
+TEST 2
+- vai su “Corsi”
+- elimina un corso
+- verifica che il tasto funzioni davvero e che la lista si aggiorni
+
+TEST 3
+- apri dashboard admin
+- verifica che “Informazioni di sistema” non ci sia più
+
+TEST 4
+- apri il sito da telefono
+- verifica che “Accedi ai Corsi” sia visibile/raggiungibile dal menu mobile
+
+TEST 5
+- vai in Academy da telefono
+- premi su un corso
+- non deve più apparire “Corso Non Trovato”
+- deve aprirsi il banner/modal accesso corso
+- inserisci nome, email e codice
+- verifica che il flusso funzioni davvero
+
+==================================================
+10. IMPORTANTE
+==================================================
+
+- fai modifiche reali ai file esistenti
+- non limitarti a descrivere le soluzioni
+- mantieni il design attuale
+- correggi eventuali route rotte, slug mancanti, handler assenti o pulsanti non collegati
+- se il click corso in Academy oggi porta a una route inesistente, correggi davvero il collegamento

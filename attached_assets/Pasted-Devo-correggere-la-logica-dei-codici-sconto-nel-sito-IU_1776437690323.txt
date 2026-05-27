@@ -1,0 +1,59 @@
+Devo correggere la logica dei codici sconto nel sito IUSMK.
+
+Problema attuale:
+- creo un codice sconto dal pannello admin
+- il codice compare nella sezione “Codici Sconto”
+- ma quando lo inserisco nel checkout Stripe, Stripe dice “Il codice non è valido”
+
+Quindi i codici admin del sito non sono realmente sincronizzati con Stripe.
+
+Voglio che il sistema funzioni davvero.
+
+OBIETTIVO
+Quando l’admin crea un codice sconto dal pannello admin, quel codice deve essere valido anche nel checkout Stripe reale.
+
+COSA DEVI CONTROLLARE E CORREGGERE
+
+1. Verifica se i codici sconto creati nel pannello admin vengono realmente creati anche su Stripe come:
+   - Coupon
+   - Promotion Code
+2. Se oggi vengono salvati solo nel database del sito, correggi il flusso:
+   - alla creazione di un codice admin, crea anche il corrispondente coupon/promotion code su Stripe
+3. Se il checkout usa Stripe Payment Links:
+   - verifica che i Payment Links usati per i corsi supportino i promotion codes
+   - abilita allow_promotion_codes dove necessario
+4. Verifica che il codice creato nel pannello admin venga:
+   - salvato nel DB locale
+   - salvato su Stripe
+   - associato correttamente ai corsi giusti se ci sono restrizioni
+5. Se un codice è limitato a un corso specifico, fai in modo che venga accettato solo su quel checkout
+6. Se un codice è globale, deve funzionare su tutti i checkout previsti
+7. Se un codice è scaduto, inattivo o ha finito gli utilizzi, Stripe deve rifiutarlo correttamente
+8. Il pulsante “Nuovo codice” del pannello admin deve quindi creare davvero un codice Stripe utilizzabile al checkout, non solo un record interno
+
+DEBUG OBBLIGATORIO
+Aggiungi log chiari:
+- [DISCOUNT] create requested
+- [DISCOUNT] local code saved
+- [DISCOUNT] stripe coupon created
+- [DISCOUNT] stripe promotion code created
+- [DISCOUNT] linked to course/payment link
+- [DISCOUNT ERROR] ...
+
+VERIFICHE IMPORTANTI
+- controlla se il codice “ANDREA” esiste davvero su Stripe
+- controlla se il Payment Link / checkout del corso accetta i promotion codes
+- controlla se il codice è stato creato in live mode e non in test mode
+- controlla che non ci sia mismatch tra ambiente live/test
+
+RISULTATO FINALE DESIDERATO
+- creo il codice dal pannello admin
+- il codice è valido nel checkout Stripe
+- lo sconto viene applicato davvero
+- utilizzi/scadenza/stato vengono rispettati
+
+Alla fine dimmi:
+1. quali file hai modificato
+2. se il problema era che il codice esisteva solo nel DB locale
+3. come hai sincronizzato i codici admin con Stripe
+4. se il codice “ANDREA” ora è stato creato davvero su Stripe e può funzionare nel checkout

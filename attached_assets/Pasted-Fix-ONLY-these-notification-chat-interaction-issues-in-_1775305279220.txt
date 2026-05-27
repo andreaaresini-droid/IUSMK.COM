@@ -1,0 +1,209 @@
+Fix ONLY these notification/chat interaction issues in the IUSMK site and admin dashboard.
+Do NOT change anything else that is already working.
+
+CURRENT PROBLEM
+When:
+- admin creates a new chat with a registered user and sends a message
+- or a customer sends a message / contact request
+
+the receiver gets a notification in the “Notifiche” section, but from there they can only mark it as read.
+This is not enough.
+
+I need notifications to become interactive and open the correct conversation directly, both:
+1. on the customer side
+2. on the admin dashboard side
+
+==================================================
+OBJECTIVE 1 — CUSTOMER NOTIFICATIONS MUST OPEN THE CHAT
+==================================================
+
+When the admin sends a message to a customer in a newly created or existing chat:
+
+1. The customer must receive a notification in the customer “Notifiche” section.
+2. That notification must be clickable.
+3. When the customer clicks the notification:
+   - open the exact chat/conversation with Giuseppe/admin
+   - not just the generic notifications page
+   - not just mark as read
+4. Add a clear action button inside the notification card:
+   - “Apri chat”
+   - optionally also “Rispondi”
+5. Clicking “Apri chat” must:
+   - navigate directly to the correct conversation thread
+   - automatically mark that notification as read
+6. If a dedicated chat page already exists, use it.
+7. If chat opens in modal/drawer, open the correct one with the right conversation selected.
+8. The customer must then be able to reply immediately to Giuseppe from that opened chat.
+
+IMPORTANT:
+- Reuse the existing chat system
+- Do not create a second parallel messaging system
+- Notification must carry the exact data needed to open the chat:
+  - conversationId
+  - senderId
+  - senderName
+  - notificationType
+  - related entity id if needed
+  - message preview
+  - timestamp
+
+==================================================
+OBJECTIVE 2 — ADMIN NOTIFICATIONS MUST ALSO OPEN THE CHAT / CONTACT THREAD
+==================================================
+
+In the admin dashboard, when a new customer message arrives:
+
+1. In the “Notifiche” section, message/contact notifications must be clickable.
+2. Admin must not be limited to “mark as read”.
+3. Each relevant notification card must include:
+   - “Apri chat” if it is a chat message
+   - “Apri richiesta” or direct open action if it belongs to “Richieste di contatto”
+4. Clicking the notification must open the exact related thread/conversation.
+5. If the notification is for:
+   - customer chat => open “Chat Clienti” with the correct conversation selected
+   - contact request => open “Richieste di Contatto” with the exact thread/message selected
+6. Once opened, admin must be able to reply immediately.
+7. After open, mark notification as read automatically.
+8. Preserve existing timestamps, read/unread state, and thread history.
+
+==================================================
+OBJECTIVE 3 — ADD UNREAD BADGES IN THE MENU
+==================================================
+
+Add notification counters (red badge / pallino with number) next to the menu items when there are unread items for that section.
+
+I want badges in the sidebar/menu for sections such as:
+- Chat Clienti
+- Richieste di Contatto
+- Notifiche
+
+Required behavior:
+1. Show a small red badge near the section name/icon
+2. Badge must display the number of unread items for that section
+3. Example:
+   - Chat Clienti → number of chats with unread customer/admin messages
+   - Richieste di Contatto → number of unread/new contact threads
+   - Notifiche → total unread notifications
+4. Badge must disappear automatically when count = 0
+5. Badge counts must update live or immediately after refresh/navigation
+6. Badge values must stay consistent across:
+   - desktop admin
+   - mobile admin
+   - customer side menu if applicable
+
+==================================================
+OBJECTIVE 4 — CORRECT UNREAD COUNT LOGIC
+==================================================
+
+Implement proper unread count logic without breaking current functionality:
+
+For Chat Clienti:
+- count unread conversations or unread messages relevant to admin
+- choose one consistent logic and keep it stable
+- recommended: badge = number of conversations containing unread messages
+
+For Richieste di Contatto:
+- badge = number of contact threads/messages still unread by admin
+
+For customer notifications/chat:
+- customer should also see the correct unread state for incoming admin messages
+
+When user/admin opens the specific thread:
+- mark the relevant item as read
+- update counters immediately
+
+==================================================
+OBJECTIVE 5 — REQUIRED DATA FLOW
+==================================================
+
+Make sure the system correctly links:
+notification -> target section -> exact thread/conversation -> reply action
+
+Each notification related to communication must include enough routing metadata, for example:
+- type: "chat_message" | "contact_request" | "contact_reply"
+- conversationId or threadId
+- senderId
+- receiverId
+- route target
+- preview text
+- createdAt
+- readAt / isRead
+
+If some of these fields do not exist, add ONLY the minimum required fields.
+Do not redesign the whole database unnecessarily.
+
+==================================================
+OBJECTIVE 6 — UI / UX REQUIREMENTS
+==================================================
+
+Keep the current IUSMK style.
+Do not redesign the whole interface.
+
+Just improve functionality:
+- clickable notification cards
+- action buttons inside notification cards
+- unread badges in the menu
+- correct routing to exact chat/thread
+- immediate reply capability after open
+
+Use labels in Italian:
+- Apri chat
+- Vai alla conversazione
+- Apri richiesta
+- Segna come letta
+
+Make sure it works well on mobile too.
+
+==================================================
+OBJECTIVE 7 — VERY IMPORTANT SAFETY RULES
+==================================================
+
+- DO NOT break existing chat creation
+- DO NOT break existing notifications
+- DO NOT change unrelated admin pages
+- DO NOT remove current mark-as-read behavior; enhance it
+- DO NOT duplicate threads
+- DO NOT send users to the wrong conversation
+- DO NOT change global styling outside what is necessary
+- DO NOT create fake counters; use real unread data
+- Reuse the current chat/contact models where possible
+
+==================================================
+MANDATORY TEST CASES
+==================================================
+
+Test all these flows:
+
+CUSTOMER SIDE
+1. Admin creates a new chat with a registered user
+2. Admin sends first message
+3. Customer receives notification
+4. Customer clicks notification
+5. Customer is taken directly to the correct chat
+6. Customer replies successfully
+
+ADMIN SIDE
+7. Customer sends a new message in an existing chat
+8. Admin gets notification in dashboard
+9. Admin clicks notification
+10. Admin is taken directly to the correct conversation in “Chat Clienti”
+11. Admin replies successfully
+
+CONTACT REQUEST SIDE
+12. A new contact request appears
+13. Admin sees unread badge near “Richieste di Contatto”
+14. Admin clicks the related notification
+15. Admin is taken to the exact request/thread
+16. Admin can reply
+
+BADGES
+17. Unread badges appear near the correct menu sections
+18. Badge numbers are correct
+19. Badge numbers decrease/update after opening or reading
+20. Badge disappears when unread count becomes zero
+
+At the end, show me clearly:
+- which files you changed
+- which models/fields you added or reused
+- how notification routing now works
+- how unread badge counts are calculated

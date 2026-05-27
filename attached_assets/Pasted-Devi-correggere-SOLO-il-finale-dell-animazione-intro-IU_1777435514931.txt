@@ -1,0 +1,109 @@
+Devi correggere SOLO il finale dell’animazione intro IUSMK.
+
+OBIETTIVO:
+- Il flash giallo deve coprire completamente lo schermo
+- Subito dopo il flash deve comparire DIRETTAMENTE il sito
+- NON deve più vedersi l’immagine di sfondo dell’intro dopo il flash
+
+---
+
+1. FLASH PIÙ FORTE (FULL SCREEN)
+
+Il flash deve:
+- coprire TUTTO lo schermo (width 100vw, height 100vh)
+- essere sopra a tutto (z-index altissimo)
+- essere molto luminoso (quasi bianco/giallo intenso)
+
+Colore:
+#FFD600 → puoi spingerlo verso:
+#FFF176 oppure #FFFFFF con glow
+
+CSS esempio:
+position: fixed;
+top: 0;
+left: 0;
+width: 100vw;
+height: 100vh;
+background: #FFD600;
+z-index: 99999;
+pointer-events: none;
+
+Aggiungi:
+filter: brightness(1.5) blur(4px);
+
+---
+
+2. TRANSIZIONE CORRETTA (FIX BUG ATTUALE)
+
+PROBLEMA:
+Dopo il flash si rivede per un attimo lo sfondo dell’intro → NON deve succedere.
+
+SOLUZIONE:
+
+Quando parte il flash:
+- attiva stato tipo:
+  showFlash = true
+
+DOPO ~150ms:
+- nascondi COMPLETAMENTE la intro
+
+ESEMPIO:
+setTimeout(() => {
+  setShowIntro(false);
+}, 150);
+
+IMPORTANTE:
+- NON aspettare la fine dell’esplosione
+- NON lasciare tempo in cui l’intro torna visibile
+
+---
+
+3. ORDINE CORRETTO DEI LAYER
+
+Deve essere così:
+
+FLASH (sopra tutto)
+↓
+INTRO (logo + background)
+↓
+SITO
+
+Durante il flash:
+- l’intro deve sparire sotto
+- il sito deve essere già pronto sotto
+
+---
+
+4. ENTRATA DIRETTA NEL SITO
+
+Subito dopo il flash:
+- mostra homepage
+- nessun fade lento
+- nessun ritorno all’intro
+- nessun frame intermedio
+
+---
+
+5. TIMING PERFETTO
+
+Sequenza finale:
+
+- logo accelera
+- esplosione
+- flash fortissimo (0.1s – 0.2s)
+- intro sparisce immediatamente
+- sito visibile subito
+
+---
+
+IMPORTANTE:
+- Non modificare animazione del logo
+- Non modificare audio
+- Non modificare layout sito
+- Non cambiare colori (solo intensità flash)
+- Non aggiungere ritardi inutili
+
+---
+
+RISULTATO:
+Flash potente che copre tutto → taglio immediato → sito, senza vedere più lo sfondo dell’intro.

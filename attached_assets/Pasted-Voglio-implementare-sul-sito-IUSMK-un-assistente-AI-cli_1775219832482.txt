@@ -1,0 +1,468 @@
+Voglio implementare sul sito IUSMK un assistente AI clienti con knowledge base controllata dall’admin.
+
+IMPORTANTE:
+- Non modificare o rompere nessuna funzione già esistente.
+- Aggiungi tutto in modo isolato, modulare e sicuro.
+- Mantieni lo stile grafico coerente con il sito IUSMK.
+- L’assistente NON deve inventare risposte.
+- L’assistente deve rispondere solo con informazioni realmente presenti nella knowledge base approvata dall’admin.
+- Se non sa rispondere, deve dirlo chiaramente e salvare la domanda nella dashboard admin, così l’admin potrà aggiungere la risposta e migliorare il sistema in futuro.
+
+========================================
+1. ARCHITETTURA GENERALE
+========================================
+
+Crea questi moduli separati:
+
+A) Public AI Chat Widget
+- Widget chat visibile sul sito pubblico
+- Bottone flottante apri/chiudi
+- Cronologia messaggi della sessione corrente
+- Suggerimenti rapidi iniziali
+
+B) AI Backend Service
+- Endpoint/API route dedicata per la chat
+- Recupera info dalla Knowledge Base
+- Costruisce contesto
+- Chiama il modello AI con istruzioni rigidissime
+- Blocca risposte inventate
+- Attiva fallback se il contesto non basta
+
+C) Admin AI Dashboard
+- Nuova sezione dashboard chiamata “Assistente AI”
+- Sottosezioni:
+  1. Knowledge Base
+  2. Domande senza risposta
+  3. Log conversazioni AI
+
+D) Knowledge Management
+- Solo l’admin può creare, modificare, pubblicare, disattivare contenuti della knowledge base
+- Nessuna auto-memoria non approvata
+- Nessuna informazione raccolta dalla chat deve diventare conoscenza automaticamente
+
+========================================
+2. DATABASE / COLLEZIONI
+========================================
+
+Crea queste entità/tabelle/collezioni:
+
+----------------------------------------
+A) KnowledgeBase
+----------------------------------------
+Campi:
+- id
+- title: string
+- content: text lungo
+- category: string
+- keywords: array di stringhe
+- sourceType: string ("site_page", "faq", "manual_entry", "policy", "service", "pricing", "contact", "booking")
+- sourcePath: string opzionale
+- isPublished: boolean
+- isActive: boolean
+- createdAt: datetime
+- updatedAt: datetime
+- createdBy: string
+- lastUpdatedBy: string
+
+Note:
+- Il bot deve usare solo record con isPublished = true e isActive = true
+- Prevedi ordinamento per updatedAt desc
+
+----------------------------------------
+B) UnansweredQuestions
+----------------------------------------
+Campi:
+- id
+- question: text
+- normalizedQuestion: string
+- pageUrl: string opzionale
+- customerSessionId: string
+- customerName: string opzionale
+- customerEmail: string opzionale
+- aiFallbackMessage: text
+- status: string ("new", "reviewed", "answered", "ignored")
+- adminAnswer: text opzionale
+- linkedKnowledgeItemId: string opzionale
+- createdAt: datetime
+- updatedAt: datetime
+- handledBy: string opzionale
+
+Note:
+- Usa normalizedQuestion per evitare duplicati evidenti
+- Se arriva più volte una domanda molto simile, aggiorna il record esistente o incrementa un contatore
+- Aggiungi anche:
+  - occurrences: number default 1
+  - lastAskedAt: datetime
+
+----------------------------------------
+C) AiChatLogs
+----------------------------------------
+Campi:
+- id
+- sessionId: string
+- userMessage: text
+- aiReply: text
+- sourceKnowledgeIds: array di stringhe
+- confidenceScore: number
+- usedFallback: boolean
+- escalatedToAdmin: boolean
+- pageUrl: string opzionale
+- createdAt: datetime
+
+========================================
+3. POPOLAMENTO INIZIALE KNOWLEDGE BASE
+========================================
+
+Crea una funzione/script admin-only per popolare inizialmente la Knowledge Base leggendo i contenuti attuali del sito IUSMK.
+
+Recupera informazioni da:
+- home
+- servizi
+- prezzi
+- orari
+- contatti
+- prenotazioni
+- faq
+- policy
+- eventuali pagine informative presenti
+
+Ogni contenuto estratto deve essere salvato come record separato, ben diviso per argomento, non un unico blocco enorme.
+
+Esempi:
+- “Orari di apertura”
+- “Come prenotare”
+- “Servizi barba”
+- “Servizi capelli”
+- “Prezzi”
+- “Contatti”
+- “Indirizzo”
+- “Politica cancellazione”
+- “Metodo di prenotazione”
+
+IMPORTANTE:
+- Se esistono dati dinamici già presenti nel sistema, usa quelli come fonte preferita
+- Non duplicare contenuti inutilmente
+- L’admin deve poter modificare tutto manualmente dopo il popolamento iniziale
+
+========================================
+4. LOGICA DI RICERCA RISPOSTE
+========================================
+
+Quando un cliente invia una domanda:
+
+STEP 1
+- Normalizza la domanda
+- Salva sessionId e pagina corrente se disponibile
+
+STEP 2
+- Cerca nella KnowledgeBase i contenuti più rilevanti
+- Usa una ricerca combinata:
+  - match testuale
+  - keywords
+  - category
+  - similarità semantica se disponibile
+- Recupera max 3-5 record più pertinenti
+
+STEP 3
+- Calcola un confidenceScore
+- Se i risultati sono troppo deboli, incompleti o assenti, NON generare una risposta libera
+
+STEP 4
+- Se il confidenceScore supera la soglia:
+  - costruisci un contesto usando solo i record trovati
+  - invia al modello AI:
+    - system prompt rigido
+    - contesto
+    - domanda utente
+
+STEP 5
+- Se il confidenceScore NON supera la soglia:
+  - non far inventare nulla
+  - attiva fallback
+  - salva la domanda in UnansweredQuestions
+  - logga l’evento in AiChatLogs
+
+========================================
+5. SOGLIA / REGOLE DI SICUREZZA
+========================================
+
+Implementa queste regole:
+
+- Se non ci sono risultati rilevanti: fallback
+- Se i risultati parlano di altro: fallback
+- Se la risposta richiederebbe interpretazioni non presenti nel contesto: fallback
+- Se il modello tenta di aggiungere dettagli non presenti nel contesto: tronca o rigenera in modo vincolato
+- Meglio dire “non lo so ancora” che dare una risposta sbagliata
+
+Confidence rules:
+- Alta: info chiaramente presente in KB
+- Media: info parziale ma sufficiente
+- Bassa: info vaga, ambigua o assente => fallback
+
+========================================
+6. SYSTEM PROMPT DELL’ASSISTENTE
+========================================
+
+Usa questo system prompt o uno molto simile:
+
+“Sei l’assistente virtuale clienti del sito IUSMK.
+
+Devi rispondere ESCLUSIVAMENTE usando le informazioni presenti nel CONTEXTO fornito.
+Non usare conoscenza esterna.
+Non inventare.
+Non fare supposizioni.
+Non completare con dettagli plausibili ma non presenti.
+Se il contesto non contiene informazioni sufficienti per rispondere con certezza, devi dire chiaramente che al momento non sei in grado di fornire quella informazione e che la richiesta verrà segnalata al team.
+
+Regole di stile:
+- Risposte brevi, chiare, professionali e cordiali
+- Italiano naturale
+- Non menzionare il funzionamento interno del sistema
+- Non dire mai cose come ‘forse’, ‘presumo’, ‘immagino’
+- Se la risposta è nel contesto, forniscila in modo diretto
+- Se non è nel contesto, rifiuta gentilmente e attiva fallback”
+
+========================================
+7. FALLBACK UFFICIALE
+========================================
+
+Quando il bot non sa rispondere, mostra un messaggio di questo tipo:
+
+“Al momento non sono in grado di darti questa informazione con certezza. Ho segnalato la tua richiesta al team, così potremo aggiornare l’assistente.”
+
+Crea una funzione dedicata per:
+- salvare la domanda in UnansweredQuestions
+- controllare se esiste già una domanda simile
+- se esiste:
+  - incrementa occurrences
+  - aggiorna lastAskedAt
+- se non esiste:
+  - crea un nuovo record
+
+========================================
+8. DASHBOARD ADMIN - NUOVA SEZIONE
+========================================
+
+Aggiungi una nuova voce menu nella dashboard admin:
+“Assistente AI”
+
+Con queste sottopagine:
+
+----------------------------------------
+A) Panoramica
+----------------------------------------
+Mostra card statistiche:
+- Voci knowledge base pubblicate
+- Domande senza risposta nuove
+- Domande gestite oggi
+- Chat AI ultime 24h
+- Fallback attivati ultime 24h
+
+----------------------------------------
+B) Knowledge Base
+----------------------------------------
+Tabella/lista con:
+- titolo
+- categoria
+- keywords
+- pubblicato sì/no
+- attivo sì/no
+- ultima modifica
+- azioni: modifica / disattiva / pubblica / elimina
+
+Aggiungi:
+- ricerca
+- filtri per categoria
+- filtri pubblicato/non pubblicato
+- pulsante “Nuova voce”
+
+Form voce:
+- title
+- content
+- category
+- keywords
+- sourceType
+- sourcePath
+- isPublished
+- isActive
+
+----------------------------------------
+C) Domande senza risposta
+----------------------------------------
+Lista con:
+- domanda
+- numero occorrenze
+- data ultima richiesta
+- status
+- pagina da cui è arrivata
+- azioni: apri / rispondi / ignora
+
+Dettaglio domanda:
+- domanda originale
+- normalizedQuestion
+- cronologia occorrenze
+- campo adminAnswer
+- pulsante “Pubblica in Knowledge Base”
+- pulsante “Segna come ignorata”
+- pulsante “Segna come review”
+
+Quando l’admin clicca “Pubblica in Knowledge Base”:
+- crea un nuovo record in KnowledgeBase
+- title generato dalla domanda o modificabile
+- content preso da adminAnswer
+- sourceType = manual_entry
+- isPublished = true
+- isActive = true
+- collega linkedKnowledgeItemId
+- imposta status = answered
+
+----------------------------------------
+D) Log Conversazioni AI
+----------------------------------------
+Tabella con:
+- data
+- sessionId
+- messaggio utente
+- risposta AI
+- confidenceScore
+- fallback sì/no
+- knowledge usata
+- pagina
+
+========================================
+9. NOTIFICA ADMIN
+========================================
+
+Quando arriva una nuova domanda senza risposta:
+- falla comparire subito nella dashboard admin
+- aggiungi badge/notifica numerica nella voce “Assistente AI” o “Domande AI”
+- opzionale: notifica toast in dashboard admin se è aperta
+
+Non inviare email o notifiche esterne se non già previste dal sistema.
+Per ora basta la notifica interna nella dashboard.
+
+========================================
+10. WIDGET CHAT FRONTEND
+========================================
+
+Funzioni richieste:
+- pulsante flottante elegante
+- apertura pannello chat
+- messaggio iniziale automatico
+- scroll automatico
+- loader durante la risposta
+- blocco invio multiplo mentre il bot sta rispondendo
+- gestione errori elegante
+
+Messaggio iniziale:
+“Ciao, sono l’assistente IUSMK. Posso aiutarti con servizi, prenotazioni, orari, prezzi e informazioni presenti sul sito.”
+
+Suggerimenti rapidi cliccabili:
+- Orari
+- Prezzi
+- Servizi
+- Contatti
+- Prenotazioni
+
+Sotto ogni risposta del bot mostra una nota discreta:
+“Risposta basata sulle informazioni attualmente disponibili.”
+
+========================================
+11. UX E STILE
+========================================
+
+- Design coerente con IUSMK
+- Aspetto moderno, pulito, professionale
+- Mobile responsive perfetto
+- Nessun popup invasivo
+- Nessun rallentamento del sito
+- Animazioni leggere
+- Accessibilità base: focus, aria labels, contrasto leggibile
+
+========================================
+12. API / BACKEND DETAIL
+========================================
+
+Crea una route o server action dedicata, ad esempio:
+POST /api/ai-chat
+
+Input:
+- message
+- sessionId
+- pageUrl opzionale
+
+Output:
+- reply
+- usedFallback
+- confidenceScore
+- sourceKnowledgeIds
+
+Gestione errori:
+- se il modello fallisce
+- se il database fallisce
+- se non si trova nulla
+In tutti questi casi:
+- non rompere il frontend
+- mostra fallback elegante
+- salva log errore lato server
+
+========================================
+13. SICUREZZA
+========================================
+
+Implementa:
+- sanitizzazione input utente
+- protezione da prompt injection basilare
+- limite lunghezza messaggio
+- rate limit minimo per sessione/IP
+- nessun accesso a dati sensibili o admin
+- nessuna esposizione di log interni al cliente
+
+Il bot pubblico non deve mai:
+- mostrare dati amministrativi
+- mostrare dati di altri utenti
+- eseguire azioni amministrative
+- leggere dati non pubblici
+
+========================================
+14. REGOLE IMPORTANTISSIME
+========================================
+
+- Non usare la memoria conversazionale come fonte di verità futura
+- Non apprendere automaticamente dalle domande utenti
+- Solo l’admin può trasformare una risposta in conoscenza pubblicata
+- Non generare informazioni esterne alla KB
+- Non toccare nessun modulo esistente se non per aggiungere collegamenti alla dashboard
+- Se esiste già un sistema di FAQ, integralo nella KnowledgeBase invece di duplicarlo male
+
+========================================
+15. OBIETTIVO FINALE
+========================================
+
+Voglio che il risultato finale sia questo:
+
+- Il cliente fa una domanda
+- L’assistente risponde solo se la risposta è realmente presente nella knowledge base
+- Se non sa rispondere, lo dice chiaramente senza inventare
+- La domanda appare nella dashboard admin
+- L’admin aggiunge la risposta
+- La risposta viene pubblicata in KnowledgeBase
+- Da quel momento l’assistente saprà rispondere anche in futuro a domande simili
+
+========================================
+16. CONSEGNA
+========================================
+
+Implementa tutto il sistema completo, pronto all’uso, con:
+- UI frontend chat
+- backend AI chat
+- dashboard admin AI
+- knowledge base CRUD
+- gestione domande senza risposta
+- log conversazioni AI
+- fallback sicuro
+- integrazione coerente nel sito attuale
+
+Non fare solo una demo grafica.
+Realizza la logica completa end-to-end.
+Non rompere nulla di ciò che già funziona.

@@ -1,0 +1,126 @@
+Devi risolvere DEFINITIVAMENTE il problema dei media che spariscono.
+
+PROBLEMA:
+Quando faccio modifiche su corsi, categorie Academy o dashboard, alcune immagini/copertine/media diventano “N/D”, “Media non disponibile” o icona rotta.
+
+Questo NON deve mai succedere.
+
+OBIETTIVO:
+Tutti i media già caricati devono rimanere sempre:
+- salvati
+- visibili
+- funzionanti
+- invariati
+
+anche quando modifico testi, descrizioni, prezzi, categorie, ordine, link pagamento o altre impostazioni.
+
+SEZIONI INTERESSATE:
+- Corsi admin
+- Academy admin
+- Media aggiuntivi
+- Immagini di copertina
+- Poster video
+- Gallery categoria
+- I miei corsi
+- Portale studente
+- Pagina sblocca corso
+
+REGOLE OBBLIGATORIE:
+
+1. NON SOVRASCRIVERE MEDIA ESISTENTI
+Quando salvo una modifica:
+- se un media ha già un URL valido, deve restare identico
+- non deve essere ricaricato
+- non deve essere convertito in N/D
+- non deve essere sostituito con null
+- non deve essere eliminato
+- non deve diventare array vuoto
+
+2. CARICA SOLO FILE NUOVI
+Durante update:
+- upload solo dei nuovi file aggiunti
+- upload solo dei file sostituiti manualmente
+- se un file è già salvato con URL, mantienilo così com’è
+
+3. MERGE, NON REPLACE
+Quando aggiorni corso/categoria:
+- fai merge dei dati nuovi con quelli esistenti
+- non fare replace completo dell’oggetto corso/categoria se non includi tutti i media
+- prima leggi il record esistente
+- poi aggiorna solo i campi modificati
+- preserva coverImage, poster, video, gallery, additionalMedia
+
+Esempio logica:
+existingCourse.media resta uguale se form.media non contiene nuovi file o eliminazioni manuali.
+
+4. DELETE SOLO MANUALE
+Un media può essere eliminato SOLO se l’admin clicca esplicitamente il tasto elimina.
+Mai eliminarlo automaticamente durante un salvataggio.
+
+5. NORMALIZZAZIONE MEDIA
+Crea una funzione unica tipo normalizeMedia(media) usata ovunque.
+
+Deve supportare:
+- string URL
+- { url }
+- { src }
+- { fileUrl }
+- { publicUrl }
+- { imageUrl }
+- { coverImage }
+- { coverImageUrl }
+- { thumbnail }
+- { thumbnailUrl }
+- { poster }
+- { posterUrl }
+
+Se è oggetto, estrai il primo valore valido.
+Se manca type, rilevalo da estensione:
+- jpg/jpeg/png/webp = image
+- mp4/mov/webm = video
+
+6. MAI SALVARE PREVIEW TEMPORANEE
+Non salvare mai:
+- blob:
+- data:
+- preview locali temporanee
+- File object
+- oggetti incompleti
+
+Nel database devono esserci solo URL pubblici/stabili.
+
+7. FIX MEDIA N/D IN DASHBOARD
+Nella dashboard admin, se un media mostra “N/D” ma ha un URL valido in un campo alternativo:
+- recuperalo con normalizeMedia
+- mostra anteprima corretta
+- non obbligare a ricaricare
+
+8. RETROCOMPATIBILITÀ
+Se ci sono media vecchi salvati in formati diversi, devono continuare a funzionare.
+Non rompere i dati già esistenti.
+
+9. SALVATAGGIO SICURO
+Prima di salvare:
+- separa media esistenti da media nuovi
+- upload nuovi file
+- ottieni URL finali
+- unisci URL vecchi + URL nuovi
+- salva array finale completo
+
+10. PERFORMANCE
+- non ricaricare media già esistenti
+- non fare upload duplicati
+- non caricare video pesanti per preview
+- usa preload metadata per video
+- usa lazy loading per immagini
+
+IMPORTANTE:
+- Non modificare pagamenti
+- Non modificare codici
+- Non modificare login
+- Non modificare chat
+- Non cambiare layout
+- Non eliminare dati esistenti
+
+RISULTATO FINALE:
+Quando modifico qualsiasi corso o categoria, tutte le immagini, copertine e video restano sempre visibili e funzionanti, senza sparire e senza diventare N/D.

@@ -1,0 +1,56 @@
+Voglio aggiungere una INTRO iniziale prima dell’ingresso nel sito IUSMK.
+
+IMPORTANTE:
+Non modificare il sito esistente, le sezioni, il menu, il login, la hero o le funzionalità. Aggiungi solo una schermata intro iniziale sopra al sito.
+
+INTRO:
+1. Quando l’utente apre il sito deve vedere uno sfondo nero fullscreen.
+2. Al centro deve esserci il logo IUSMK bianco.
+3. Il logo deve lampeggiare/pulsare leggermente.
+4. Sotto al logo deve comparire la scritta:
+   “Tocca per entrare nel mondo di IUSMK”
+5. La scritta deve essere bianca, elegante, centrata e leggibile anche da mobile.
+
+INTERAZIONE:
+Quando l’utente clicca/tocca la schermata:
+1. Deve partire il suono del rasoio.
+2. Deve comparire un rasoio animato che entra dal basso e passa verso l’alto al centro dello schermo.
+3. Il rasoio deve dare l’effetto di tagliare l’immagine iniziale in due parti: sinistra e destra.
+4. Le due parti dell’immagine devono cadere verso il basso in modo realistico:
+   - parte sinistra cade ruotando leggermente verso sinistra
+   - parte destra cade ruotando leggermente verso destra
+   - aggiungi gravità/accelerazione, opacità e movimento fluido
+5. Dopo la caduta deve rimanere uno sfondo nero.
+6. Subito dopo deve sparire l’intro e deve apparire il sito normalmente.
+
+IMMAGINE DA TAGLIARE:
+Userò/allego questa immagine come immagine dell’intro.
+Deve essere mostrata fullscreen con object-fit: cover.
+Deve essere divisa visivamente in due metà, sinistra e destra, durante l’animazione del taglio.
+
+AUDIO:
+Prepara il codice per usare un file audio del rasoio, ad esempio:
+`/sounds/razor.mp3`
+Il suono deve partire solo dopo il click/tap dell’utente, per evitare blocchi del browser.
+
+COMPORTAMENTO:
+- L’intro deve essere fullscreen, sopra tutto il sito, con z-index altissimo.
+- Deve funzionare bene su mobile e desktop.
+- Dopo aver completato l’animazione, l’intro deve essere rimossa dal DOM o nascosta completamente.
+- Non deve bloccare lo scroll del sito dopo la fine.
+- Non deve riapparire mentre l’utente naviga tra le pagine.
+- Deve riapparire solo se l’utente ricarica la pagina o riapre il sito.
+
+ANIMAZIONE:
+Usa CSS/Framer Motion se già presente nel progetto, altrimenti usa CSS animation.
+Crea una sequenza tipo:
+- Stato iniziale: logo bianco pulsante + testo
+- Click
+- immagine fullscreen visibile
+- rasoio sale dal basso al centro
+- split immagine in due metà
+- metà sinistra e destra cadono verso il basso con rotazione
+- fade nero
+- mostra sito
+
+Non rompere nulla del sito esistente.

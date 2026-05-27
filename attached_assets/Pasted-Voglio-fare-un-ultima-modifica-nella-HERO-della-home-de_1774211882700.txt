@@ -1,0 +1,93 @@
+Voglio fare un’ultima modifica nella HERO della home del sito IUSMK.
+
+OBIETTIVO
+Voglio cambiare lo stile della scritta:
+
+“Transforming scalps
+into canvases”
+
+facendola diventare coerente con lo stile del logo IUSMK che ti ho allegato.
+
+IMPORTANTE:
+non voglio cambiare il testo, voglio cambiare solo lo STILE GRAFICO della scritta, prendendo come riferimento il logo IUSMK allegato.
+
+COSA VOGLIO OTTENERE
+La headline della hero deve richiamare visivamente il logo IUSMK:
+- look organico / morbido / volumetrico
+- stile bold e distintivo
+- effetto premium e artistico
+- coerenza visiva con il brand
+- forte impatto visivo ma leggibilità ancora buona
+
+INDICAZIONI STILISTICHE
+Prendi ispirazione dal logo allegato:
+- forme morbide e piene
+- personalità forte
+- aspetto quasi scolpito / gonfio / 3D soft
+- se necessario usa:
+  - font più adatto
+  - text-shadow
+  - stroke leggero
+  - layer multipli
+  - effetto emboss / soft 3D
+  - personalizzazione tipografica
+Ma il risultato finale deve sembrare parte dello stesso universo visivo del logo IUSMK.
+
+IMPORTANTE SULLA LEGGIBILITÀ
+- la scritta deve restare leggibile anche sopra l’immagine hero
+- non deve confondersi con lo sfondo
+- non deve sembrare un effetto pesante o amatoriale
+- deve restare elegante e premium
+
+SCELTA VISIVA
+Valuta la soluzione migliore tra queste:
+1. applicare un trattamento stilistico alla scritta attuale
+2. usare una font/display più vicina al logo
+3. creare una resa personalizzata della headline come elemento grafico/immagine/SVG
+
+Scegli la soluzione migliore per ottenere:
+- massima somiglianza stilistica con il logo
+- ottima nitidezza
+- ottima resa responsive
+- nessuna perdita di qualità
+
+SE POSSIBILE
+Voglio che:
+- “Transforming scalps” e “into canvases” restino gerarchicamente ben separati
+- ma visivamente coerenti tra loro
+- se necessario puoi mantenere due stili leggermente diversi tra riga 1 e riga 2, purché il tutto sembri più vicino al linguaggio visivo del logo IUSMK
+
+VINCOLI IMPORTANTI
+- non cambiare inutilmente il layout della hero
+- non spostare pulsanti se non serve
+- non cambiare il testo
+- non rompere il responsive
+- non toccare altre sezioni del sito
+- mantieni il design premium del sito
+
+RESPONSIVE
+Controlla che il nuovo stile funzioni bene:
+- su desktop
+- su mobile
+- su tablet
+La headline non deve uscire dai margini, sovrapporsi male ai bottoni o risultare tagliata.
+
+PREFERENZA
+Se una semplice modifica CSS non basta per ottenere un risultato davvero coerente con il logo, crea una soluzione più avanzata (ad esempio SVG o asset grafico nitido) ma mantenendo:
+- alta qualità
+- sfondo trasparente se serve
+- caricamento corretto
+- ottima resa in tutte le dimensioni
+
+TEST FINALI
+Verifica:
+- somiglianza visiva con il logo IUSMK
+- buona leggibilità
+- resa elegante
+- corretto allineamento nella hero
+- responsive corretto
+
+Alla fine fammi un riepilogo con:
+- soluzione scelta (CSS / font / SVG / asset grafico)
+- come hai avvicinato la headline allo stile del logo
+- eventuali piccoli aggiustamenti fatti per leggibilità e responsive

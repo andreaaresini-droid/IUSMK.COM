@@ -1,0 +1,57 @@
+Devo aggiungere un’ultima modifica nel sito IUSMK, lato admin.
+
+Nella sezione:
+Admin > Account registrati > Dettagli cliente > tab “Corsi”
+
+ora vedo correttamente i corsi attivi del cliente.
+Voglio aggiungere anche un tasto per eliminare/rimuovere un corso direttamente da questa sezione, nel caso l’admin voglia toglierlo al cliente.
+
+COMPORTAMENTO RICHIESTO
+1. In ogni card corso del cliente, aggiungi un pulsante visibile tipo:
+   - “Rimuovi corso”
+   oppure
+   - icona cestino + testo chiaro
+2. Quando l’admin clicca quel tasto:
+   - deve uscire una conferma chiara
+   - esempio: “Vuoi davvero rimuovere questo corso dall’account di Angelo Artem?”
+3. Se confermato:
+   - il corso deve essere rimosso dall’account del cliente
+   - non deve più comparire in:
+     - lato cliente > “I miei corsi”
+     - lato admin > tab “Corsi” del cliente
+4. Se il corso era stato sbloccato con codice:
+   - gestisci in modo coerente anche il collegamento al codice associato
+   - se serve, scollega il corso dall’utente senza rompere lo storico admin
+5. Aggiorna subito l’interfaccia dopo la rimozione senza bug o refresh strani
+6. Mostra messaggi chiari:
+   - successo
+   - errore se qualcosa va male
+
+DETTAGLI TECNICI
+- controlla quale record/relazione nel database rappresenta il “corso attivo” del cliente
+- elimina/disattiva quella relazione corretta
+- non rompere:
+  - codici
+  - notifiche
+  - academy
+  - pagamenti stripe
+  - altri corsi del cliente
+
+DEBUG
+Aggiungi log:
+- [ADMIN COURSE REMOVE] requested
+- [ADMIN COURSE REMOVE] confirmed
+- [ADMIN COURSE REMOVE] relation removed
+- [ADMIN COURSE REMOVE] UI refreshed
+- [ADMIN COURSE REMOVE ERROR] ...
+
+UI/UX
+- il tasto deve vedersi bene anche da mobile
+- mantieni lo stile grafico coerente con il resto della dashboard
+- evita pulsanti troppo vicini o scomodi da premere su telefono
+
+Alla fine dimmi:
+1. quali file hai modificato
+2. come hai implementato la rimozione del corso
+3. quale relazione/tabella viene aggiornata
+4. come hai fatto sparire il corso sia lato admin sia lato cliente

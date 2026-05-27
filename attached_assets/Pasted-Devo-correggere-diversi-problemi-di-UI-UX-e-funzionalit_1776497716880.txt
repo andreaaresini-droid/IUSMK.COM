@@ -1,0 +1,134 @@
+Devo correggere diversi problemi di UI/UX e funzionalità nel sito IUSMK, lato admin e lato cliente, senza rompere nulla di ciò che già funziona.
+
+PROBLEMA 1 — Dashboard admin da computer non scorre bene
+Situazione attuale:
+- da desktop/computer la dashboard admin non è scorrevole correttamente
+- alcune pagine sembrano bloccate o non scrollano bene
+
+Correzione richiesta:
+1. Controlla la struttura layout della dashboard admin
+2. Correggi overflow, altezza contenitori, body scroll, fixed containers e wrappers
+3. La dashboard admin deve scrollare perfettamente da desktop e da mobile
+4. Nessuna sezione deve restare bloccata o tagliata
+
+PROBLEMA 2 — Sezione “Account registrati” da mobile non ben centrata
+Situazione attuale:
+- da telefono la sezione “Account registrati” non è ben centrata e non si vede bene
+
+Correzione richiesta:
+1. Migliora il layout mobile della pagina “Account registrati”
+2. Tutti gli elementi devono essere ben centrati e proporzionati
+3. Le card clienti non devono risultare strette, tagliate o decentrate
+4. Bottoni, contatori, barra ricerca, filtri e dettagli devono vedersi bene da telefono
+5. Mantieni leggibilità e ordine perfetti
+
+PROBLEMA 3 — Menu cliente sfalsato
+Situazione attuale:
+- lato cliente il menu mobile è completamente sfalsato
+- deve tornare come prima con tutti i nomi centrali e ordinati
+
+Correzione richiesta:
+1. Ripristina il menu mobile cliente in modo elegante e centrato
+2. Le voci menu devono essere allineate correttamente
+3. Il layout deve tornare pulito come prima
+4. Nessun testo fuori asse
+5. Mantieni lo stile IUSMK
+
+PROBLEMA 4 — Preferenze notifiche admin
+Nella sezione “Notifiche” della dashboard admin voglio aggiungere la possibilità per l’admin di decidere quali notifiche ricevere e quali no.
+
+Funzione richiesta:
+1. Aggiungi un blocco “Preferenze notifiche admin”
+2. L’admin deve poter attivare/disattivare categorie di notifiche, ad esempio:
+   - acquisti
+   - chat clienti
+   - richieste di contatto
+   - codici accesso
+   - codici sconto
+   - registrazioni account
+   - altri eventi utili già presenti nel sito
+3. Se una categoria è disattivata, l’admin non deve ricevere quella notifica
+4. Le preferenze devono essere salvate in modo persistente
+5. UI chiara, comoda anche da mobile
+
+PROBLEMA 5 — Assistente IUSMK non deve apparire nelle pagine admin
+Situazione attuale:
+- l’assistente IUSMK appare anche nella pagina admin
+- non lo voglio
+
+Correzione richiesta:
+1. L’assistente IUSMK deve apparire solo nelle pagine clienti/pubbliche
+2. Non deve essere visibile in nessuna pagina admin/dashboard admin
+3. Controlla tutte le route admin e rimuovilo completamente lì
+4. Non rompere l’assistente lato cliente
+
+PROBLEMA 6 — Knowledge base assistente: coupon
+Aggiungi nella knowledge base dell’assistente le informazioni per rispondere alle domande sui coupon.
+
+L’assistente deve saper rispondere in modo chiaro a domande tipo:
+- dove si inseriscono i coupon
+- i coupon si inseriscono nel checkout Stripe
+- se funzionano più di una volta
+- se hanno limiti di utilizzo
+- se dipende dal coupon specifico
+- se sono scaduti o non validi
+- se possono essere inviati dall’admin ai clienti
+
+IMPORTANTISSIMO:
+Quando l’utente chiede se i coupon funzionano più di una volta, la risposta NON deve essere automaticamente “no”.
+La risposta corretta deve essere:
+- dipende da come è stato configurato quel coupon
+- può avere un solo utilizzo oppure più utilizzi
+- può avere limiti totali o per cliente se configurati così
+
+PROBLEMA 7 — Eliminazione singola notifiche lato cliente
+Situazione attuale:
+- lato cliente si possono cancellare tutte le notifiche
+- ma voglio anche eliminare singolarmente una notifica specifica
+
+Correzione richiesta:
+1. Nella sezione notifiche lato cliente aggiungi un tasto per eliminare singolarmente ogni notifica
+2. Il cliente deve poter:
+   - eliminare una sola notifica
+   - oppure eliminare tutte
+3. UI pulita e comoda da mobile
+4. Dopo eliminazione singola, il badge/notifiche non lette deve aggiornarsi bene
+5. Nessun bug o refresh rotto
+
+UI/UX GENERALE
+- tutto deve essere perfettamente centrato
+- desktop e mobile devono entrambi funzionare bene
+- niente elementi sfalsati
+- niente overlay rotti
+- niente scroll bloccato
+- mantieni stile coerente con IUSMK
+
+DEBUG
+Aggiungi log chiari dove utile per:
+- rendering menu mobile cliente
+- rendering admin pages
+- save preferenze notifiche admin
+- filtro notifiche admin
+- eliminazione singola notifica cliente
+- mount assistente solo nelle route cliente
+
+IMPORTANTISSIMO
+Non rompere:
+- dashboard admin
+- notifiche cliente
+- badge notifiche
+- chat
+- acquisti
+- corsi
+- assistente lato cliente
+- menu principale del sito
+
+Alla fine dimmi:
+1. quali file hai modificato
+2. come hai corretto lo scroll della dashboard admin
+3. come hai sistemato “Account registrati” su mobile
+4. come hai ripristinato il menu cliente centrato
+5. come funzionano le preferenze notifiche admin
+6. come hai escluso l’assistente dalle pagine admin
+7. quali informazioni coupon hai aggiunto alla knowledge base
+8. come hai implementato l’eliminazione singola delle notifiche lato cliente

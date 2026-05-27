@@ -1,0 +1,103 @@
+Modifica il sistema di creazione e modifica corsi del pannello admin SENZA cambiare il design generale del sito e del pannello. Voglio cambiare il metodo di caricamento dei contenuti multimediali.
+
+OBIETTIVO
+Durante la creazione o modifica di un corso:
+- NON voglio più inserire manualmente l'URL della copertina
+- voglio poter caricare direttamente la copertina dal dispositivo
+- voglio poter caricare direttamente anche il video del corso dal dispositivo
+- il caricamento deve funzionare sia da computer sia da telefono
+
+1. COPERTINA CORSO
+Nel form “Nuovo Corso” e nel form “Modifica Corso”:
+- rimuovi il campo testuale “URL immagine copertina”
+- sostituiscilo con un vero campo upload file
+- deve accettare immagini da dispositivo:
+  - jpg
+  - jpeg
+  - png
+  - webp
+- mostra anteprima immagine dopo la selezione
+- se l’utente cambia immagine, aggiorna l’anteprima
+- salva correttamente il file e associa il percorso al corso nel database
+- se esiste già una copertina in modifica corso, mostrala già visibile come preview
+
+2. VIDEO CORSO
+Aggiungi nel form “Nuovo Corso” e “Modifica Corso” una sezione upload video:
+- campo upload reale da dispositivo
+- deve funzionare sia su desktop che mobile
+- formati accettati:
+  - mp4
+  - mov
+  - webm
+- mostra nome file selezionato
+- opzionale: mostra stato caricamento/progress bar
+- salva correttamente il file e collega il video al corso
+- in modifica corso, se un video esiste già, mostra almeno il nome file o un indicatore “video caricato”
+
+3. UX MOBILE + DESKTOP
+I pulsanti upload devono essere comodi e chiari su entrambi:
+- computer
+- smartphone
+- tablet
+
+Quindi:
+- usa input type="file" reale oppure componente upload equivalente
+- pulsanti chiari tipo:
+  - “Carica copertina”
+  - “Carica video corso”
+- da telefono deve aprirsi normalmente il selettore file/galleria del dispositivo
+- da computer deve aprirsi l’esplora file
+
+4. SALVATAGGIO FILE
+Implementa un sistema reale di salvataggio file, non simulato.
+Usa la soluzione già più adatta al progetto esistente, ad esempio:
+- storage locale del progetto se già previsto
+oppure meglio
+- Supabase Storage / Firebase Storage / Cloudinary / altro storage già integrato
+
+Requisiti:
+- al submit del form, i file devono essere caricati davvero
+- il database deve salvare il path/url finale del file caricato
+- il corso deve poi leggere correttamente immagine e video dai dati salvati
+
+5. VALIDAZIONI
+Aggiungi validazioni:
+- copertina obbligatoria almeno in creazione corso
+- video obbligatorio almeno in creazione corso, se il corso deve essere subito fruibile
+- messaggi di errore chiari se formato file non valido
+- opzionale: limite dimensione file con messaggio chiaro
+- gestisci eventuali errori upload senza rompere il form
+
+6. MODIFICA CORSO
+Nel form di modifica:
+- permetti di sostituire copertina e video con nuovi file caricati dal dispositivo
+- se non carico un nuovo file, mantieni quelli esistenti
+- se sostituisco il file, aggiorna il record del corso correttamente
+
+7. LISTA CORSI ADMIN
+Nella lista corsi admin:
+- assicurati che la copertina venga letta dal file caricato
+- se utile, mostra una mini thumbnail della copertina
+- non mostrare campi URL manuali all’utente admin
+
+8. PULIZIA UI
+Rimuovi ogni riferimento UI a:
+- “URL immagine copertina”
+- inserimento manuale link immagine
+- eventuale inserimento manuale link video
+
+9. TEST FINALE
+Dopo la modifica verifica che:
+- da desktop io possa creare un corso caricando immagine e video dal computer
+- da mobile io possa creare un corso caricando immagine e video dal telefono
+- la preview copertina funzioni
+- il video venga salvato correttamente
+- il corso venga creato senza richiedere URL manuali
+- la modifica corso permetta di aggiornare i file
+- il resto del pannello admin continui a funzionare
+
+IMPORTANTE
+- fai modifiche reali al codice esistente
+- non limitarti a descrivere la soluzione
+- mantieni l’aspetto grafico attuale del modal/form
+- se serve, aggiorna backend/API/database/storage per supportare upload veri

@@ -1,0 +1,198 @@
+Devi correggere il progetto IUSMK in modo che funzioni correttamente NON SOLO in Preview/Replit dev, ma anche sul sito pubblicato e sul dominio custom iusmk.com.
+
+ATTENZIONE:
+In Preview di Replit funziona tutto correttamente:
+- login admin funziona
+- corsi visibili
+- sezione Masterclass corretta
+
+Ma sul dominio pubblico iusmk.com:
+- non riesco ad accedere alla dashboard admin
+- i corsi non compaiono
+- quindi il problema è chiaramente nella configurazione production/deploy/domain, non nella preview locale
+
+Non voglio una spiegazione teorica: voglio un fix reale di configurazione, API, sessioni e build di produzione.
+
+==================================================
+OBIETTIVO
+==================================================
+
+Fare in modo che il sito pubblicato su iusmk.com si comporti esattamente come la Preview di Replit:
+- login admin funzionante
+- corsi pubblicati visibili
+- Academy funzionante
+- homepage “Le Masterclass” funzionante
+
+==================================================
+1. CONTROLLA DIFFERENZA TRA PREVIEW E PRODUZIONE
+==================================================
+
+Confronta realmente:
+- ambiente Preview Replit
+- ambiente Published / production
+- dominio custom iusmk.com
+
+Individua perché Preview funziona ma produzione no.
+
+Controlla in particolare:
+- variabili ambiente disponibili in preview ma non in production
+- base URL API
+- path API
+- proxy frontend/backend
+- cookie auth
+- domini e sottodomini
+- cors / sameSite / secure cookie
+- database connection in production
+- static build vs server runtime
+
+==================================================
+2. LOGIN ADMIN — FIX PRODUZIONE
+==================================================
+
+PROBLEMA
+Su iusmk.com il login admin non funziona, mentre in Preview sì.
+
+Devi controllare e correggere:
+
+A. endpoint auth in produzione
+- verifica che /api/auth/admin/login funzioni davvero sul dominio pubblico
+- verifica che le chiamate API da iusmk.com vadano all’endpoint giusto
+- evita che il frontend punti ancora a URL preview/dev
+
+B. cookie/sessione
+- controlla se in produzione i cookie auth vengono scritti davvero
+- verifica flags:
+  - secure
+  - sameSite
+  - httpOnly
+  - domain
+  - path
+- assicurati che su iusmk.com la sessione admin venga salvata e letta correttamente
+
+C. route /api/auth/me
+- assicurati che dopo il login l’endpoint auth/me funzioni sul dominio pubblico
+- niente 401 se le credenziali sono corrette
+
+D. credenziali
+- assicurati che produzione stia leggendo le stesse credenziali corrette della preview
+- non deve usare config vecchie o env mancanti
+
+==================================================
+3. CORSI NON VISIBILI — FIX PRODUZIONE
+==================================================
+
+PROBLEMA
+In Preview i corsi si vedono, su iusmk.com no.
+
+Devi controllare:
+
+A. query corsi in produzione
+- verifica che la homepage e Academy leggano i corsi dal database corretto anche in produzione
+- assicurati che l’API corsi pubblicati funzioni sul dominio pubblico
+
+B. endpoint corsi
+- verifica che le route API dei corsi rispondano anche su produzione
+- controlla che non ci siano URL hardcoded verso preview/dev
+
+C. variabili ambiente / database
+- verifica che la produzione abbia accesso allo stesso database corretto
+- controlla se mancano env di connessione
+- controlla se la build pubblicata usa valori diversi o nulli
+
+D. immagini / cover
+- verifica che le copertine corsi siano accessibili anche in produzione
+- niente path che funzionano solo in preview
+
+==================================================
+4. BASE URL / API URL
+==================================================
+
+Controlla tutto il frontend e correggi eventuali errori di base URL.
+
+Possibili problemi da cercare:
+- fetch("/api/...") che in produzione non passa correttamente
+- fetch verso host preview .replit.dev invece di iusmk.com
+- uso scorretto di env tipo:
+  VITE_API_URL
+  PUBLIC_API_URL
+  BASE_URL
+  APP_URL
+- mismatch tra frontend pubblicato e backend servito
+
+Obiettivo:
+- in produzione tutte le API devono funzionare dal dominio iusmk.com
+- nessun riferimento residuo alla preview dev
+
+==================================================
+5. BUILD E PUBLISH
+==================================================
+
+Controlla il processo di publish/production:
+- assicurati che il codice nuovo sia davvero incluso nella build pubblicata
+- assicurati che non stia servendo una build vecchia
+- assicurati che frontend e backend corretti siano entrambi deployati
+- se serve, correggi script build/start
+
+Controlla:
+- build command
+- start command
+- static assets
+- server routes
+- SPA fallback / API routing
+
+==================================================
+6. DOMINIO CUSTOM
+==================================================
+
+Controlla se il problema è specifico del dominio custom iusmk.com.
+
+Verifica:
+- che il dominio punti correttamente alla build giusta
+- che non ci siano problemi tra root domain e sottodominio
+- che cookie/sessioni funzionino sul dominio custom
+- che gli endpoint API siano raggiungibili da iusmk.com
+
+==================================================
+7. LOG E DEBUG PRODUZIONE
+==================================================
+
+Esegui un controllo reale con log su produzione:
+- login admin request
+- auth/me request
+- request corsi pubblicati
+- homepage masterclass data fetch
+- academy data fetch
+
+Trova esattamente dove produzione fallisce e correggilo.
+
+==================================================
+8. TEST OBBLIGATORI
+==================================================
+
+TEST 1
+- apri Preview Replit
+- verifica che login admin e corsi funzionino
+
+TEST 2
+- apri iusmk.com
+- verifica che login admin funzioni anche lì
+
+TEST 3
+- apri iusmk.com homepage
+- verifica che la sezione “Le Masterclass” mostri il corso reale
+
+TEST 4
+- apri iusmk.com/academy
+- verifica che i corsi pubblicati compaiano davvero
+
+TEST 5
+- ripeti da telefono reale, non solo da browser desktop
+
+==================================================
+9. IMPORTANTE
+==================================================
+
+- non cambiare design
+- non cambiare branding
+- correggi solo la differenza tra preview e produzione
+- fai modifiche reali di config, env, api, cookie, sessione, build e dominio fino a far funzionare il sito pubblicato esattamente come la preview

@@ -1,0 +1,134 @@
+Update ONLY the AI assistant knowledge/instructions so it can answer correctly to questions about:
+
+1. how to activate push notifications
+2. how to add the IUSMK site to the phone home screen like an app
+
+Do NOT change anything else in the assistant or website.
+
+==================================================
+OBJECTIVE
+==================================================
+
+The AI assistant must give clear, correct, complete answers when users ask things like:
+
+- Come attivo le notifiche push?
+- Come posso attivare le notifiche?
+- Come faccio ad aggiungere il sito alla schermata home?
+- Come metto IUSMK sulla home del telefono?
+- Posso usare il sito come un’app?
+- Come aggiungo il sito come applicazione?
+- Come installo il sito sul telefono?
+
+The assistant must answer in Italian, naturally, and based on the real current flow of the site.
+
+==================================================
+KNOWLEDGE TO ADD — PUSH NOTIFICATIONS
+==================================================
+
+Add this knowledge to the assistant:
+
+Le notifiche push si attivano così:
+1. bisogna avere un account ed effettuare l’accesso al sito
+2. dopo aver aperto il sito, bisogna andare nel menu
+3. entrare nella sezione “Notifiche”
+4. lì è presente il tasto per attivare le notifiche push
+5. dopo l’attivazione, l’utente può ricevere notifiche su messaggi, corsi e aggiornamenti del sito
+
+Important:
+- the assistant must NOT say that the browser is unsupported
+- the assistant must NOT invent technical limitations unless they are actually detected live by the app
+- the assistant must explain the current real path used on the site
+
+Suggested answer style:
+“Per attivare le notifiche push devi accedere al tuo account, aprire il menu del sito, entrare nella sezione ‘Notifiche’ e premere il tasto per attivarle.”
+
+==================================================
+KNOWLEDGE TO ADD — ADD TO HOME SCREEN
+==================================================
+
+Add this knowledge to the assistant:
+
+Per aggiungere IUSMK alla schermata Home e usarlo come un’app:
+
+Su iPhone:
+1. apri il sito con Safari
+2. premi il tasto Condividi
+3. scorri e seleziona “Aggiungi a Home”
+4. conferma per aggiungerlo alla schermata iniziale
+
+Su Android:
+1. apri il sito con Chrome
+2. premi il menu del browser
+3. seleziona “Aggiungi a schermata Home” oppure “Installa app” se disponibile
+4. conferma l’aggiunta
+
+The assistant should explain that once added to the home screen, the site can be opened more quickly like an app.
+
+==================================================
+HOW THE ASSISTANT SHOULD ANSWER
+==================================================
+
+The assistant must give short, helpful, direct answers.
+
+Examples of ideal answers:
+
+Question:
+“Come posso attivare le notifiche push?”
+Answer:
+“Per attivare le notifiche push devi accedere al tuo account, aprire il menu del sito, entrare nella sezione ‘Notifiche’ e premere il tasto di attivazione.”
+
+Question:
+“Come aggiungo il sito alla schermata Home?”
+Answer:
+“Se usi iPhone, apri il sito con Safari, premi Condividi e poi ‘Aggiungi a Home’. Se usi Android, apri il sito con Chrome, premi il menu e scegli ‘Aggiungi a schermata Home’ oppure ‘Installa app’.”
+
+Question:
+“Posso usare il sito come un’app?”
+Answer:
+“Sì, puoi aggiungerlo alla schermata Home del telefono. In questo modo lo apri rapidamente come se fosse un’app.”
+
+==================================================
+IMPORTANT RULES FOR THE ASSISTANT
+==================================================
+
+- Respond in Italian
+- Be concise but complete
+- Do not give incomplete answers
+- Do not stop mid-sentence
+- Do not say false things like “il browser non supporta le notifiche push”
+- Do not invent steps that do not exist on the site
+- Reuse the actual site flow:
+  account -> menu -> notifiche -> attiva push
+- Mention both iPhone and Android for home screen questions
+- If the user asks both things together, answer both clearly in one message
+
+==================================================
+OPTIONAL FAQ ENTRIES TO ADD
+==================================================
+
+Add FAQ/knowledge entries for these user intents:
+- attivare notifiche push
+- notifiche sito
+- aggiungere alla home
+- installare il sito come app
+- usare il sito come applicazione
+- aggiungere IUSMK al telefono
+
+==================================================
+MANDATORY TESTS
+==================================================
+
+Test the AI assistant with these exact questions:
+
+1. “Come posso attivare le notifiche push?”
+2. “Come faccio ad aggiungere il sito alla schermata home?”
+3. “Posso usare IUSMK come un’app?”
+4. “Come installo il sito sul telefono?”
+5. “Come faccio sia ad aggiungere il sito alla home sia ad attivare le notifiche?”
+
+The assistant must answer correctly and completely in all these cases.
+
+At the end, show me:
+- what AI knowledge/instructions you updated
+- which FAQ/knowledge entries you added
+- 2 example answers generated by the assistant

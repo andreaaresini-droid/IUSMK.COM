@@ -1,0 +1,143 @@
+C’è un bug grave nella logica di scadenza dei codici accesso di IUSMK.
+
+PROBLEMA REALE
+È stato creato un codice con scadenza oggi alle 14:35.
+Il cliente ha riscattato il codice alle 14:37.
+Il sistema ha comunque accettato il codice e ha sbloccato il corso.
+
+Questo non deve mai succedere.
+
+OBIETTIVO
+Un codice scaduto deve essere bloccato completamente.
+Se la data/ora di scadenza è superata, il cliente non deve poter usare il codice e non deve ottenere accesso al corso.
+
+IMPORTANTE
+Il controllo della scadenza deve avvenire nel BACKEND, non solo nel frontend.
+
+CORREZIONE DA IMPLEMENTARE
+
+1. CONTROLLO BACKEND OBBLIGATORIO AL MOMENTO DEL RISCATTO
+Nel momento in cui il cliente inserisce il codice e prova a sbloccare il corso:
+- controlla nel backend se il codice esiste
+- controlla se è attivo
+- controlla se è revocato
+- controlla se ha una data di scadenza
+- se la data di scadenza è presente, confrontala con data e ora correnti
+- se il momento attuale è successivo alla scadenza, blocca subito il riscatto
+- NON creare accesso al corso
+- NON assegnare il corso all’utente
+- NON creare record di sblocco
+
+2. CONTROLLO SU DATA + ORA, NON SOLO DATA
+Il confronto deve considerare anche l’orario preciso.
+Esempio:
+- scadenza: 20 aprile 2026 ore 14:35
+- tentativo di riscatto: 20 aprile 2026 ore 14:37
+Risultato corretto:
+- codice scaduto
+- accesso negato
+
+Non voglio controlli solo sul giorno.
+Serve confronto timestamp completo.
+
+3. TIMEZONE CORRETTO
+Controlla come vengono salvati e confrontati gli orari.
+Il sistema deve usare una logica coerente tra:
+- data salvata nel database
+- data mostrata in admin
+- data usata nel controllo scadenza
+
+Verifica eventuali problemi di timezone, ad esempio:
+- salvataggio in UTC
+- confronto in ora locale
+- visualizzazione Europe/Rome ma controllo lato server diverso
+
+Se necessario:
+- salva e confronta tutto in UTC
+- converti correttamente in frontend solo per la visualizzazione
+oppure usa un’unica strategia coerente
+Ma il risultato finale deve essere corretto per l’orario reale dell’utente/admin.
+
+4. BLOCCO ANCHE SE IL CODICE È ANCORA “ATTIVO”
+Lo stato “attivo” non deve bastare.
+Anche se un codice è marcato come attivo, se ha superato expiresAt deve essere considerato NON utilizzabile.
+
+Quindi la logica corretta è:
+codice valido solo se:
+- esiste
+- status = active
+- non revocato
+- non scaduto
+- non ha superato eventuale limite dispositivi/usi
+
+5. MESSAGGIO ERRORE CHIARO AL CLIENTE
+Se il codice è scaduto, mostra un messaggio chiaro:
+- “Questo codice è scaduto”
+oppure
+- “Il codice inserito non è più valido perché è scaduto”
+
+Non usare messaggi generici.
+
+6. NON CREARE ACCESSI FANTASMA
+Se il codice è scaduto:
+- non deve comparire in “I miei corsi”
+- non deve creare accessi attivi
+- non deve risultare come corso sbloccato
+- non deve aggiornare contatori o usage se il redeem è stato rifiutato
+
+7. CONTROLLO ANCHE SU CODICI GIÀ ESISTENTI
+La correzione deve valere per:
+- codici nuovi
+- codici già presenti nel database
+- codici modificati dall’admin
+
+8. EVENTUALE PULIZIA DATI
+Controlla se, a causa del bug attuale, esistono accessi corso creati usando codici già scaduti.
+Se trovi record generati in modo errato:
+- segnaliameli chiaramente
+- non cancellare nulla automaticamente senza controllo
+ma rendi evidente il problema per eventuale pulizia manuale admin
+
+9. DEBUG DA AGGIUNGERE
+Aggiungi log temporanei nel backend del redeem codice:
+- codice inserito
+- expiresAt letto dal database
+- timestamp attuale del server
+- timezone usata
+- risultato confronto scadenza
+- motivo del blocco o accettazione
+
+Voglio capire esattamente perché un codice scaduto è stato accettato.
+
+10. VALIDAZIONE FRONTEND FACOLTATIVA, MA SOLO AGGIUNTIVA
+Puoi anche mostrare lato frontend che il codice è scaduto, ma questo controllo è solo secondario.
+La protezione vera deve essere lato backend.
+
+11. TEST OBBLIGATORI
+Verifica questi casi:
+- codice senza scadenza -> deve funzionare
+- codice con scadenza futura -> deve funzionare
+- codice con scadenza passata di 1 minuto -> deve essere bloccato
+- codice con scadenza esattamente all’ora corrente -> definire comportamento preciso e coerente
+- codice revocato -> deve essere bloccato
+- codice scaduto non deve creare accesso al corso
+- codice scaduto non deve apparire in “I miei corsi”
+
+12. DEFINIRE COMPORTAMENTO ESATTO SUL LIMITE
+Definisci chiaramente la regola:
+- se now > expiresAt -> codice scaduto
+oppure
+- se now >= expiresAt -> codice scaduto
+
+Consiglio:
+usa
+- now >= expiresAt -> codice scaduto
+così appena arriva l’orario di scadenza il codice non è più utilizzabile
+
+13. NON TOCCARE IL RESTO
+Non modificare altre parti del sito.
+Intervieni solo sulla logica di validazione dei codici in fase di riscatto e sui controlli di scadenza.
+
+RISULTATO FINALE ATTESO
+Se un codice scade alle 14:35, dalle 14:35 in poi non deve più poter essere usato.
+Se un cliente prova a usarlo alle 14:37, deve ricevere errore e non deve ottenere accesso al corso.

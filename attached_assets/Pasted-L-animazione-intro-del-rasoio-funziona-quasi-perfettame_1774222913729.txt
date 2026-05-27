@@ -1,0 +1,55 @@
+L’animazione intro del rasoio funziona quasi perfettamente, ma voglio fare due ultime modifiche.
+
+1. ANIMAZIONE LEGGERMENTE PIÙ LENTA
+Voglio che tutta l’animazione sia un po’ più lenta e più leggibile.
+Adesso è troppo veloce e il taglio non si capisce bene.
+
+Obiettivo:
+- rallenta leggermente il movimento del rasoio
+- rallenta leggermente anche la separazione delle due metà della foto
+- mantieni comunque un effetto premium e fluido
+- non renderla lenta in modo pesante: solo più chiara e leggibile
+
+Indicazione pratica:
+- aumenta un po’ la durata complessiva dell’intro
+- rendi più chiaro il momento in cui il rasoio passa e la foto si apre in due
+- sincronizza bene i tempi tra salita del rasoio, taglio e caduta laterale delle due metà
+
+2. USARE IL FILE AUDIO DEL RASOIO CHE TI ALLEGO
+Ti allegherò un file audio chiamato qualcosa come “rasoio_intro_3s.wav”.
+Voglio che questo audio venga usato come suono del rasoio durante l’intro.
+
+Requisiti:
+- il suono deve partire quando inizia il movimento del rasoio
+- il suono deve accompagnare tutta l’animazione
+- il suono deve finire quando l’animazione si conclude
+- sincronizza la durata dell’animazione alla durata del file audio
+- se serve, adatta leggermente i tempi dell’animazione in modo che combacino perfettamente con il file audio
+- evita errori come quelli dell’AudioContext già chiuso
+- usa la soluzione più stabile possibile, preferibilmente con un semplice elemento audio HTML o una gestione robusta senza bug
+
+3. SINCRONIZZAZIONE
+Voglio che:
+- il rasoio salga
+- tagli la foto al centro
+- le due metà vadano a destra e sinistra
+- il suono accompagni tutto il gesto
+- quando finisce il suono, finisca anche l’intro e si veda la home
+
+4. NON TOCCARE IL RESTO
+- non cambiare altre parti del sito
+- non modificare navbar, hero o sezioni
+- modifica solo tempi animazione e audio dell’intro
+
+5. TEST FINALI
+Verifica:
+- animazione più leggibile
+- audio sincronizzato
+- nessun errore console
+- intro funzionante su desktop e mobile
+- refresh e riapertura pagina ancora funzionanti
+
+Alla fine fammi un riepilogo con:
+- nuova durata dell’animazione
+- come hai sincronizzato il file audio
+- eventuali piccoli aggiustamenti ai timing

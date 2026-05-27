@@ -1,0 +1,69 @@
+C’è un nuovo problema nella sezione Galleria del sito IUSMK.
+
+Situazione attuale:
+- ora da telefono riesco correttamente a selezionare le foto dall’album o dai file
+- però dopo il caricamento le immagini NON si vedono
+- al loro posto compare un riquadro vuoto / icona immagine rotta / placeholder
+- questo succede sia nell’admin che nella galleria pubblica del sito
+
+Voglio che analizzi e corregga il problema senza cambiare inutilmente il design attuale.
+
+Obiettivo:
+fare in modo che, dopo l’upload, le immagini vengano salvate e visualizzate correttamente sia nel pannello admin sia nella galleria pubblica.
+
+Controlli da fare:
+1. Verifica se il file viene davvero caricato correttamente nel sistema di storage usato dal progetto
+2. Verifica se nel database/collection viene salvato il campo corretto dell’immagine:
+   - url pubblica
+   - path
+   - filename
+   - storage key
+   - eventuale base64 o asset reference
+3. Controlla se il frontend admin e quello pubblico stanno leggendo il campo giusto per mostrare l’immagine
+4. Controlla se l’URL salvata è valida e accessibile pubblicamente
+5. Controlla se ci sono problemi di:
+   - path sbagliato
+   - URL relative invece di assolute
+   - immagini salvate ma non servite dal server
+   - permessi / static serving
+   - mismatch tra struttura dei dati salvati e quella letta in frontend
+   - problemi di estensione MIME o content-type
+   - immagini caricate ma renderizzate con src errato
+6. Controlla se il componente immagine mostra il placeholder perché riceve valore nullo, undefined o un URL non valido
+7. Verifica che il problema sia risolto sia su mobile che desktop
+
+Cosa voglio:
+- upload funzionante
+- anteprima corretta nell’admin
+- immagini visibili nella galleria pubblica
+- nessuna icona immagine rotta
+- mantenere layout, stile, colori e struttura attuale
+
+Richieste specifiche:
+- se necessario, correggi la logica di salvataggio dell’upload
+- se necessario, correggi la logica di recupero e rendering immagini
+- se il sistema attuale salva dati incompleti, sistemalo in modo pulito
+- aggiungi controlli e fallback: se un’immagine non è disponibile, mostra un placeholder solo come fallback reale, non al posto di immagini valide
+- aggiungi logging utile per capire:
+  - cosa viene caricato
+  - cosa viene salvato nel database
+  - quale URL viene usata nel rendering
+  - perché eventualmente il rendering fallisce
+
+Importante:
+- non rifare da zero la galleria se non serve
+- non cambiare inutilmente il design
+- modifica solo la logica necessaria
+- correggi il problema end-to-end
+
+Dopo la correzione:
+1. testa caricando una nuova immagine
+2. verifica che si veda nell’admin
+3. verifica che si veda nella galleria pubblica
+4. verifica che funzioni da telefono e da desktop
+
+Alla fine fammi un riepilogo chiaro con:
+- causa del problema
+- punti corretti
+- come vengono ora salvate e mostrate le immagini
+- eventuali limiti residui

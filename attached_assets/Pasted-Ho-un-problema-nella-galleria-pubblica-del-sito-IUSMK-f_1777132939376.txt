@@ -1,0 +1,102 @@
+Ho un problema nella galleria pubblica del sito IUSMK: foto e video ci mettono troppo tempo a caricarsi per i clienti.
+
+Voglio ottimizzare la galleria senza rompere nulla di ciò che funziona ora.
+
+Obiettivo
+
+Foto e video devono comparire molto più velocemente su:
+
+mobile
+desktop
+Safari/iPhone
+Chrome
+PWA/app
+1. Immagini galleria
+
+Non caricare le immagini originali pesanti nella griglia.
+
+Quando l’admin carica una foto, genera e salva:
+
+thumbnail leggera per la griglia
+versione media per anteprima
+versione full solo quando il cliente apre la foto
+
+Nella galleria pubblica usa:
+
+thumbnail nella griglia
+full image solo nel popup/lightbox
+
+Usa formati ottimizzati:
+
+WebP o AVIF se possibile
+fallback JPG/PNG
+2. Video galleria
+
+Nella griglia NON caricare subito il video completo.
+
+Per ogni video:
+
+crea una thumbnail/cover video leggera
+mostra quella nella griglia
+carica il video vero solo quando il cliente clicca per aprirlo
+
+Se vuoi mantenere la preview dei primi 2 secondi:
+
+caricala solo quando il riquadro video è visibile
+usa preload="metadata" o preload="none"
+non far partire tutti i video insieme
+3. Lazy loading intelligente
+
+Usa lazy loading per tutti i media sotto la prima schermata.
+
+Le prime immagini visibili devono caricare subito, le altre solo quando si avvicinano allo schermo.
+
+4. Intersection Observer
+
+Per video preview e immagini sotto, usa Intersection Observer:
+
+carica media solo quando entrano in viewport
+ferma video preview quando escono dallo schermo
+evita consumo inutile di rete
+5. Cache corretta
+
+Imposta cache per media statici:
+
+Cache-Control: public, max-age=31536000, immutable
+
+Quando un file viene aggiornato, usa nome file nuovo/versionato per evitare cache vecchia.
+
+6. Compressione upload admin
+
+Quando l’admin carica nuovi media:
+
+comprimi immagini senza perdere qualità visibile
+crea thumbnail automaticamente
+per video, genera poster/thumbnail
+salva file originali solo se servono per apertura completa
+7. Non modificare le funzioni esistenti
+
+NON rompere:
+
+apertura immagini
+apertura video
+audio video
+play/pausa
+filtri galleria
+dashboard admin
+upload admin
+layout attuale
+8. Test finale
+
+Verifica:
+
+galleria desktop
+galleria mobile
+prima apertura senza cache
+scroll veloce
+apertura immagine
+apertura video
+audio video
+filtri categoria
+
+La galleria deve caricarsi molto più velocemente e restare identica come funzionamento.

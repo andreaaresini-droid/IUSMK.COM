@@ -1,0 +1,146 @@
+Voglio aggiungere nel menu mobile/desktop del sito IUSMK un selettore di lingua per cambiare facilmente tutta la lingua del sito.
+
+ATTENZIONE:
+- la traduzione deve riguardare SOLO il sito pubblico
+- la parte admin/dashboard NON deve essere tradotta
+- non voglio modifiche inutili al design
+- il selettore lingua deve essere semplice, elegante e coerente con lo stile del sito
+
+==================================================
+OBIETTIVO
+==================================================
+
+Aggiungere nel menu del sito un controllo per cambiare lingua facilmente.
+
+Le lingue iniziali che voglio supportare sono almeno:
+- Italiano
+- Inglese
+
+Se la struttura lo consente, prepara il sistema in modo estendibile anche per future lingue.
+
+==================================================
+DOVE METTERLO
+==================================================
+
+Nel menu del sito, sia mobile che desktop se presente, aggiungi una sezione chiara per la lingua.
+
+Esempi accettabili:
+- pulsante “IT / EN”
+- dropdown “Lingua”
+- selettore con due bottoni
+- piccolo switch elegante
+
+Sul mobile deve stare bene nel menu aperto, senza rompere il layout.
+
+==================================================
+COSA DEVE TRADURRE
+==================================================
+
+La lingua deve cambiare TUTTO il sito pubblico, ad esempio:
+- navbar/menu
+- home
+- chi è IUSMK
+- galleria
+- academy
+- contatto
+- footer
+- pulsanti
+- testi delle sezioni pubbliche
+- intro pubblica se ci sono testi
+- eventuali messaggi visibili al cliente/utente pubblico
+
+==================================================
+COSA NON DEVE TRADURRE
+==================================================
+
+NON tradurre:
+- dashboard admin
+- area admin
+- pagine/admin routes
+- testi interni di gestione admin
+- sezioni protette dell’amministrazione
+
+La parte admin deve restare com’è ora.
+
+==================================================
+LOGICA RICHIESTA
+==================================================
+
+Implementa un sistema pulito di internazionalizzazione per il sito pubblico.
+
+Voglio una soluzione robusta, ad esempio:
+- file di traduzione separati per lingua
+- struttura tipo dizionario/translation keys
+- fallback lingua predefinita
+
+Lingua predefinita:
+- Italiano
+
+Quando l’utente cambia lingua:
+- il sito pubblico deve aggiornarsi correttamente
+- la scelta deve restare salvata
+- se chiude e riapre il sito, deve ritrovare l’ultima lingua scelta
+
+Puoi salvare la scelta con:
+- localStorage
+oppure
+- altra soluzione semplice e stabile
+
+==================================================
+UX / DESIGN
+==================================================
+
+Il selettore lingua deve:
+- essere coerente col look premium del sito
+- non sembrare un elemento fuori stile
+- avere buon contrasto
+- essere facile da usare da telefono
+- non occupare troppo spazio
+
+Se utile, usa:
+- IT / EN
+- piccole bandiere solo se eleganti e non pacchiane
+- indicatore lingua attiva
+
+==================================================
+RESPONSIVE
+==================================================
+
+Verifica:
+- menu mobile
+- menu desktop
+- apertura/chiusura menu
+- selettore lingua ben visibile e non rotto su schermi piccoli
+
+==================================================
+IMPORTANTE
+==================================================
+
+- non cambiare inutilmente layout e stile del menu
+- non rompere intro, animazioni, immagini o pulsanti
+- non toccare la parte admin
+- applica la traduzione solo al sito pubblico
+
+==================================================
+TEST FINALI
+==================================================
+
+Verifica davvero:
+1. sito pubblico in italiano
+2. cambio lingua in inglese
+3. aggiornamento corretto di testi e pulsanti pubblici
+4. admin invariato
+5. refresh pagina → lingua mantenuta
+6. chiusura e riapertura sito → lingua mantenuta
+7. mobile menu → selettore funziona bene
+
+==================================================
+OUTPUT FINALE
+==================================================
+
+Alla fine voglio un riepilogo chiaro con:
+- come hai implementato la traduzione
+- dove hai messo il selettore lingua
+- quali parti pubbliche vengono tradotte
+- conferma che l’admin non viene toccato
+- come viene salvata la lingua scelta

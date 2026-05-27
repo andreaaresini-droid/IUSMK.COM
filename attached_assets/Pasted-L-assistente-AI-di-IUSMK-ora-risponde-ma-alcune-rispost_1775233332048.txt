@@ -1,0 +1,168 @@
+L’assistente AI di IUSMK ora risponde, ma alcune risposte sono incomplete, tagliate oppure non rispondono davvero alla domanda del cliente.
+
+Voglio che tu corregga SOLO la logica dell’assistente AI e del retrieval della Knowledge Base, senza modificare ciò che già funziona nel resto del sito.
+
+OBIETTIVO
+L’assistente deve:
+- rispondere in modo completo ma sintetico
+- rispondere davvero alla domanda fatta dal cliente
+- non troncare le frasi
+- non mischiare informazioni non pertinenti
+- non dare una risposta parziale se nella Knowledge Base esiste abbastanza contesto per rispondere meglio
+- usare fallback solo quando davvero non ha abbastanza informazioni
+
+PROBLEMI DA CORREGGERE
+Attualmente succede che:
+- alcune risposte si interrompono a metà
+- alcune risposte prendono solo una parte della knowledge base
+- alcune risposte non centrano bene la domanda
+- alcune risposte danno istruzioni incomplete
+- alcune domande che riguardano login, password, acquisto corso, notifiche o codici vengono risposte in modo troppo generico
+
+CORREZIONI RICHIESTE
+
+1) MIGLIORA IL RETRIEVAL DELLA KNOWLEDGE BASE
+Quando arriva una domanda:
+- non recuperare un solo record, ma i 3-5 record più pertinenti
+- ordina i risultati per rilevanza reale
+- dai priorità a title, keywords e category oltre che al content
+- se la domanda riguarda accesso/login/password/registrazione, recupera tutte le voci correlate a:
+  - accesso
+  - password
+  - login
+  - registrazione
+  - account
+- se la domanda riguarda corsi/codici/notifiche/acquisti, recupera tutte le voci correlate a:
+  - corsi
+  - acquisti
+  - codice
+  - sblocco
+  - notifiche
+- se la domanda riguarda resi/rimborsi/contatti, recupera tutte le voci correlate a:
+  - resi
+  - rimborsi
+  - contatti
+  - Giuseppe
+  - telefono
+- unisci i record rilevanti prima di generare la risposta
+
+2) COSTRUZIONE DEL CONTESTO
+Non passare al modello solo un frammento piccolo o casuale.
+Costruisci un contesto pulito e completo con:
+- titolo voce
+- categoria
+- contenuto
+per ogni voce trovata.
+Se più voci si completano tra loro, passale insieme.
+Evita duplicati.
+Evita che venga passato solo il primo record se ce ne sono altri molto utili.
+
+3) RISPOSTE COMPLETE E NON TRONCATE
+Controlla se il testo della risposta viene tagliato:
+- verifica limiti di lunghezza frontend e backend
+- verifica se il box del messaggio ha overflow nascosto o max-height errato
+- verifica se il testo viene interrotto per limite token, substring o trim involontario
+- verifica se il renderer markdown/json taglia l’ultima parte
+
+Correggi in modo che:
+- la risposta venga salvata completa
+- la risposta venga renderizzata completa
+- il box messaggi mostri tutto il testo con wrapping corretto
+- lo scroll della chat funzioni bene anche con risposte lunghe
+
+4) PROMPT SYSTEM PIÙ PRECISO
+Aggiorna il system prompt dell’assistente con regole più forti:
+
+“Sei l’assistente virtuale clienti del sito IUSMK.
+
+Rispondi esclusivamente usando le informazioni presenti nel contesto fornito dalla Knowledge Base.
+Non inventare.
+Non aggiungere dettagli esterni.
+Non usare conoscenza generale non presente nel contesto.
+
+Prima di rispondere:
+- identifica la richiesta precisa del cliente
+- usa tutte le informazioni pertinenti presenti nel contesto
+- se più voci si completano tra loro, combina le informazioni in un’unica risposta coerente
+- rispondi in modo diretto, chiaro e completo
+- non lasciare frasi a metà
+- non dare risposte vaghe
+- non elencare informazioni inutili
+- se la domanda contiene più parti, rispondi a tutte le parti se il contesto lo consente
+
+Se il contesto contiene solo una risposta parziale e non sufficiente, non completare a intuito.
+In quel caso dì chiaramente che al momento non puoi dare l’informazione completa con certezza.”
+
+5) LOGICA DI RISPOSTA MIGLIORE
+Implementa questa logica:
+- se il cliente chiede “non ricordo la password”, la risposta deve riguardare il recupero password e l’accesso, non la registrazione generica
+- se il cliente chiede “come compro un corso?”, la risposta deve spiegare:
+  - dove andare
+  - che si acquista sul sito
+  - che dopo l’acquisto arriva un codice nelle notifiche
+  - che il codice serve a sbloccare il corso
+- se il cliente chiede “non trovo il codice”, la risposta deve spiegare:
+  - controllare la sezione notifiche dell’account
+  - verificare di essere loggato correttamente
+  - contattare Giuseppe/IUSMK se il problema continua
+- se il cliente chiede dei resi, la risposta deve spiegare chiaramente che:
+  - deve contattare personalmente Giuseppe
+  - sarà Giuseppe a decidere caso per caso
+
+6) GESTIONE DOMANDE SPECIFICHE
+Aggiungi una normalizzazione intento con parole chiave.
+Esempi:
+- “non ricordo la password”, “ho dimenticato la password”, “non riesco ad accedere” => intent = password/accesso
+- “come compro un corso”, “come acquistare”, “voglio comprare un video” => intent = acquisto corso
+- “non trovo il codice”, “codice non arrivato”, “come sblocco il corso” => intent = sblocco corso
+- “posso fare un reso”, “rimborso”, “restituzione” => intent = resi
+- “come contatto Giuseppe”, “numero”, “whatsapp” => intent = contatti
+
+Usa l’intent per richiamare blocchi KB più pertinenti.
+
+7) CONTROLLO QUALITÀ RISPOSTA
+Prima di inviare la risposta al frontend, verifica:
+- risponde davvero alla domanda?
+- è completa rispetto al contesto disponibile?
+- contiene almeno una risposta utile e concreta?
+- evita parti inutili o fuori tema?
+
+Se la risposta non supera questo controllo:
+- rigenerala una volta usando lo stesso contesto
+- se ancora è insufficiente, usa fallback elegante
+
+8) FALLBACK SOLO SE NECESSARIO
+Non attivare fallback se nella Knowledge Base esistono abbastanza informazioni per rispondere bene.
+Usa fallback solo se il contesto è davvero insufficiente o ambiguo.
+
+9) AGGIUNGI/RIVEDI VOCI KB UTILI
+Se manca una voce specifica per:
+- password dimenticata
+- accesso account
+- registrazione account
+- acquisto corso
+- codice corso
+- notifiche account
+- supporto in caso di codice non trovato
+- contatti Giuseppe
+creala o migliorala, senza duplicati inutili.
+
+10) TEST DA ESEGUIRE
+Dopo la correzione, testa almeno queste domande e verifica che la risposta sia completa:
+- “come posso comprare un corso?”
+- “non ricordo la password del mio account”
+- “non trovo il codice del corso”
+- “come faccio il reso?”
+- “come contatto Giuseppe?”
+- “posso prenotare un taglio dal sito?”
+
+11) IMPORTANTE
+Non modificare graficamente il sito se non serve.
+Non rompere la chat che già funziona.
+Non toccare altre aree del sito.
+Correggi solo:
+- retrieval
+- contesto
+- prompt
+- completezza risposta
+- qualità delle voci knowledge base necessarie

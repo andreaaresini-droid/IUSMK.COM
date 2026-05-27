@@ -1,0 +1,71 @@
+Voglio aggiornare SOLO la pagina intro di IUSMK.
+
+NON modificare homepage, Academy, corsi, login, chat, notifiche o dashboard.
+
+OBIETTIVO INTRO:
+1. All’inizio deve comparire:
+   - immagine di sfondo
+   - logo IUSMK centrale
+   - scritta “Tocca per entrare nel mondo di IUSMK”
+
+2. Quando il cliente tocca lo schermo:
+   - deve scomparire SOLO la scritta
+   - l’immagine di sfondo deve rimanere
+   - il logo deve rimanere visibile
+   - NON deve entrare subito nel sito
+
+3. Dopo che la scritta è scomparsa, il cliente deve toccare il logo.
+
+4. Quando il cliente tocca il logo:
+   - il logo deve iniziare a girare sempre più veloce
+   - mentre gira deve ingrandirsi verso lo schermo
+   - deve dare un effetto tipo “arriva addosso allo schermo”
+   - alla fine deve esplodere/frantumarsi con un effetto elegante
+   - subito dopo deve entrare nel sito/homepage
+
+ANIMAZIONE LOGO:
+- Mantieni il logo senza rettangolo trasparente dietro.
+- Non modificare il canvas trasparente.
+- Il logo deve partire dalla dimensione attuale corretta.
+- Durante l’animazione:
+  - aumenta progressivamente la velocità di rotazione
+  - aumenta progressivamente la scala
+  - aggiungi effetto finale tipo frantumazione/esplosione
+- Se la frantumazione 3D è troppo complessa, usa un effetto alternativo elegante:
+  - flash/glitch
+  - particelle
+  - frammenti simulati
+  - dissolvenza rapida con scale grande
+
+SE USI FRAMER MOTION:
+- Fase 1: testo visibile
+- click schermo → testo opacity 0
+- abilita click sul logo
+- click logo → animazione:
+  rotate: 0 → 720/1440 gradi
+  scale: 1 → 3/4
+  opacity: 1 → 0
+  aggiungi blur/flash/particelle
+- alla fine chiama la funzione che entra nel sito
+
+SE USI THREE.JS / R3F:
+- Mantieni Canvas full-screen trasparente.
+- Al click logo:
+  - aumenta rotationSpeed con easing
+  - aumenta scale del modello
+  - eventualmente crea particelle/frammenti o effetto burst finale
+  - dopo animazione completa, mostra homepage
+
+IMPORTANTE:
+- Il primo click/tap sullo schermo NON deve più aprire il sito.
+- Il primo click deve solo far sparire la scritta.
+- Solo il click sul logo deve avviare l’animazione ed entrare nel sito.
+- Funziona bene su mobile.
+- Non riattivare il vecchio video intro.
+- Non far comparire rettangoli dietro al logo.
+- Non far uscire il logo troppo grande all’inizio.
+
+RISULTATO FINALE:
+Intro in 2 step:
+1. Tocca lo schermo → sparisce la scritta.
+2. Tocca il logo → logo gira sempre più veloce, si ingrandisce, si frantuma/esplode e poi mostra il sito.

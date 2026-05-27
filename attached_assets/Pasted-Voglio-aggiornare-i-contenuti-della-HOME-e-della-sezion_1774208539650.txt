@@ -1,0 +1,110 @@
+Voglio aggiornare i contenuti della HOME e della sezione “Chi è IUSMK” del sito IUSMK usando esattamente i materiali che ti ho allegato.
+
+OBIETTIVO
+Sostituisci i contenuti attuali della HOME e della sezione “Chi è IUSMK” con:
+- il testo della PRIMA immagine allegata (la pagina del PDF con titolo “CHI E’ IUSMK?”)
+- la SECONDA immagine allegata come immagine principale da usare sia nella HOME sia nella sezione “Chi è IUSMK”
+
+IMPORTANTE
+- usa il testo della prima immagine come base contenutistica
+- usa la seconda immagine come immagine ufficiale
+- non cambiare inutilmente il design generale del sito
+- mantieni lo stile premium già presente
+- adatta solo layout, proporzioni e impaginazione per far stare bene testo e immagine
+- il tutto deve essere responsive e bello sia da telefono che da desktop
+
+1) HOME
+Nella home voglio inserire:
+- la seconda immagine allegata
+- un blocco testuale ricavato dal testo della prima immagine
+
+Per la HOME non voglio necessariamente tutto il testo lunghissimo in un unico blocco pesante.
+Voglio una versione ben impaginata e leggibile:
+- titolo forte tipo “Chi è IUSMK?”
+- testo introduttivo ben formattato
+- se serve, usa una versione leggermente organizzata in paragrafi mantenendo il contenuto della pagina allegata
+- il tono deve restare identitario, forte, artistico e professionale
+
+2) SEZIONE “CHI È IUSMK”
+In questa sezione voglio:
+- la seconda immagine allegata ben visibile
+- il testo della prima immagine inserito in modo completo o quasi completo, ben leggibile e ben formattato
+- paragrafi ordinati
+- ottima leggibilità su sfondo del sito
+- layout elegante, coerente con il brand
+
+3) IMMAGINE
+La seconda immagine deve essere usata:
+- nella home
+- nella sezione “Chi è IUSMK”
+
+Requisiti immagine:
+- deve vedersi bene
+- non deve essere tagliata male
+- mantieni proporzioni corrette
+- ottimizza posizionamento su mobile e desktop
+- se serve, usa object-fit / containment / layout responsive corretto
+- evita che il soggetto venga tagliato in faccia o nelle parti importanti
+
+4) TESTO
+Usa il testo della prima immagine.
+Trascrivilo correttamente e inseriscilo nel sito.
+
+Mantieni questo contenuto e questo tono:
+
+Titolo:
+“CHI E’ IUSMK?”
+
+Testo:
+“Sono Giuseppe Musto, in arte IUSMK.
+Mi definisco un barber artist, un ricercatore instancabile di linee, forme e colori. Vivo ogni giorno immerso nell’universo dei capelli: dal dettaglio più tecnico allo stile che racconta chi sei, dal gesto quotidiano al tratto artistico che lascia il segno.
+
+La mia storia nasce per strada. Prima di impugnare una clipper, impugnavo bombolette.
+Ero e sono ancora un writer, un creatore di murales, un osservatore del cemento che prende vita.
+Ho sempre trasformato superfici in emozioni, spazi vuoti in storie. È lì, tra i muri e l’odore dei colori, che ho imparato la precisione, la visione, il coraggio di uscire dagli schemi.
+
+Quando ho portato tutto questo nel mondo del barbering, qualcosa si è acceso.
+Ogni testa è diventata una tela. Ogni linea un graffito. Ogni sfumatura un modo per raccontare un’identità.
+Mi sono specializzato negli hair tattoo e nell’hair color, un linguaggio che unisce tecnica e istinto, disciplina e libertà, arte e mestiere. Amo i fade, i tagli costruiti con metodo ma vissuti con stile, quei dettagli che fanno vibrare lo sguardo.
+
+Questo book è più di un manuale: è un invito.
+È la mia visione, il mio percorso, la mia evoluzione.
+Pagina dopo pagina, ti porto con me dentro il mio modo di vedere il mondo: fatto di linee che si incontrano, colori che si incastrano e idee che, come nella street, non chiedono permesso semplicemente esplodono.
+
+Voglio che tu, mentre sfogli, ti immedesimi.
+Che trovi ispirazione, domande, motivazione.
+Che possa sentire che anche il tuo percorso può essere unico, potente, diverso.
+Perché l’arte non è ciò che facciamo: è il modo in cui guardiamo ciò che ci circonda.
+
+Benvenuto nel mio mondo.
+Benvenuto nel mondo di IUSMK.”
+
+5) STILE E IMPAGINAZIONE
+Voglio che tu migliori la presentazione del testo senza cambiare il contenuto.
+Quindi:
+- paragrafi ben spaziati
+- gerarchia tipografica chiara
+- titolo forte
+- eventualmente alcune frasi in evidenza
+- ottima leggibilità su mobile
+- coerenza con colori e branding del sito
+
+6) RESPONSIVE
+Controlla bene:
+- HOME da mobile
+- HOME da desktop
+- sezione “Chi è IUSMK” da mobile
+- sezione “Chi è IUSMK” da desktop
+
+7) IMPORTANTE
+- non rompere le altre sezioni del sito
+- non cambiare inutilmente navbar, footer o altre parti
+- aggiorna solo i contenuti e il layout delle due sezioni interessate
+- se l’immagine attuale nella home o nella sezione “Chi è IUSMK” è diversa, sostituiscila con la seconda allegata
+- se ci sono testi placeholder o vecchi testi, sostituiscili con questo
+
+Alla fine fammi un riepilogo con:
+- cosa hai aggiornato nella HOME
+- cosa hai aggiornato nella sezione “Chi è IUSMK”
+- come hai gestito immagine e responsive
+- eventuali piccoli adattamenti grafici fatti per far stare meglio il contenuto

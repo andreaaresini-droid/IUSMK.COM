@@ -1,0 +1,86 @@
+Voglio fare DUE modifiche precise nel sito, senza toccare nient’altro.
+
+--------------------------------------------------
+1. SOSTITUZIONE SCRITTA CON IMMAGINE
+--------------------------------------------------
+
+Devi sostituire la scritta attuale (testo) presente nella sezione interessata con un’immagine che ti allegherò.
+
+ATTENZIONE:
+- NON modificare layout, dimensioni o posizione del contenitore
+- NON cambiare animazioni già esistenti (se presenti)
+- NON cambiare margini o spaziature globali
+
+COSA FARE:
+1. Trova il punto dove viene renderizzata la scritta attuale
+2. Rimuovi SOLO il testo
+3. Inserisci al suo posto un <img> con l’immagine allegata
+
+REQUISITI IMMAGINE:
+- deve essere senza sfondo (trasparente)
+- deve adattarsi perfettamente allo spazio della scritta
+- deve essere centrata
+
+Usa queste proprietà:
+- max-width: 100%
+- height: auto
+- display: block
+- margin: 0 auto
+
+Se serve:
+- aggiungi object-fit: contain
+
+IMPORTANTE:
+- l’immagine NON deve uscire dal contenitore
+- NON deve essere tagliata
+- deve vedersi interamente
+
+--------------------------------------------------
+2. RIMOZIONE PULSANTE WHATSAPP
+--------------------------------------------------
+
+Devi eliminare completamente il pulsante:
+"Contattami su WhatsApp"
+
+COSA FARE:
+- rimuovi il bottone dal DOM (NON nasconderlo con display:none, ma proprio eliminarlo)
+- elimina eventuale link WhatsApp associato
+- rimuovi eventuale icona WhatsApp collegata a quel bottone
+
+IMPORTANTE:
+- NON lasciare spazi vuoti strani
+- il layout deve restare pulito
+- gli altri elementi devono adattarsi automaticamente
+
+--------------------------------------------------
+NON TOCCARE ALTRO
+--------------------------------------------------
+
+NON modificare:
+- colori
+- font
+- altre sezioni
+- animazioni
+- navbar
+- footer
+- logiche JS
+- responsive
+
+--------------------------------------------------
+TEST FINALI
+--------------------------------------------------
+
+Verifica che:
+- la scritta sia sostituita perfettamente con l’immagine
+- l’immagine sia centrata e ben visibile
+- il pulsante WhatsApp NON esista più
+- il layout sia identico a prima (senza buchi)
+
+--------------------------------------------------
+OUTPUT
+--------------------------------------------------
+
+Fammi vedere:
+- file modificato
+- riga dove hai inserito l’immagine
+- riga dove hai rimosso il bottone WhatsApp

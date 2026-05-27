@@ -1,0 +1,91 @@
+La nuova immagine dell’intro è stata sostituita correttamente, ma adesso NON si vede bene: il logo in alto nell’immagine risulta tagliato.
+
+Voglio che tu sistemi SOLO l’adattamento dell’immagine dell’intro, senza modificare assolutamente nient’altro.
+
+NON devi modificare:
+- animazione
+- tempi
+- audio
+- taglio centrale
+- movimento del rasoio
+- overlay
+- testo
+- effetti
+- logica intro
+- struttura generale
+
+Devi modificare SOLO il modo in cui l’immagine viene mostrata dentro l’intro, in modo che si adatti correttamente e si veda bene tutta la parte importante, soprattutto il logo in alto.
+
+--------------------------------------------------
+OBIETTIVO
+--------------------------------------------------
+Fare in modo che l’immagine dell’intro:
+- non risulti tagliata male
+- mostri bene il logo in alto
+- resti centrata
+- continui a funzionare con il taglio centrale dell’animazione
+
+--------------------------------------------------
+COSA FARE
+--------------------------------------------------
+1. Controlla come viene renderizzata l’immagine dell’intro:
+   - object-fit
+   - object-position
+   - background-size
+   - background-position
+   - overflow del contenitore
+   - eventuali clip-path iniziali
+
+2. Adatta l’immagine in modo corretto.
+Valuta la soluzione migliore tra:
+- object-fit: contain
+- object-fit: cover con object-position regolata meglio
+- background-size: contain
+- background-position top center
+- scaling leggermente ridotto
+- padding interno se necessario
+
+3. Voglio che si veda bene soprattutto:
+- il logo nella parte alta
+- il soggetto centrale
+- la composizione generale
+
+4. Se serve, fai in modo che l’immagine stia leggermente più piccola dentro il contenitore dell’intro, così da non tagliare le parti importanti
+
+--------------------------------------------------
+IMPORTANTE
+--------------------------------------------------
+- NON cambiare l’immagine
+- NON cambiare la logica del taglio in due metà
+- NON spostare il centro del taglio
+- NON modificare il rasoio
+- NON toccare tempi o audio
+- modifica solo il modo in cui l’immagine viene adattata dentro il contenitore
+
+--------------------------------------------------
+RESPONSIVE
+--------------------------------------------------
+Verifica bene sia:
+- desktop
+- mobile
+
+Su entrambi:
+- il logo non deve essere tagliato
+- il soggetto deve restare ben visibile
+- l’intro deve continuare a sembrare premium
+
+--------------------------------------------------
+TEST FINALI
+--------------------------------------------------
+Verifica che:
+- il logo nella parte alta si veda bene
+- l’immagine sia più equilibrata
+- il taglio dell’animazione continui a funzionare
+- il resto dell’intro sia identico a prima
+
+--------------------------------------------------
+OUTPUT
+--------------------------------------------------
+Fammi vedere solo:
+- cosa hai modificato nel rendering dell’immagine
+- i valori finali usati (object-fit / object-position / scale / ecc.)

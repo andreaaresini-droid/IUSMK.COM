@@ -1,0 +1,113 @@
+Aggiorna la gestione dei codici nella dashboard admin di IUSMK.
+
+OBIETTIVO
+Quando l’admin crea un codice per un cliente, deve avere la possibilità di inviare manualmente una notifica al cliente con il codice di accesso.
+
+PROBLEMA ATTUALE
+Attualmente l’admin può creare il codice, ma al cliente non arriva nessuna notifica.
+Voglio che nella dashboard admin, vicino a ogni codice creato, ci sia un pulsante dedicato per inviare la notifica al cliente associato a quel codice.
+
+FUNZIONE DA AGGIUNGERE
+
+1. PULSANTE INVIO NOTIFICA
+Nella lista dei codici accesso, per ogni codice creato mostra un pulsante tipo:
+- “Invia notifica”
+oppure
+- icona + testo chiaro
+
+Il pulsante deve comparire accanto al codice nella dashboard admin.
+
+2. COSA DEVE FARE IL PULSANTE
+Quando l’admin clicca “Invia notifica”:
+- il sistema deve inviare una notifica in-app al cliente corretto associato a quel codice
+- la notifica deve comparire nella sezione notifiche del cliente
+- la notifica deve contenere chiaramente:
+  - nome del corso
+  - codice di accesso
+  - messaggio breve che spiega che può usarlo per sbloccare il corso
+
+3. TESTO NOTIFICA
+Usa un testo ordinato e professionale, per esempio:
+
+Titolo:
+Hai ricevuto un codice di accesso
+
+Messaggio:
+Giuseppe ti ha assegnato un codice per il corso “{nome corso}”.
+Il tuo codice è: {codice}
+Vai nella sezione Academy e inseriscilo per sbloccare il corso.
+
+Se esiste già il link interno corretto, rendi la notifica cliccabile verso la sezione Academy o verso la pagina riscatto codice.
+
+4. DESTINATARIO CORRETTO
+La notifica deve essere inviata all’account realmente collegato a quel codice.
+Non basarti solo su nome o email come testo visibile.
+Usa il vero userId/accountId associato al codice.
+
+5. SICUREZZA
+Solo l’admin deve vedere e poter usare questo pulsante.
+Gli utenti normali non devono poter inviare notifiche.
+
+6. STATO NOTIFICA
+Aggiungi anche un piccolo stato visibile nella dashboard admin, ad esempio:
+- “Notifica non inviata”
+- “Notifica inviata”
+
+Se possibile, salva:
+- data e ora ultimo invio
+- chi ha inviato la notifica
+
+7. PREVENIRE ERRORI
+Prima di inviare, controlla:
+- che il codice esista
+- che abbia un cliente associato
+- che il corso associato esista
+- che l’utente destinatario esista davvero
+
+Se manca qualcosa, mostra un messaggio admin chiaro tipo:
+- “Impossibile inviare la notifica: cliente non associato”
+- “Impossibile inviare la notifica: corso non trovato”
+
+8. FEEDBACK UI
+Quando l’admin clicca il pulsante:
+- mostra stato loading
+- poi toast di conferma tipo:
+  - “Notifica inviata con successo”
+oppure toast errore se qualcosa va storto
+
+9. INVIO MULTIPLO
+L’admin deve poter reinviare la notifica anche più di una volta, se necessario.
+Quindi il pulsante non deve sparire dopo il primo invio.
+Può diventare:
+- “Reinvia notifica”
+oppure restare “Invia notifica”
+
+10. COMPATIBILITÀ
+Non modificare la logica di:
+- creazione codici
+- revoca codici
+- utilizzo codice
+- corsi acquistati
+- notifiche esistenti
+Aggiungi solo questa funzione di invio manuale notifica dal lato admin.
+
+11. DATABASE / TRACCIAMENTO
+Se necessario aggiungi campi tipo:
+- notificationSentAt
+- notificationSentBy
+- notificationSendCount
+
+Così l’admin può capire se il cliente è già stato avvisato.
+
+12. TEST FINALI
+Verifica questi casi:
+- admin crea codice
+- admin clicca “Invia notifica”
+- il cliente riceve la notifica nella sua area notifiche
+- la notifica contiene nome corso e codice corretto
+- l’admin vede conferma invio
+- l’admin può reinviare la notifica
+- se il codice non ha un utente valido, compare errore chiaro
+
+IMPORTANTE
+La notifica deve essere inviata manualmente tramite pulsante nella dashboard admin, accanto al codice specifico, e deve arrivare nella sezione notifiche del cliente corretto.

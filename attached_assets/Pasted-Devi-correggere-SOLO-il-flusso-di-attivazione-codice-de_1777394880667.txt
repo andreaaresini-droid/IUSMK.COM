@@ -1,0 +1,46 @@
+Devi correggere SOLO il flusso di attivazione codice dei corsi IUSMK.
+
+PROBLEMA:
+1. Quando il cliente riceve la notifica con il codice e clicca “Accedi al corso”, deve andare direttamente alla pagina per inserire il codice del corso acquistato.
+2. Quando il cliente clicca “Attiva con codice” nella card/pagina del corso, ora viene portato al portale utente, ma deve andare alla pagina corretta per inserire il codice e sbloccare quel corso.
+
+MODIFICA RICHIESTA:
+Crea o usa una pagina/route dedicata all’attivazione codice corso, ad esempio:
+
+/attiva-corso/:courseId
+
+oppure
+
+/course/:courseId/activate
+
+Questa pagina deve mostrare:
+- titolo del corso
+- campo per inserire il codice
+- pulsante “Sblocca corso”
+- eventuale messaggio di errore se codice errato
+- messaggio di successo se corso sbloccato
+- dopo successo, tasto “Guarda il corso”
+
+COMPORTAMENTO TASTO “ACCEDI AL CORSO” NELLA NOTIFICA:
+- Deve portare direttamente alla pagina di attivazione codice del corso acquistato.
+- Deve passare il courseId o courseSlug corretto.
+- Se possibile, precompila il codice ricevuto nella notifica.
+- Se il cliente non è loggato, portalo prima al login e poi riportalo alla pagina attivazione codice.
+
+COMPORTAMENTO TASTO “ATTIVA CON CODICE”:
+- Deve portare alla stessa pagina di attivazione codice del corso specifico.
+- Non deve più portare genericamente al portale utente.
+- Deve sapere quale corso sta tentando di sbloccare.
+- Dopo attivazione riuscita, il corso deve risultare sbloccato nell’account del cliente.
+
+IMPORTANTE:
+- Non rompere il sistema codici già esistente.
+- Non modificare pagamenti, Academy, galleria, chat, notifiche o login se non necessario.
+- Mantieni lo stile IUSMK.
+- Verifica da mobile.
+- Se esiste già una pagina simile per inserire il codice, riutilizzala ma assicurati che riceva il corso corretto.
+
+RISULTATO FINALE:
+- Notifica → “Accedi al corso” → pagina inserimento codice per quel corso.
+- Card corso → “Attiva con codice” → pagina inserimento codice per quel corso.
+- Il cliente non deve più finire nel portale generico quando vuole attivare un corso.

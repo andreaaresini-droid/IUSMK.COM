@@ -1,0 +1,293 @@
+Voglio modificare la dashboard admin del sito IUSMK in modo preciso, senza rompere ciò che già funziona.
+
+ATTENZIONE:
+- Non toccare altre aree del sito se non necessario.
+- Mantieni lo stile attuale della dashboard.
+- La modifica deve funzionare bene sia da desktop sia da mobile.
+- Non voglio solo cambiare il testo del riquadro: voglio cambiare anche la logica dietro.
+
+OBIETTIVO GENERALE
+Attualmente nella dashboard c’è il riquadro “Studenti Totali”, ma quando ci clicco sopra mi porta alla pagina “Codici di Accesso”.
+Questo non va bene.
+
+Voglio invece dividere chiaramente due sezioni diverse:
+
+1. ACCOUNT REGISTRATI
+2. CODICI ATTIVI / CLIENTI CON CORSI ATTIVI
+
+==================================================
+1) MODIFICA RIQUADRO DASHBOARD
+==================================================
+
+Modifica il riquadro attualmente chiamato:
+- “Studenti Totali”
+
+e cambialo in:
+- “Account Registrati”
+
+Il numero mostrato in quel riquadro deve rappresentare:
+- tutti gli utenti/clienti che si sono registrati al sito
+- anche se non hanno acquistato nessun corso
+- anche se non hanno ancora ricevuto o attivato un codice
+
+Quando l’admin clicca quel riquadro:
+- NON deve più aprire la pagina “Codici di Accesso”
+- deve invece aprire una nuova pagina/sezione admin dedicata agli account registrati
+
+==================================================
+2) NUOVA PAGINA ADMIN: ACCOUNT REGISTRATI
+==================================================
+
+Crea una nuova pagina admin chiamata:
+- “Account Registrati”
+
+Questa pagina deve mostrare tutti gli account registrati sul sito, anche quelli che non hanno acquistato corsi.
+
+Per ogni account mostra almeno:
+- nome
+- cognome (se disponibile)
+- email
+- username (se esiste)
+- data registrazione
+- ultimo accesso (se disponibile)
+- stato account (attivo/non attivo se previsto)
+- numero corsi acquistati
+- numero codici assegnati
+- eventuali note admin
+
+Aggiungi:
+- barra di ricerca
+- filtri
+- ordinamento
+- paginazione se serve
+
+Filtri utili:
+- tutti
+- registrati oggi
+- registrati negli ultimi 7 giorni
+- con corsi acquistati
+- senza corsi acquistati
+- con codici assegnati
+- senza codici assegnati
+
+==================================================
+3) AZIONI UTILI NELLA PAGINA ACCOUNT REGISTRATI
+==================================================
+
+Per ogni account registrato voglio che l’admin possa fare azioni utili direttamente da lì.
+
+Aggiungi per ogni cliente queste azioni:
+
+A) Apri dettaglio account
+- apre una scheda dettagliata del cliente
+
+B) Invia messaggio privato tramite il sito
+- l’admin può scrivere un messaggio manuale
+- il messaggio viene inviato all’account del cliente dentro il sito
+- il cliente lo vede nella sua area notifiche / messaggi
+- salva anche lo storico dei messaggi inviati
+
+C) Assegna codice corso
+- l’admin può selezionare un corso
+- l’admin può selezionare un codice già generato oppure generarne uno nuovo
+- può inviarlo direttamente a quel cliente
+- il codice assegnato deve comparire nelle notifiche del cliente
+- deve risultare anche associato a quel cliente nel backend
+
+D) Visualizza codici assegnati
+- elenco dei codici già assegnati a quel cliente
+- con stato (attivo, usato, scaduto se previsto)
+
+E) Visualizza corsi acquistati
+- mostra gli acquisti di quel cliente
+
+F) Aggiungi nota admin
+- note visibili solo all’admin
+
+G) Disattiva / riattiva account
+- solo se questa funzione è già compatibile con il sistema esistente
+- non rompere login e autenticazione
+
+==================================================
+4) DETTAGLIO ACCOUNT REGISTRATO
+==================================================
+
+Quando l’admin apre un account, voglio una pagina o modale dettagliata con:
+
+- dati principali account
+- data registrazione
+- storico accessi se disponibile
+- corsi acquistati
+- codici assegnati
+- notifiche inviate
+- messaggi privati inviati dall’admin
+- eventuali note interne
+
+Se possibile, aggiungi tab o sezioni:
+- Informazioni
+- Corsi
+- Codici
+- Messaggi
+- Note
+
+==================================================
+5) SEZIONE “CODICI ATTIVI” DA SISTEMARE
+==================================================
+
+Anche il riquadro “Codici Attivi” va migliorato.
+
+Quando l’admin clicca “Codici Attivi”, deve aprire una pagina dedicata che mostri chiaramente:
+
+- tutti i codici generati
+- a quale corso appartengono
+- se sono assegnati o no
+- a quale cliente sono assegnati
+- se sono stati riscattati/usati
+- data generazione
+- data assegnazione
+- stato del codice
+
+Inoltre in questa sezione voglio vedere chiaramente anche i clienti che hanno acquistato corsi o che hanno un codice associato.
+
+Questa pagina deve diventare una vera area di gestione codici e clienti con corsi attivi, non solo una lista semplice.
+
+==================================================
+6) FUNZIONI UTILI NELLA PAGINA CODICI ATTIVI
+==================================================
+
+Per ogni codice o cliente collegato ai corsi, l’admin deve poter fare azioni utili:
+
+- generare nuovo codice
+- assegnare codice a un cliente registrato
+- revocare codice se necessario
+- vedere se il codice è stato usato
+- aprire il profilo del cliente collegato
+- inviare il codice direttamente nelle notifiche del cliente
+- reinviare un codice già assegnato
+- filtrare per corso
+- filtrare per stato
+- filtrare per cliente
+- cercare per email, nome o codice
+
+==================================================
+7) STRUTTURA DATI / LOGICA
+==================================================
+
+Se non esiste già una distinzione chiara, separa logicamente:
+
+A) utenti registrati
+- tutti quelli che hanno un account sul sito
+
+B) clienti con corsi / codici
+- utenti registrati che hanno acquistato un corso
+- oppure hanno ricevuto/attivato un codice
+
+Queste due cose NON devono più essere confuse tra loro.
+
+Il conteggio di:
+- “Account Registrati” = tutti gli account
+- “Codici Attivi” = codici attualmente attivi / validi
+Non devono puntare alla stessa pagina se hanno significati diversi.
+
+==================================================
+8) NOTIFICHE E MESSAGGI
+==================================================
+
+Quando l’admin invia un messaggio privato o un codice a un cliente:
+
+- il cliente deve riceverlo nella sua area notifiche del sito
+- se esiste già un sistema notifiche, riusa quello
+- non creare un sistema parallelo inutile
+- salva lo storico lato admin
+
+Aggiungi tipi notifiche chiari, ad esempio:
+- private_message
+- course_code_assigned
+- code_resent
+- admin_notice
+
+==================================================
+9) INTERFACCIA DASHBOARD
+==================================================
+
+Nella dashboard:
+- cambia il testo “Studenti Totali” in “Account Registrati”
+- lascia il numero corretto
+- cambia il link del riquadro alla nuova pagina “Account Registrati”
+
+Mantieni gli altri riquadri, ma correggi la navigazione dove serve.
+
+Se utile, nella card “Codici Attivi” fai in modo che il click apra la nuova pagina corretta di gestione codici.
+
+==================================================
+10) MOBILE
+==================================================
+
+Queste nuove pagine devono funzionare bene su mobile:
+- elenco account registrati
+- dettaglio account
+- gestione codici attivi
+
+Attenzione a:
+- pulsanti troppo piccoli
+- tabelle non leggibili
+- overflow orizzontale
+- modali troppo grandi
+
+Se serve, su mobile usa card responsive invece di tabelle troppo larghe.
+
+==================================================
+11) SICUREZZA
+==================================================
+
+Assicurati che:
+- solo l’admin possa vedere queste pagine
+- solo l’admin possa inviare messaggi o codici
+- nessun cliente normale possa accedere a dati di altri utenti
+- tutte le operazioni siano protette lato backend
+
+==================================================
+12) DATI DA MOSTRARE NELLA CARD “ACCOUNT REGISTRATI”
+==================================================
+
+Il numero della card deve essere calcolato su:
+- tutti gli account creati nel sistema utenti/clienti
+- escludendo eventuali account admin se necessario
+- includendo chi si è registrato ma non ha ancora acquistato nulla
+
+==================================================
+13) DATI DA MOSTRARE NELLA CARD “CODICI ATTIVI”
+==================================================
+
+Il numero della card deve essere calcolato sui codici attivi reali.
+Non deve mostrare semplicemente il numero di clienti o di acquisti, ma il numero corretto dei codici attivi disponibili/assegnati secondo la logica del sistema.
+
+==================================================
+14) RISULTATO FINALE DESIDERATO
+==================================================
+
+Voglio questo risultato:
+
+- Il riquadro “Studenti Totali” diventa “Account Registrati”
+- cliccando lì apro la lista completa di tutti gli account registrati
+- da quella pagina posso gestire i clienti registrati, inviare messaggi, inviare codici e vedere lo storico utile
+- il riquadro “Codici Attivi” apre una vera area di gestione codici/corsi/clienti collegati
+- tutto è distinto in modo chiaro e logico
+- niente deve essere confuso tra account registrati e clienti con corsi
+
+==================================================
+15) IMPORTANTE
+==================================================
+
+Non fare solo una modifica grafica.
+Devi correggere:
+- etichetta card
+- conteggio card
+- destinazione click
+- nuova pagina admin account registrati
+- gestione messaggi privati
+- invio codici ai clienti
+- miglioramento gestione codici attivi
+
+Non rompere ciò che è già funzionante nel sito.
+Implementa tutto in modo coerente con la struttura già esistente.

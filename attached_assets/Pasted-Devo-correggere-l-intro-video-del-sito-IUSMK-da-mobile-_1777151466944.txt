@@ -1,0 +1,57 @@
+Devo correggere l’intro video del sito IUSMK da mobile.
+
+Problemi da risolvere:
+
+1. Nella schermata iniziale “Tocca per entrare nel mondo di IUSMK” voglio rimettere l’immagine di sfondo che c’era prima sotto il logo e sotto il testo/tasto.
+   - Non lasciare la schermata solo nera.
+   - Usa la stessa immagine di sfondo precedente dell’intro.
+   - Mantieni logo e testo centrati sopra lo sfondo.
+   - Aggiungi un overlay scuro leggero sopra l’immagine per mantenere il testo leggibile.
+
+2. Quando parte il video intro, in basso a destra compare la scritta/watermark “KlingAI 3.0 4K”.
+   - Nascondila visivamente senza modificare il file video.
+   - Aggiungi un piccolo box/overlay in basso a destra sopra il video.
+   - Il box deve avere un colore uguale/simile allo sfondo del video in quel punto, così copre la scritta senza farsi notare.
+   - Deve funzionare soprattutto da mobile.
+   - Non deve coprire parti importanti del video.
+
+3. Il video verticale ha due bande nere sopra e sotto.
+   - Non devono sembrare bande nere separate.
+   - Devo poter “camuffare” queste zone con colori coerenti con il video.
+   - Sopra usa un colore chiaro/bianco simile allo sfondo superiore del video.
+   - Sotto usa un colore scuro/nero o sfumato coerente con la parte bassa del video.
+   - L’obiettivo è far sembrare il video integrato nella schermata, non appoggiato con spazi neri sopra e sotto.
+
+4. Struttura video:
+   - Mantieni il video centrato.
+   - Non deformare il video.
+   - Non tagliare il contenuto importante.
+   - Usa object-fit: contain, ma riempi lo sfondo dell’overlay con gradienti/colori coerenti.
+   - Da mobile deve sembrare fluido e professionale.
+
+5. Audio:
+   - Il video deve continuare a partire con il suo audio dopo il click dell’utente.
+   - Non mettere muted.
+
+6. Fine video:
+   - Quando il video finisce, entra normalmente nel sito.
+   - Non modificare homepage, corsi, admin, chat, login o altre funzioni.
+
+Implementazione consigliata:
+- Nel componente IntroOverlay aggiungi:
+  - stato iniziale con background image precedente;
+  - stato playing con wrapper video fullscreen;
+  - background del wrapper con gradienti:
+    top area chiara/bianca;
+    center area video;
+    bottom area scura;
+  - overlay assoluto in basso a destra per coprire watermark KlingAI.
+
+Esempio CSS richiesto:
+- .intro-video-stage fullscreen fixed
+- background: linear-gradient(to bottom, #f3f6f7 0%, #f3f6f7 18%, #000 82%, #000 100%);
+- video object-fit: contain
+- .watermark-cover position absolute bottom/right, dimensioni responsive, colore/sfondo coerente, z-index sopra video
+
+Importante:
+Fai attenzione agli schermi iPhone/Safari: usa 100dvh invece di 100vh dove possibile.

@@ -1,0 +1,117 @@
+Il problema dei video nella galleria NON è ancora risolto: continua ad apparire un riquadro nero con il tasto play centrale.
+
+Devi correggere il componente reale della galleria video.
+
+OBIETTIVO:
+Ogni video nella griglia deve mostrare una preview animata reale dei primi 2 secondi del video, non un box nero.
+
+PROBLEMA ATTUALE:
+- Il video viene riconosciuto come video.
+- Però nella griglia viene mostrato ancora un placeholder nero con tasto play.
+- Quindi probabilmente il componente sta ancora usando un div/placeholder invece di un tag <video> reale.
+
+ISTRUZIONI OBBLIGATORIE:
+
+1. SOSTITUISCI IL PLACEHOLDER VIDEO:
+- Trova il punto in cui nella griglia viene renderizzato il box nero dei video.
+- Rimuovi il placeholder nero con tasto play centrale.
+- Al suo posto renderizza un vero elemento <video>.
+
+Esempio:
+
+<video
+  src={item.optimizedUrl || item.originalUrl || item.url}
+  muted
+  playsInline
+  autoPlay
+  preload="metadata"
+  controls={false}
+  className="gallery-video-preview"
+/>
+
+2. CSS VIDEO:
+Il video deve riempire tutto il riquadro:
+
+.gallery-video-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  background: transparent;
+}
+
+3. LOOP PRIMI 2 SECONDI:
+Aggiungi una logica timeupdate:
+- quando currentTime >= 2
+- riportalo a 0
+- fai play di nuovo
+
+Esempio:
+
+const handlePreviewTimeUpdate = (video) => {
+  if (video.currentTime >= 2) {
+    video.currentTime = 0;
+    video.play().catch(() => {});
+  }
+};
+
+4. AUTOPLAY MOBILE:
+Per funzionare su iPhone/Android:
+- muted obbligatorio
+- playsInline obbligatorio
+- autoPlay obbligatorio
+- controls false
+
+5. RIMUOVI TASTO PLAY CENTRALE:
+- Non mostrare più il grande tasto play al centro nella griglia.
+- Puoi lasciare solo la piccola etichetta “VIDEO” in alto a sinistra.
+- Il tasto play può apparire SOLO nel modal/dettaglio, non nella griglia.
+
+6. FALLBACK:
+Se il video non riesce a partire:
+- mostra posterUrl se esiste
+- altrimenti prova thumbnailUrl
+- altrimenti mostra il primo frame del video
+- NON mostrare il riquadro nero vuoto.
+
+7. CONTROLLA URL VIDEO:
+Verifica che il src del video sia corretto.
+Usa questa priorità:
+
+const videoSrc =
+  item.optimizedUrl ||
+  item.videoOptimizedUrl ||
+  item.originalUrl ||
+  item.videoUrl ||
+  item.url;
+
+Se videoSrc è vuoto, allora correggi il mapping dei dati.
+
+8. DEBUG TEMPORANEO:
+Aggiungi temporaneamente console.log per verificare:
+- item.type
+- item.fileType
+- videoSrc
+- posterUrl
+
+Così capiamo se il video non parte perché il src è vuoto.
+
+9. INTERSECTION OBSERVER:
+Se usi IntersectionObserver:
+- quando il video è visibile, chiama video.play()
+- quando non è visibile, video.pause()
+- non lasciare il video fermo su nero.
+
+10. NON MODIFICARE:
+- immagini
+- categorie
+- intro video
+- homepage
+- admin
+- login
+- corsi
+- chat
+- pagamenti
+
+RISULTATO FINALE:
+Nella griglia della galleria, i video devono apparire come anteprime animate reali dei primi 2 secondi, senza riquadro nero e senza grande tasto play centrale.

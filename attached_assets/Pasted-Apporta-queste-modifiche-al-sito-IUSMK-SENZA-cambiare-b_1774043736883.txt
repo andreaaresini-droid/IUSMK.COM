@@ -1,0 +1,105 @@
+Apporta queste modifiche al sito IUSMK SENZA cambiare branding, font, colori, struttura generale o stile del layout. Devi correggere solo la resa visiva delle immagini.
+
+==================================================
+1. SEZIONE “CHI È IUSMK” — IMMAGINE ADATTATA MEGLIO
+==================================================
+
+PROBLEMA
+L’immagine nella sezione “Chi è IUSMK” non si vede bene né da telefono né da computer:
+- è tagliata male
+- il soggetto non è centrato correttamente
+- la resa non valorizza bene la foto
+
+OBIETTIVO
+Far vedere l’immagine bene sia su desktop sia su mobile.
+
+DEVI FARE QUESTO:
+- correggi il rendering dell’immagine nella sezione “Chi è IUSMK”
+- mantieni la stessa immagine attuale
+- NON deformarla
+- centra correttamente il soggetto
+- evita tagli brutti su volto/testa
+- rendi la sezione responsive in modo curato
+
+SOLUZIONE DESIDERATA
+- usa una gestione responsive dell’immagine migliore
+- se necessario usa:
+  - object-fit corretto
+  - object-position corretto
+  - altezze diverse tra mobile e desktop
+  - container responsive
+- su desktop il soggetto deve vedersi bene
+- su mobile il soggetto deve restare visibile e ben centrato
+- se serve, usa regole diverse per mobile e desktop
+
+IMPORTANTE
+- non usare stretch
+- non schiacciare l’immagine
+- non lasciare vuoti strani
+- l’immagine deve risultare elegante e pienamente leggibile
+
+==================================================
+2. HOMEPAGE — COPERTINA CORSO DEVE ESSERE A COLORI
+==================================================
+
+PROBLEMA
+Da telefono la copertina del corso nella sezione “Le Masterclass” si vede in bianco e nero invece che a colori.
+
+OBIETTIVO
+La copertina del corso nella homepage deve vedersi a colori sia da desktop sia da telefono.
+
+DEVI FARE QUESTO:
+- controlla perché su mobile viene applicato l’effetto bianco e nero / grayscale
+- rimuovi quell’effetto dalla copertina corso nella homepage
+- assicurati che la cover venga mostrata con i colori originali reali
+- verifica che non ci siano classi CSS, filtri, overlay o effetti hover che su mobile restano attivi in modo sbagliato
+
+CONTROLLA IN PARTICOLARE:
+- filter: grayscale(...)
+- mix-blend-mode
+- opacity overlays
+- pseudo-elementi
+- classi diverse tra mobile e desktop
+- versioni thumbnail errate o immagini trasformate
+
+RISULTATO DESIDERATO
+- la cover corso in homepage deve essere a colori
+- identica cromaticamente all’immagine originale caricata
+- sia su telefono sia su computer
+
+==================================================
+3. TEST FINALE
+==================================================
+
+Verifica davvero che:
+
+TEST 1
+- sezione “Chi è IUSMK” su desktop:
+  - immagine ben visibile
+  - soggetto centrato
+  - nessun taglio brutto
+
+TEST 2
+- sezione “Chi è IUSMK” su mobile:
+  - immagine ben visibile
+  - soggetto centrato
+  - niente crop sbagliato
+
+TEST 3
+- homepage sezione “Le Masterclass” su mobile:
+  - copertina corso a colori
+  - nessun bianco e nero
+
+TEST 4
+- homepage sezione “Le Masterclass” su desktop:
+  - copertina sempre a colori
+  - nessuna regressione grafica
+
+==================================================
+4. IMPORTANTE
+==================================================
+
+- fai modifiche reali al codice esistente
+- non limitarti a descrivere cosa faresti
+- non cambiare il resto del layout
+- correggi solo adattamento immagine “Chi è IUSMK” e colori copertina corso homepage

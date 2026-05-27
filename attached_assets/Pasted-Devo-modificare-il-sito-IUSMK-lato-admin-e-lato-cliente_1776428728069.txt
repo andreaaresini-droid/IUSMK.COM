@@ -1,0 +1,104 @@
+Devo modificare il sito IUSMK, lato admin e lato cliente, senza rompere il resto del progetto.
+
+MODIFICA 1 — Admin > Account registrati
+Nella sezione “Account registrati” l’admin deve poter:
+
+1. Eliminare uno o più corsi dall’account di un cliente
+   - rimuovere il corso dalla lista “I miei corsi” del cliente
+   - rimuovere anche eventuali stati di acquisto collegati se necessario
+   - se esiste un codice accesso associato a quel corso/cliente, l’admin deve poter scegliere se:
+     - eliminare solo il corso
+     - eliminare solo il codice
+     - eliminare corso + codice insieme
+
+2. Eliminare uno o più codici accesso assegnati a un cliente
+   - senza eliminare per forza l’account
+   - se il codice viene eliminato, il cliente non deve più poter usare quel codice
+
+3. Eliminare completamente un account cliente dal sito
+   - rimuovere account, sessioni, dati profilo essenziali, corsi associati, codici associati, notifiche utente collegate
+   - fare in modo che, se quel cliente vorrà tornare, dovrà registrarsi di nuovo da zero
+   - aggiungere conferma forte prima dell’eliminazione account
+   - se possibile, mostrare un modal di conferma chiaro con il nome/email cliente
+
+4. Tutte queste azioni devono essere disponibili in modo chiaro dentro ogni scheda/account cliente oppure in una pagina dettaglio account
+
+5. Aggiungere feedback visivi:
+   - loading
+   - conferma di avvenuta eliminazione
+   - errore in caso di problemi
+
+MODIFICA 2 — Codici sconto Stripe
+Voglio cambiare la gestione dei codici sconto.
+
+Attualmente sotto al tasto “Acquista” c’è la sezione per inserire il codice sconto.
+QUESTA SEZIONE VA RIMOSSA COMPLETAMENTE dal frontend cliente.
+
+Nuovo comportamento:
+1. L’admin dalla dashboard e dalla sezione “Codici sconto” deve poter creare codici sconto da usare nel checkout Stripe
+2. Ogni codice sconto deve poter avere almeno questi campi:
+   - codice
+   - tipo sconto (percentuale o importo fisso)
+   - valore
+   - attivo/non attivo
+   - eventuale data di scadenza
+   - eventuale limite utilizzi
+   - eventuale restrizione a uno o più corsi specifici
+3. Se il progetto usa Stripe Payment Links:
+   - integra la logica corretta per usare i coupon/promotion codes Stripe nel checkout
+   - fai in modo che l’admin possa creare il codice lato sito e che venga creato/associato correttamente anche su Stripe oppure che venga salvato in modo compatibile con Stripe
+4. Se è più corretto tecnicamente usare Promotion Codes/Coupons Stripe, implementa quel flusso nel modo giusto
+5. Il checkout Stripe deve poter ricevere e applicare quei codici creati dall’admin
+6. Se un codice è scaduto o inattivo, non deve funzionare
+
+MODIFICA 3 — Invio rapido codici sconto ai clienti
+Nella sezione “Codici sconto” l’admin deve avere anche un tasto rapido per inviare il codice a:
+- un singolo cliente
+- più clienti selezionati
+- opzionalmente tutti i clienti
+
+L’invio deve poter avvenire tramite il sistema di comunicazione già presente nel sito, riutilizzando i sistemi già esistenti se ci sono:
+- notifica interna sul sito
+- email
+- eventualmente push se già supportata
+
+Per ogni invio, l’admin deve poter scegliere:
+- a chi inviarlo
+- messaggio accompagnatorio facoltativo
+
+Il messaggio inviato deve includere almeno:
+- nome codice sconto
+- valore sconto
+- eventuale scadenza
+- istruzione chiara che il codice si applica nel checkout Stripe
+
+MODIFICA 4 — Pulizia frontend cliente
+1. Rimuovere dalla pagina del corso / acquisto il box “Codice sconto” sotto al tasto acquista
+2. Lasciare il pulsante acquista pulito
+3. Se Stripe gestisce i promotion code direttamente nel suo checkout, lasciare che il codice venga usato lì
+4. Non mostrare più nel sito un campo coupon custom sotto il bottone acquista
+
+MODIFICA 5 — UX/UI e sicurezza
+1. Tutte le nuove azioni admin devono funzionare bene sia da desktop sia da mobile
+2. Le pagine admin devono vedersi bene anche da telefono
+3. Proteggi bene le azioni sensibili con permessi admin
+4. Logga azioni importanti:
+   - rimozione corso da cliente
+   - rimozione codice accesso
+   - eliminazione account
+   - creazione codice sconto
+   - invio codice sconto a clienti
+
+IMPORTANTISSIMO
+- Non rompere il flusso acquisti esistente
+- Non rompere il webhook Stripe
+- Non rompere notifiche/email esistenti
+- Riutilizza strutture già presenti nel progetto quando possibile
+- Se ci sono vecchi dati, gestisci compatibilità
+
+Alla fine dimmi con precisione:
+- quali file hai modificato
+- come hai implementato la rimozione corsi/codici/account
+- come hai implementato i codici sconto Stripe
+- come hai rimosso il box codice sconto dal frontend
+- come funziona il tasto rapido di invio ai clienti

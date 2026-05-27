@@ -1,0 +1,119 @@
+Voglio aggiungere sul sito IUSMK un assistente AI per i clienti.
+
+OBIETTIVO
+L’assistente deve rispondere SOLO usando le conoscenze reali del sito e della knowledge base amministrabile.
+NON deve mai inventare risposte.
+Se non trova informazioni sufficienti, deve dire chiaramente che al momento non è in grado di fornire quell’informazione con certezza, e deve notificare l’admin nella dashboard salvando la domanda tra quelle senza risposta.
+
+IMPLEMENTAZIONE RICHIESTA
+
+1) CHAT WIDGET FRONTEND
+- Aggiungi un pulsante/chat widget visibile sul sito pubblico IUSMK.
+- UI pulita, coerente con lo stile del sito.
+- Messaggio iniziale tipo: "Ciao, sono l’assistente IUSMK. Posso aiutarti con servizi, orari, prenotazioni, contatti e informazioni presenti sul sito."
+- Supporta cronologia messaggi nella sessione corrente.
+
+2) KNOWLEDGE BASE
+Crea una collezione/tabella chiamata KnowledgeBase con questi campi:
+- title
+- content
+- category
+- keywords
+- sourceType
+- isPublished
+- createdAt
+- updatedAt
+- lastUpdatedBy
+
+Il contenuto iniziale della KnowledgeBase deve essere popolato leggendo le informazioni già presenti sul sito IUSMK:
+- home
+- servizi
+- prezzi
+- contatti
+- orari
+- faq
+- policy
+- eventuali pagine informative
+L’assistente deve usare solo record isPublished=true.
+
+3) DOMANDE SENZA RISPOSTA
+Crea una collezione/tabella chiamata UnansweredQuestions con questi campi:
+- question
+- normalizedQuestion
+- pageUrl
+- customerSessionId
+- customerName (opzionale)
+- customerEmail (opzionale)
+- aiFallbackMessage
+- status (new, reviewed, answered, ignored)
+- adminAnswer
+- linkedKnowledgeItemId
+- createdAt
+- updatedAt
+
+Quando l’assistente non trova una risposta affidabile:
+- salva automaticamente la domanda in UnansweredQuestions
+- evita duplicati evidenti usando normalizedQuestion
+- mostra al cliente un messaggio tipo:
+  "Al momento non sono in grado di darti questa informazione con certezza. La tua richiesta è stata segnalata al team, così potremo aggiornare l’assistente."
+
+4) AI LOGIC
+Crea una server action / API route sicura per la chat.
+Flusso:
+- riceve la domanda utente
+- recupera i contenuti più rilevanti da KnowledgeBase
+- costruisce un contesto con i soli contenuti trovati
+- invia al modello AI una system instruction molto rigida:
+  “Rispondi esclusivamente con le informazioni presenti nel contesto fornito.
+   Non inventare.
+   Non usare conoscenza esterna.
+   Se il contesto è insufficiente, dì che al momento non puoi fornire l’informazione con certezza.”
+- se non ci sono risultati utili oppure il risultato è debole, attiva fallback e salva in UnansweredQuestions
+
+5) SOGLIA DI AFFIDABILITÀ
+Implementa una logica di confidence / relevance:
+- se non ci sono abbastanza risultati rilevanti, non rispondere a caso
+- meglio fallback che risposta inventata
+- salva anche quali record della KnowledgeBase sono stati usati
+
+6) DASHBOARD ADMIN
+Aggiungi nella dashboard admin:
+- card con numero di domande senza risposta
+- pagina "Domande AI"
+- filtri per status
+- dettaglio domanda
+- campo per inserire risposta admin
+- pulsante "Pubblica in Knowledge Base"
+Quando l’admin inserisce una risposta:
+- crea o aggiorna automaticamente un record in KnowledgeBase
+- collega linkedKnowledgeItemId alla domanda
+- cambia status in answered
+
+7) GESTIONE FUTURA
+L’assistente deve imparare in futuro NON tramite memoria casuale della chat, ma tramite KnowledgeBase approvata dall’admin.
+Quindi:
+- nessuna risposta utente/admin deve diventare conoscenza automatica senza approvazione
+- solo l’admin può pubblicare nuove conoscenze
+
+8) SICUREZZA E QUALITÀ
+- Nessuna allucinazione
+- Nessuna risposta su argomenti non presenti nel contesto
+- Sanitizza input/output
+- Rate limit base sulla chat pubblica
+- Logga errori senza rompere il sito
+- Se l’AI fallisce, mostra messaggio fallback elegante
+
+9) MIGLIORIE UX
+- Mostra sotto ogni risposta un piccolo testo tipo “Risposta basata sulle informazioni attualmente disponibili”
+- Se utile, aggiungi suggerimenti rapidi cliccabili:
+  “Orari”
+  “Servizi”
+  “Prezzi”
+  “Contatti”
+  “Prenotazioni”
+
+10) IMPORTANTE
+Non modificare ciò che attualmente funziona nel sito.
+Aggiungi questa funzione in modo isolato e sicuro.
+Se esiste già una dashboard admin, integra solo le nuove sezioni necessarie.
+Mantieni stile coerente con IUSMK.

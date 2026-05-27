@@ -1,0 +1,94 @@
+Aggiorna il sito IUSMK Academy con questa logica:
+
+OBIETTIVO
+Un utente non deve poter acquistare un corso che possiede già e che risulta ancora attivo.
+L’utente può acquistarlo di nuovo solo se l’admin ha revocato il codice, revocato l’accesso al corso, oppure se quel corso non è più attivo per quell’account.
+
+REGOLE DA IMPLEMENTARE
+
+1. CONTROLLO POSSESSO CORSO
+Quando un utente entra nella sezione Academy o nella pagina di dettaglio di un corso:
+- controlla se esiste già un acquisto valido per quel corso associato al suo account
+- considera valido un acquisto se:
+  - il corso è assegnato a quell’utente
+  - il codice è attivo oppure l’accesso al corso è attivo
+  - il corso non è stato revocato dall’admin
+
+2. BLOCCO ACQUISTO DUPLICATO
+Se l’utente possiede già quel corso in modo attivo:
+- nascondi il pulsante “Acquista ora” oppure disabilitalo
+- al suo posto mostra:
+  - badge o testo: “Già acquistato”
+  - pulsante secondario: “Vai al corso” oppure “Apri corso”
+- l’utente non deve poter andare al checkout per quel corso
+
+3. RIACQUISTO CONSENTITO SOLO IN CASO DI REVOCA
+Se l’admin:
+- revoca il codice
+oppure
+- revoca l’accesso al corso
+oppure
+- rimuove l’assegnazione del corso all’utente
+
+allora il sistema deve:
+- togliere lo stato “Già acquistato”
+- ripristinare il pulsante “Acquista ora”
+- permettere nuovamente il checkout di quel corso
+
+4. LOGICA DATABASE / STATO
+Aggiungi o usa chiaramente uno stato per l’accesso al corso, ad esempio:
+- active = true/false
+oppure
+- status = active / revoked / expired
+
+Per ogni relazione utente-corso, il frontend deve considerare “già acquistato” solo se lo stato è attivo.
+
+5. CHECK ANCHE SUL BACKEND
+Non fare solo un blocco grafico frontend.
+Aggiungi anche un controllo server-side nel flusso di acquisto:
+- se l’utente prova ad acquistare un corso che possiede già attivamente, blocca la creazione del nuovo checkout
+- restituisci un messaggio tipo: “Hai già acquistato questo corso”
+- consenti il checkout solo se lo stato del corso per quell’utente è revocato/non attivo
+
+6. SEZIONE ACADEMY
+Nella lista corsi della sezione Academy:
+- per i corsi già acquistati e attivi mostra “Già acquistato” e “Apri corso”
+- per i corsi non acquistati mostra “Acquista ora”
+- per i corsi revocati mostra nuovamente “Acquista ora”
+
+7. PAGINA DETTAGLIO CORSO
+Anche nella pagina singola del corso applica la stessa logica:
+- se posseduto attivamente → non mostrare il pulsante di acquisto
+- se revocato/non attivo → mostrare di nuovo il pulsante di acquisto
+
+8. DASHBOARD ADMIN
+Nella dashboard admin, nella gestione codici o accessi:
+- aggiungi un’azione chiara tipo “Revoca accesso”
+- quando l’admin revoca accesso/codice, aggiorna subito lo stato del corso per quell’utente
+- assicurati che questa revoca abbia effetto sia nella UI sia nel backend checkout
+
+9. COMPATIBILITÀ CON LOGICA ATTUALE
+Mantieni invariato tutto il resto del sistema:
+- notifiche
+- video corsi
+- codici
+- corsi acquistati
+- dashboard admin
+Intervieni solo sulla logica di disponibilità acquisto e possesso corso.
+
+10. UX
+Messaggi consigliati:
+- “Già acquistato”
+- “Questo corso è già presente nel tuo account”
+- “Apri corso”
+- “Acquista ora”
+
+11. TEST DA FARE
+Dopo l’implementazione verifica questi casi:
+- utente senza corso acquistato → vede “Acquista ora”
+- utente con corso acquistato attivo → vede “Già acquistato” e non può comprare
+- admin revoca il corso → l’utente torna a vedere “Acquista ora”
+- backend blocca comunque eventuale tentativo manuale di doppio acquisto
+
+IMPORTANTE
+Il blocco del doppio acquisto deve funzionare sia nella sezione Academy sia nella pagina singola del corso sia nel backend del checkout.

@@ -1,0 +1,136 @@
+Il problema dei video nei Corsi / Academy non è ancora risolto.
+
+Ho provato a caricare un video da circa 150MB: sembra caricato, ma poi lato cliente nell’Academy non si vede / non parte.
+
+Questa sezione dovrà gestire video corsi anche di ore, quindi serve una soluzione seria, non un semplice upload base.
+
+Obiettivo
+
+L’admin deve poter caricare:
+
+copertine anche pesanti
+video lezioni pesanti
+video anche lunghi, da ore
+
+E lato cliente:
+
+il video deve vedersi bene
+deve partire velocemente
+deve caricarsi in modo fluido
+non deve restare nero o bloccato
+1. Non salvare video grandi come base64 o dentro il database
+
+Verifica subito che i video NON vengano salvati:
+
+come base64
+dentro campi JSON
+dentro il database
+
+I video devono essere salvati su storage vero, e nel database deve restare solo:
+
+URL pubblico o firmato
+titolo
+descrizione
+durata
+ordine lezione
+thumbnail/copertina
+2. Usa storage adatto ai video
+
+Se l’attuale sistema upload non è adatto, cambialo.
+
+Per i video corsi usa una soluzione stabile tipo:
+
+Supabase Storage
+Cloudflare R2
+S3
+Cloudinary video
+Mux
+Bunny Stream
+
+L’importante è che supporti file grandi e streaming.
+
+3. Upload video robusto
+
+Per i video lezioni implementa:
+
+upload diretto allo storage
+barra progresso reale
+gestione errori chiara
+nessun errore 413
+limite reale almeno 1GB per video
+supporto MP4 / MOV / WebM
+
+Non deve fallire con video da 150MB.
+
+4. Streaming lato cliente
+
+Nell’Academy il video non deve essere scaricato tutto prima di partire.
+
+Deve essere servito in modo adatto allo streaming:
+
+player HTML5 stabile
+supporto range requests
+preload corretto
+thumbnail prima del play
+caricamento progressivo
+fallback se il formato non è supportato
+
+Se possibile usa HLS o una piattaforma video tipo Mux/Bunny/Cloudinary per rendere il video veloce anche se dura ore.
+
+5. Compatibilità iPhone / Safari
+
+Verifica soprattutto su iPhone/Safari.
+
+I video devono avere:
+
+formato compatibile
+codec compatibile H.264/AAC
+playsInline
+controlli visibili
+nessun autoplay obbligatorio
+nessun problema di schermo nero
+6. Form Corsi admin
+
+Nel form corso:
+
+copertina max almeno 50MB
+video max almeno 1GB
+messaggio corretto, non “max 500MB” se il limite reale è diverso
+se un video è caricato correttamente, mostra stato “Upload completato”
+salva correttamente il video nella lezione
+7. Academy cliente
+
+Correggi la parte cliente dove il video non si vede.
+
+Controlla:
+
+URL video salvato
+permessi storage
+CORS
+player
+formato video
+caricamento da mobile
+eventuali URL temporanei scaduti
+eventuale errore console/network
+8. Test obbligatori
+
+Dopo la correzione fai questi test:
+
+Carica video piccolo.
+Carica video da circa 150MB.
+Apri Academy lato cliente.
+Verifica che il video parta.
+Verifica da mobile/iPhone.
+Verifica che il video non resti nero.
+Verifica che reload della pagina non rompa il video.
+9. Dimmi cosa hai corretto
+
+Alla fine voglio sapere:
+
+dove veniva salvato prima il video
+perché nell’Academy non si vedeva
+quale storage viene usato ora
+nuovo limite reale upload video
+se il video viene servito in streaming o download progressivo
+
+IMPORTANTE: questa sezione è per vendere corsi video professionali. Deve funzionare con video lunghi e pesanti, non solo con file piccoli di prova.

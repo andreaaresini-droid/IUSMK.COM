@@ -1,0 +1,81 @@
+Apporta queste modifiche al sito IUSMK SENZA modificare design, colori o layout.
+
+==================================================
+1. POPUP ACCESSO CORSO — CAMBIO INSTAGRAM → WHATSAPP
+==================================================
+
+PROBLEMA
+Nel popup “Accedi al corso” in basso compare la frase:
+"Non hai ancora un codice? Contattaci su Instagram @_iusmk_"
+
+OBIETTIVO
+Sostituire Instagram con WhatsApp.
+
+DEVI FARE QUESTO:
+- sostituisci completamente la frase con:
+
+Non hai ancora un codice? Contattaci su WhatsApp
+
+OPZIONALE (MA CONSIGLIATO):
+- rendi “WhatsApp” cliccabile
+- link diretto:
+https://wa.me/393393010246
+
+REQUISITI:
+- mantieni lo stesso stile (colore, font, dimensione)
+- non cambiare layout del popup
+- non spostare elementi
+
+==================================================
+2. SEZIONE GALLERIA — CAMBIO TITOLO "PORTFOLIO"
+==================================================
+
+PROBLEMA
+Nella pagina galleria e in alcune sezioni compare la scritta:
+"PORTFOLIO"
+
+OBIETTIVO
+Sostituire con:
+"GALLERIA"
+
+DEVI FARE QUESTO:
+- sostituisci tutte le occorrenze visibili di:
+  "PORTFOLIO"
+  con:
+  "GALLERIA"
+
+ATTENZIONE:
+- solo testo visibile all’utente
+- NON modificare nomi file, variabili o route interne
+
+==================================================
+3. FOOTER / SEZIONI IN FONDO PAGINA
+==================================================
+
+OBIETTIVO
+Se in fondo alle pagine compare ancora "Portfolio", sostituirlo.
+
+DEVI:
+- controllare footer e sezioni finali
+- sostituire eventuali "Portfolio" con "Galleria"
+
+==================================================
+4. CONTROLLO FINALE
+==================================================
+
+Verifica che:
+
+- nel popup non ci sia più Instagram
+- il testo WhatsApp sia corretto
+- il link WhatsApp funzioni
+- nella pagina galleria il titolo sia "GALLERIA"
+- non esista più "Portfolio" visibile nel sito
+- nessun errore console
+
+==================================================
+IMPORTANTE
+==================================================
+
+- non modificare layout
+- non cambiare colori o stile
+- solo sostituzione testi + link WhatsApp

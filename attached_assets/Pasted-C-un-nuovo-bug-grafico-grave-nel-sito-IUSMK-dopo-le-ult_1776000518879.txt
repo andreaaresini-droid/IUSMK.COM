@@ -1,0 +1,113 @@
+C’è un nuovo bug grafico grave nel sito IUSMK dopo le ultime modifiche responsive.
+
+PROBLEMA
+Il logo che stava correttamente in alto a sinistra nell’header/navbar ora è diventato gigantesco e copre gran parte della homepage/hero.
+Dallo screenshot si vede chiaramente che il logo non è più contenuto nella navbar ma viene renderizzato enorme sopra il contenuto della pagina.
+
+OBIETTIVO
+Ripristinare immediatamente il comportamento corretto del logo:
+- il logo deve stare solo nell’header/navbar
+- deve avere dimensioni corrette e controllate
+- non deve mai coprire la hero o il contenuto della pagina
+- deve essere responsive ma sempre proporzionato
+- il problema va corretto alla radice, non nascosto
+
+COSA DEVI CONTROLLARE E CORREGGERE
+
+1. Trova la causa precisa
+Verifica cosa ha rotto il logo dopo le ultime modifiche responsive:
+- CSS globale sulle immagini
+- regole su img, svg, picture
+- regole sulla navbar/header
+- regole sul contenitore logo
+- width, height, max-width, min-width
+- object-fit
+- display block/flex
+- position absolute/fixed/relative
+- z-index
+- transform / scale
+- classi Tailwind o CSS modules modificate
+- media queries mobile/PWA
+- eventuali regole generiche applicate a tutte le immagini del sito
+
+2. Ripristina il logo nell’header
+Il logo deve:
+- stare nel contenitore corretto della navbar
+- avere dimensione stabile su mobile e desktop
+- non uscire mai dal suo wrapper
+- non alterare l’altezza dell’header
+- non finire sopra la hero
+
+Controlla:
+- wrapper del logo
+- link del logo
+- immagine/logo asset
+- eventuale versione mobile del logo
+- eventuale versione SVG/PNG/WebP
+
+3. Imposta regole sicure per il logo
+Applica regole solide tipo:
+- altezza controllata
+- larghezza automatica proporzionale
+- max-width coerente
+- max-height coerente
+- flex-shrink corretto
+- overflow hidden nel parent se utile
+- allineamento verticale corretto nella navbar
+
+Il logo deve scalare bene ma senza mai diventare enorme.
+
+4. Controlla collisioni con le correzioni responsive recenti
+Probabilmente una correzione globale fatta per i layout mobile ha rotto anche il logo.
+Controlla se hai aggiunto qualcosa del tipo:
+- img { width: 100%; }
+- max-width troppo permissivo
+- classi globali che colpiscono anche il logo
+- regole sui container hero/header
+- cambiamenti ai wrapper comuni
+
+Se trovi una regola globale che causa questo bug, restringila ai soli componenti corretti invece di applicarla a tutto.
+
+5. Controlla la homepage hero
+Assicurati che il logo non faccia parte accidentalmente della hero o di un layer grafico sbagliato.
+Controlla se:
+- è stato montato nel componente sbagliato
+- il DOM è cambiato
+- il logo viene renderizzato due volte
+- una copia del logo è finita nella hero section
+- una immagine decorativa sta usando il file del logo per errore
+
+6. Z-index e positioning
+Controlla che:
+- il logo stia solo nella navbar
+- la navbar abbia layering corretto
+- la hero non stia inglobando il logo
+- il logo non abbia position absolute errata con dimensioni enormi
+
+7. Test da fare
+Verifica il risultato in:
+- homepage desktop
+- homepage mobile
+- iPhone Safari
+- iPhone PWA da schermata Home
+
+Il logo deve:
+- restare piccolo e ordinato in alto a sinistra
+- non coprire mai il contenuto
+- non deformarsi
+- non uscire dal layout
+
+8. Protezione futura
+Aggiungi una protezione CSS/strutturale in modo che future modifiche responsive non possano più far esplodere la dimensione del logo.
+Se serve:
+- usa una classe dedicata solo al logo
+- evita che erediti regole generiche troppo aggressive
+- separa lo stile del logo dagli stili globali delle immagini di contenuto
+
+OUTPUT FINALE
+Quando hai finito dimmi:
+1. qual era la causa precisa del bug
+2. quali file/componenti hai modificato
+3. quali regole hai corretto
+4. conferma che il logo è tornato normale su mobile, desktop e PWA
+5. conferma che non copre più la homepage

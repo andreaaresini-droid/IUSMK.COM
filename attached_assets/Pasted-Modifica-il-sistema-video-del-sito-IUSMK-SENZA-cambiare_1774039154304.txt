@@ -1,0 +1,108 @@
+Modifica il sistema video del sito IUSMK SENZA cambiare branding, colori, font o layout generale.
+
+OBIETTIVO
+1. Il video del corso deve vedersi direttamente dentro il sito IUSMK
+2. Non deve più aprirsi in una pagina esterna
+3. Non deve esserci un link pubblico visibile al file video
+4. Voglio la massima protezione possibile lato web contro registrazione schermo da telefono, sapendo però che sul browser non è tecnicamente garantibile al 100%
+
+IMPORTANTE
+Se una protezione non è realmente possibile su web mobile, non simularla: implementa solo misure reali e scrivilo chiaramente nel codice o nel README.
+
+==================================================
+1. PLAYER VIDEO INTERNO AL SITO
+==================================================
+
+- Il video deve essere riprodotto dentro la pagina corso del sito IUSMK
+- Non deve aprirsi in una nuova scheda
+- Non deve aprirsi una pagina esterna con il file video
+- Il player deve essere integrato nella dashboard studente o nella pagina corso protetta
+- L’utente autorizzato deve vedere il video direttamente lì
+
+==================================================
+2. ACCESSO PROTETTO
+==================================================
+
+- Il video deve essere caricato solo se l’utente ha davvero accesso al corso
+- Controlla lato server che l’utente sia autorizzato
+- Se non è autorizzato, il player non deve ricevere il video
+- Non usare link pubblici permanenti
+
+==================================================
+3. URL TEMPORANEE / PROTETTE
+==================================================
+
+- Servi il video con URL temporanee firmate oppure con streaming protetto
+- L’URL non deve restare pubblica e riutilizzabile
+- Se qualcuno copia l’URL, deve scadere presto
+- Nessun file mp4 pubblico diretto visibile in pagina
+
+==================================================
+4. NIENTE DOWNLOAD FACILE
+==================================================
+
+Implementa sul player:
+- niente tasto download
+- niente apertura in nuova scheda
+- blocco tasto destro
+- blocco menu contestuale
+- blocco drag del video
+- rimozione controlli inutili che espongono il file
+
+==================================================
+5. WATERMARK SOPRA IL VIDEO
+==================================================
+
+Aggiungi un watermark visibile sopra il video con:
+- nome utente
+- email utente
+
+Il watermark deve:
+- essere semi-trasparente
+- restare sopra il video
+- rendere meno utile una registrazione schermo
+
+==================================================
+6. PROTEZIONE MASSIMA POSSIBILE SU MOBILE
+==================================================
+
+Su telefono prova a implementare tutte le misure realistiche possibili lato web:
+- player interno al sito
+- niente link esterno
+- niente download diretto
+- watermark utente
+- controllo accesso lato server
+- URL temporanee
+- protezione sessione
+
+MA:
+- non dichiarare che la registrazione schermo mobile è bloccata al 100% se non è vero
+- se non è possibile impedirla davvero da browser, dillo chiaramente
+
+==================================================
+7. COMPORTAMENTO FINALE DESIDERATO
+==================================================
+
+Quando uno studente entra nel suo corso:
+- il video si vede direttamente sul sito IUSMK
+- non si apre una pagina esterna
+- non compare un link diretto al file
+- il player è protetto e accessibile solo da chi ha il corso sbloccato
+- c’è watermark con i dati dello studente
+
+==================================================
+8. TEST FINALE
+==================================================
+
+Verifica davvero che:
+- il video si apra dentro il sito
+- non si apra più una pagina esterna
+- non ci sia pulsante download
+- il watermark compaia
+- un utente non autorizzato non possa vedere il video
+- eventuali URL video siano temporanee o non riutilizzabili facilmente
+
+IMPORTANTE
+- fai modifiche reali al codice esistente
+- non limitarti a descrivere la soluzione
+- mantieni il design attuale

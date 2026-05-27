@@ -1,0 +1,121 @@
+Devo correggere definitivamente la logica dell’intro video del sito IUSMK.
+
+PROBLEMA:
+Quando il cliente clicca/tocca per entrare, alcune volte il video parte in ritardo e il sito si vede prima che il video sia finito.
+
+OBIETTIVO:
+Dopo il click, il sito NON deve mai comparire prima della fine reale del video.
+Il video deve partire il prima possibile, ma anche se parte con 1 secondo di ritardo, il sito deve essere mostrato SOLO quando il video è terminato completamente.
+
+ISTRUZIONI:
+
+1. BLOCCA IL SITO DOPO IL CLICK:
+- Quando l’utente clicca/tocca la schermata iniziale, mantieni l’overlay intro sopra tutto il sito.
+- Non rimuovere l’overlay subito dopo il click.
+- Non mostrare la homepage finché il video non ha emesso l’evento onEnded.
+
+2. AVVIO VIDEO:
+- Il video deve essere già presente nel DOM e precaricato.
+- Usa preload="auto".
+- Al click:
+  - imposta video.currentTime = 0;
+  - mostra lo stato “playing intro”;
+  - chiama video.play() direttamente dentro l’evento click/tap.
+
+3. REGOLA FONDAMENTALE:
+- NON usare timeout per mostrare il sito mentre il video sta caricando o riproducendo.
+- NON usare setTimeout basato sulla durata presunta del video.
+- Il sito deve comparire SOLO con onEnded del video.
+
+4. FALLBACK SICURO:
+- Il fallback deve servire solo se il video fallisce davvero.
+- Usa fallback solo su:
+  - onError
+  - play().catch dopo vari tentativi falliti
+  - video non caricato dopo 8 secondi e non è mai partito
+- Se il video è partito anche con ritardo, NON attivare il fallback.
+- Se videoStarted === true, aspetta sempre onEnded.
+
+5. STATI CONSIGLIATI:
+Gestisci stati separati:
+- introVisible = true
+- videoRequested = false
+- videoStarted = false
+- videoEnded = false
+- videoError = false
+
+Logica:
+- al click: videoRequested = true
+- quando il video emette onPlay o onPlaying: videoStarted = true
+- quando il video emette onEnded: videoEnded = true e solo allora introVisible = false
+- se onError prima dell’avvio: fallback e mostra sito
+- se play fallisce definitivamente: fallback e mostra sito
+
+6. EVITA IL BUG ATTUALE:
+- Non chiamare enterSite() subito dopo video.play().
+- Non chiamare enterSite() dopo un timeout fisso.
+- Non nascondere l’intro quando cambia lo stato playing.
+- Nascondi l’intro SOLO dentro handleVideoEnded().
+
+7. SCHERMATA DURANTE IL CARICAMENTO:
+- Se dopo il click il video impiega un attimo a partire, mostra comunque una schermata nera/intro con logo o loader leggero.
+- Non mostrare il sito dietro.
+- L’utente deve vedere solo l’intro, mai la homepage prima del video.
+
+8. ESEMPIO LOGICA:
+function handleEnterClick() {
+  setVideoRequested(true);
+  const video = videoRef.current;
+  if (!video) return;
+
+  video.currentTime = 0;
+
+  const playPromise = video.play();
+
+  if (playPromise !== undefined) {
+    playPromise.catch(() => {
+      retryPlay();
+    });
+  }
+}
+
+function handleVideoPlaying() {
+  setVideoStarted(true);
+}
+
+function handleVideoEnded() {
+  setVideoEnded(true);
+  setIntroVisible(false);
+  sessionStorage.setItem("iusmkIntroSeen", "true");
+}
+
+IMPORTANTE:
+handleVideoEnded è l’unico punto in cui si deve mostrare il sito.
+
+9. VIDEO TAG:
+Il video deve avere:
+- ref={videoRef}
+- preload="auto"
+- playsInline
+- controls={false}
+- muted={false}
+- onPlaying={handleVideoPlaying}
+- onPlay={handleVideoPlaying}
+- onEnded={handleVideoEnded}
+- onError={handleVideoError}
+
+10. NON MODIFICARE:
+- video intro
+- audio
+- logo
+- testo iniziale
+- galleria
+- homepage
+- corsi
+- admin
+- chat
+- login
+- pagamenti
+
+RISULTATO FINALE:
+Cliente apre il sito → vede schermata iniziale → clicca/tocca → il video parte appena possibile → il sito resta nascosto per tutta la durata del video → solo quando il video è finito completamente compare il sito.

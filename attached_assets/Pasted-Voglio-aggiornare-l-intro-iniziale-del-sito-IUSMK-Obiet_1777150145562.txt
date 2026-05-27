@@ -1,0 +1,51 @@
+Voglio aggiornare l’intro iniziale del sito IUSMK.
+
+Obiettivo:
+Quando l’utente apre il sito deve vedere la schermata iniziale attuale con il logo e il tasto rosso per entrare. Quando clicca sul tasto rosso, NON deve entrare subito nel sito: deve prima partire il video intro che ho caricato, con il suo audio originale. Appena il video finisce, la schermata intro deve scomparire e deve comparire normalmente il sito IUSMK.
+
+Regole precise:
+
+1. Mantieni la schermata iniziale attuale con logo e tasto rosso.
+2. Al click sul tasto rosso:
+   - nascondi logo/testo/tasto iniziale;
+   - mostra il video intro a schermo intero;
+   - avvia il video automaticamente;
+   - abilita l’audio del video, quindi NON deve essere muted.
+3. Il video deve essere centrato e adattarsi bene sia da desktop sia da telefono.
+4. Il video non deve essere tagliato male:
+   - usa object-fit: contain se serve mantenere tutto visibile;
+   - sfondo nero dietro al video.
+5. Durante il video non devono comparire controlli, bottoni o elementi del sito.
+6. Quando il video termina:
+   - rimuovi completamente l’overlay dell’intro;
+   - mostra la homepage del sito;
+   - salva in sessionStorage che l’intro è stata già vista durante quella sessione.
+7. L’intro deve riapparire solo quando:
+   - l’utente apre il sito in una nuova sessione;
+   - oppure ricarica dopo aver chiuso e riaperto il browser.
+8. Durante la navigazione interna del sito l’intro NON deve ripartire.
+9. Aggiungi anche un fallback:
+   - se il video non si carica o dà errore, dopo massimo 7 secondi fai entrare comunque l’utente nel sito.
+10. Il video deve partire solo dopo il click dell’utente, così il browser permette anche l’audio.
+11. Non modificare il resto del sito, non cambiare layout, contenuti, login, corsi, admin, chat o altre funzioni.
+
+Implementazione richiesta:
+
+- Crea/aggiorna un componente IntroOverlay.
+- Usa il file video che caricherò negli assets/public del progetto.
+- Imposta il percorso del video in modo semplice da modificare, ad esempio:
+  const INTRO_VIDEO_SRC = "/intro-iusmk.mp4"
+- Il video deve avere:
+  autoPlay
+  playsInline
+  preload="auto"
+  controls={false}
+  muted={false}
+- Usa onEnded per mostrare il sito.
+- Usa onError e timeout di sicurezza per mostrare comunque il sito.
+- Blocca lo scroll del body mentre l’intro è visibile.
+- Quando l’intro finisce, ripristina lo scroll normale.
+- Assicurati che funzioni bene su iPhone, Android, desktop e PWA.
+
+Risultato finale:
+Apro il sito → vedo schermata con logo e tasto rosso → clicco il tasto rosso → parte il video intro con audio → finito il video entro automaticamente nel sito.

@@ -1,0 +1,55 @@
+Cambiamo integrazione pagamenti del sito IUSMK:
+
+NON voglio più usare la creazione diretta della checkout session con le chiavi API come flusso principale.
+Voglio usare Stripe Payment Links creati manualmente da Stripe e associati ai corsi nell’admin.
+
+Obiettivo:
+1. Quando l’admin crea o modifica un corso, deve poter inserire anche:
+   - payment_link_url di Stripe
+2. Nella pagina del corso, il pulsante acquisto deve reindirizzare al payment link Stripe associato al corso
+3. Il reindirizzamento al payment link deve aggiungere dinamicamente:
+   - client_reference_id = ID univoco dell’utente loggato oppure ID ordine interno
+   - prefilled_email o locked_prefilled_email con l’email del cliente se supportato
+4. NON salvare acquisti come completati quando l’utente apre solo il checkout
+5. Gli acquisti devono essere creati o segnati come completati SOLO dopo il webhook Stripe:
+   - checkout.session.completed
+6. Nel webhook:
+   - recupera il corso pagato
+   - recupera l’utente usando client_reference_id e/o email Stripe
+   - crea l’acquisto completato
+   - genera o recupera il codice accesso
+   - invia notifica interna al cliente con il codice
+   - invia email conferma pagamento/acquisto al cliente
+   - invia notifica push all’admin del nuovo acquisto
+7. Evita duplicati se Stripe reinvia il webhook
+8. Se un utente arriva al checkout ma non paga, NON deve comparire:
+   - né nella sezione admin “Acquisti”
+   - né in “I miei corsi”
+9. Correggi l’admin “Acquisti”:
+   - mostra solo pagamenti completati reali
+   - niente record pending derivati da semplici aperture checkout
+   - calcola correttamente totale acquisti, completati, ricavi totali
+10. Correggi la sezione cliente “I miei corsi”:
+   - non duplicare lo stesso corso se non esiste un pagamento completato reale
+   - mostra il corso solo quando l’acquisto è completato
+   - se esistono vecchi record sporchi/pending creati da test precedenti, ripuliscili o escludili
+11. Correggi il layout mobile della pagina admin “Acquisti”:
+   - deve vedersi bene su iPhone/telefono
+   - tabella responsive
+   - niente contenuti tagliati
+   - usa cards o tabella scrollabile in modo elegante
+12. Mantieni invariato il resto del sito.
+
+Dettagli tecnici importanti:
+- Stripe Payment Links aprono nuove Checkout Sessions
+- usa checkout.session.completed come unica fonte affidabile per fulfillment
+- usa client_reference_id per collegare il pagamento all’utente del sito
+- se serve, usa la redirect URL del payment link con {CHECKOUT_SESSION_ID} per la pagina di conferma
+- logga bene tutto il webhook e ogni step post-pagamento
+
+Alla fine dimmi:
+- quali file hai modificato
+- come hai salvato payment_link_url nei corsi
+- come costruisci il link finale con client_reference_id/email
+- come hai impedito i record falsi o duplicati
+- come hai corretto la pagina acquisti su mobile

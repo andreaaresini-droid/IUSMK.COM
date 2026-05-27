@@ -1,0 +1,78 @@
+Devi correggere SOLO la pagina “Sblocca corso” e il click su “Attiva/Sblocca con codice”.
+
+PROBLEMI:
+1. Quando clicco “Attiva con codice” ci mette troppo tempo ad aprire la pagina.
+2. La pagina “Sblocca corso” sembra bloccarsi.
+3. Non si vede l’immagine di copertina del corso: appare icona rotta / media non disponibile.
+
+OBIETTIVO:
+- La pagina deve aprirsi subito.
+- Non deve bloccarsi.
+- L’immagine di copertina del corso deve vedersi correttamente.
+
+CORREZIONI:
+
+1. VELOCITÀ APERTURA PAGINA
+Quando clicco “Attiva con codice”:
+- vai subito alla route di sblocco corso
+- non aspettare caricamenti pesanti prima di cambiare pagina
+- mostra subito uno skeleton/loading leggero se i dati corso stanno caricando
+- evita fetch multipli duplicati
+- evita loop infiniti in useEffect
+- non caricare video pesanti in questa pagina
+
+2. PAGINA SBLOCCA CORSO NON DEVE BLOCCARSI
+Controlla la pagina di attivazione codice:
+- nessun loop di setState dentro useEffect
+- useEffect con dipendenze corrette
+- fetch corso una sola volta
+- se manca courseId/slug mostra errore leggero, non bloccare pagina
+- non fare preload dei video
+- non caricare gallery completa se non serve
+
+3. COPERTINA CORSO
+La pagina “Sblocca corso” deve mostrare solo l’immagine di copertina del corso.
+
+Usa una normalizzazione robusta:
+course.coverImageUrl ||
+course.coverImage ||
+course.thumbnailUrl ||
+course.thumbnail ||
+course.imageUrl ||
+course.media?.[0]?.url ||
+course.media?.[0]?.src ||
+course.media?.[0]?.fileUrl ||
+course.media?.[0]?.publicUrl
+
+Se il valore è un oggetto, estrai:
+url || src || fileUrl || publicUrl
+
+Non usare blob temporanei.
+Non usare tag video per immagini.
+Se è immagine usa <img>.
+Se manca davvero immagine, mostra fallback pulito senza bloccare.
+
+4. PERFORMANCE IMMAGINE
+- Usa loading="eager" solo per la copertina principale
+- Usa decoding="async"
+- Non aspettare che l’immagine sia caricata per mostrare il form codice
+- Il form deve essere utilizzabile subito
+
+5. ROUTING
+Il tasto “Attiva con codice” deve portare direttamente alla pagina:
+course/:id/activate oppure /attiva-corso/:id
+
+Passando il courseId corretto.
+Non deve passare dal portale utente.
+Non deve fare redirect intermedi inutili.
+
+IMPORTANTE:
+- Non modificare pagamenti.
+- Non modificare Academy.
+- Non modificare “I miei corsi”.
+- Non modificare chat o homepage.
+- Non rompere il sistema codici.
+- Mantieni lo stile attuale.
+
+RISULTATO:
+Clic su “Attiva con codice” → pagina sblocco si apre subito → form utilizzabile subito → copertina corso visibile correttamente.

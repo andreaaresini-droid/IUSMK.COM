@@ -1,0 +1,151 @@
+Voglio aggiornare la sezione “Galleria” della dashboard admin del sito IUSMK.
+
+Obiettivo
+
+L’admin deve poter gestire non solo immagini, ma anche video, e deve poter filtrare facilmente i contenuti della galleria in base a:
+
+categorie create
+solo immagini
+solo video
+eventualmente tutti i contenuti
+1. Aggiunta supporto video nella Galleria admin
+
+Nella sezione Galleria della dashboard admin, voglio che l’admin possa aggiungere anche video oltre alle immagini.
+
+Da fare:
+aggiungi un modo per caricare file video direttamente dalla dashboard
+i video devono essere salvati e mostrati nella galleria admin insieme alle immagini
+i formati video supportati devono includere almeno:
+.mp4
+.mov
+.webm se possibile
+Nel form di aggiunta contenuto:
+
+attualmente c’è “Aggiungi immagine”; voglio che diventi una cosa più completa, ad esempio:
+
+Aggiungi contenuto
+oppure
+un selettore tra:
+Immagine
+Video
+Campi richiesti per ogni contenuto:
+titolo facoltativo o modificabile
+categoria
+tipo contenuto:
+immagine
+video
+file upload
+2. Visualizzazione video nella lista admin
+
+Nella griglia della galleria admin:
+
+i video devono comparire insieme alle immagini
+devono essere chiaramente riconoscibili come video
+Come voglio che si vedano:
+miniatura/preview del video
+oppure
+primo frame + badge “VIDEO”
+Ogni card deve continuare ad avere:
+pulsante Modifica
+pulsante Elimina
+
+Se il contenuto è un video, fallo vedere chiaramente nella card con un badge tipo:
+
+VIDEO
+
+Se è immagine:
+
+IMMAGINE
+oppure lascia il badge categoria ma rendi comunque distinguibile il tipo
+3. Filtri nella sezione Galleria admin
+
+Voglio aggiungere dei filtri visibili in alto nella sezione Galleria admin.
+
+I filtri devono permettere di vedere:
+Tutti
+Immagini
+Video
+Categorie create dall’admin
+
+Quindi, ad esempio:
+
+Tutti
+Immagini
+Video
+Colore
+Fade
+Design
+ecc.
+Comportamento:
+cliccando su Immagini → mostra solo immagini
+cliccando su Video → mostra solo video
+cliccando su una categoria → mostra solo i contenuti di quella categoria
+cliccando su Tutti → mostra tutto
+Importante:
+
+i filtri devono essere:
+
+chiari visivamente
+comodi da usare
+ben allineati
+responsive anche su schermi più piccoli
+4. Compatibilità con le categorie già esistenti
+
+Le categorie già create devono continuare a funzionare.
+
+Se l’admin crea una nuova categoria:
+
+deve comparire automaticamente tra i filtri della galleria admin
+5. Modifica contenuti esistenti
+
+Quando l’admin clicca Modifica su un contenuto della galleria, deve poter modificare:
+
+titolo
+categoria
+tipo, solo se ha senso
+file, se vuole sostituirlo
+anteprima del contenuto corrente
+6. Struttura dati / backend
+
+Aggiorna la struttura della galleria in modo che ogni elemento abbia almeno:
+
+type → "image" oppure "video"
+category
+title se presente
+fileUrl
+eventuale thumbnailUrl per i video, se utile
+
+Assicurati che il backend supporti correttamente anche i video senza rompere la gestione attuale delle immagini.
+
+7. UI / UX
+
+Mantieni lo stile attuale della dashboard admin, quindi:
+
+look elegante
+dark theme
+pulsanti coerenti con il design esistente
+niente elementi disordinati
+
+I filtri devono sembrare parte naturale della UI attuale.
+
+8. Non rompere la galleria pubblica
+
+Fai attenzione a non rompere la parte pubblica del sito.
+
+Per ora voglio prima che la gestione nell’admin sia completa e funzionante.
+Se la galleria pubblica già usa questi dati, assicurati che almeno non si rompa con l’aggiunta dei video.
+
+9. Controllo finale
+
+Dopo la modifica verifica che:
+
+l’admin possa caricare un video
+il video compaia nella griglia
+il filtro “Video” funzioni
+il filtro “Immagini” funzioni
+i filtri categoria funzionino
+modifica ed elimina continuino a funzionare anche per i video
+Importante
+
+Non voglio una soluzione provvisoria o solo visiva.
+Voglio che la sezione Galleria admin supporti davvero immagini + video + filtri funzionanti.

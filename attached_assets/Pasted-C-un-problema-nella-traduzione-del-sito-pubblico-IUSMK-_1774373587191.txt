@@ -1,0 +1,115 @@
+C’è un problema nella traduzione del sito pubblico IUSMK.
+
+PROBLEMA
+La localizzazione non è completa/coerente in due punti:
+
+1. Nella HOME, la parte biografia NON si è tradotta correttamente
+2. Nella sezione “Chi è IUSMK”, quasi tutto si traduce ma il titolo grande bianco “CHI È IUSMK?” resta non tradotto
+
+Voglio che tu corregga SOLO il sistema di traduzione di queste parti, senza cambiare layout, stile o colori.
+
+==================================================
+OBIETTIVO
+==================================================
+
+Rendere coerente la traduzione del sito pubblico in tutte le sezioni, in particolare:
+
+- HOME → sezione biografia deve tradursi correttamente
+- Pagina/sezione “Chi è IUSMK” → anche il titolo grande bianco deve tradursi correttamente
+
+L’admin deve restare invariato.
+
+==================================================
+COSA DEVI CONTROLLARE
+==================================================
+
+Analizza dove il sistema di localizzazione non sta leggendo correttamente le translation keys.
+
+Controlla in particolare:
+
+1. HOME — sezione biografia
+- verifica se il testo è ancora hardcoded
+- verifica se il componente non usa il context/hook di lingua
+- verifica se alcune stringhe sono state dimenticate fuori dal dizionario traduzioni
+- verifica se la home usa un set di chiavi diverso rispetto alla pagina about
+
+2. PAGINA “CHI È IUSMK”
+- verifica perché il titolo grande bianco “CHI È IUSMK?” non cambia lingua
+- controlla se quel titolo è hardcoded nel componente
+- controlla se usa una stringa diversa da quella prevista nel file di traduzione
+- controlla eventuali mismatch tra chiave IT/EN
+
+==================================================
+COSA VOGLIO
+==================================================
+
+1. Nella HOME:
+La parte biografia deve usare correttamente il sistema di traduzione già implementato.
+Quando cambio lingua:
+- il titolo
+- il sottotitolo
+- il testo biografico
+- il pulsante/link relativo
+devono aggiornarsi correttamente
+
+2. Nella sezione “Chi è IUSMK”:
+Anche il titolo grande bianco deve tradursi correttamente.
+Esempio:
+- Italiano: “CHI È IUSMK?”
+- Inglese: “WHO IS IUSMK?” oppure altra traduzione coerente già prevista
+
+==================================================
+IMPORTANTE
+==================================================
+
+NON cambiare:
+- layout
+- font
+- colori
+- dimensioni
+- spaziature
+- immagini
+- intro
+- admin
+- animazioni
+
+Correggi SOLO la logica/chiavi di traduzione.
+
+==================================================
+CONTROLLO TECNICO
+==================================================
+
+Verifica:
+- file di traduzione IT/EN
+- chiavi mancanti
+- chiavi duplicate o sbagliate
+- componenti che non usano il context/hook di lingua
+- stringhe hardcoded ancora presenti
+- differenze tra Home e About/Chi è IUSMK
+
+Se serve:
+- aggiungi le chiavi mancanti
+- sostituisci le stringhe hardcoded con translation keys
+- allinea i componenti al sistema di localizzazione già esistente
+
+==================================================
+TEST FINALI
+==================================================
+
+Verifica davvero:
+1. lingua italiana → tutto corretto
+2. lingua inglese → 
+   - biografia nella HOME tradotta
+   - titolo grande “Chi è IUSMK?” tradotto
+3. admin invariato
+4. nessun cambiamento grafico
+
+==================================================
+OUTPUT FINALE
+==================================================
+
+Alla fine voglio un riepilogo chiaro con:
+- quali stringhe erano ancora hardcoded
+- quali chiavi hai aggiunto/corretto
+- in quali componenti hai sistemato la localizzazione
+- conferma che ora Home e “Chi è IUSMK” si traducono entrambe correttamente

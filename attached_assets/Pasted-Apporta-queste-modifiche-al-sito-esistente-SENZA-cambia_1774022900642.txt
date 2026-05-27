@@ -1,0 +1,81 @@
+Apporta queste modifiche al sito esistente SENZA cambiare il layout generale, lo stile, i colori e la struttura già realizzati. Devi solo aggiornare i contenuti e alcuni elementi specifici.
+
+MODIFICHE RICHIESTE
+
+1. LOGO / NOME IN ALTO A SINISTRA
+- Sostituisci ovunque la scritta "KRIS.ART" con "IUSMK"
+- Mantieni lo stesso stile tipografico, dimensione e posizione
+
+2. HERO SECTION HOME
+- Sostituisci la scritta grande centrale attuale con:
+  "Transforming scalps into canvases"
+- Mantieni un impatto visivo molto forte, grande, premium ed editoriale
+- Elimina completamente la scritta piccola/paragrafo sotto il titolo principale
+- Lascia la hero più pulita, con solo titolo principale e pulsanti
+
+3. PULSANTI HERO
+- Elimina il pulsante o la sezione "Prenota una seduta"
+- Sostituiscilo con un pulsante WhatsApp con testo tipo:
+  "Chatta su WhatsApp"
+  oppure
+  "Contattami su WhatsApp"
+- Il pulsante deve aprire direttamente WhatsApp al numero:
+  +39 3393010246
+- Usa link cliccabile corretto formato WhatsApp
+- Mantieni lo stile premium coerente col sito
+
+4. SECONDA SEZIONE HOME
+- Elimina completamente i riquadri/statistiche dove compaiono:
+  "12+ anni di esperienza", "5k+ clienti serviti", "200+ professionisti formati", "30+ paesi"
+- Rimuovi proprio tutta quella fascia/blocco, senza lasciare spazi strani
+- Fai risalire bene la sezione successiva in modo armonioso
+
+5. MENU DI NAVIGAZIONE
+- Sostituisci la voce "Chi siamo" con:
+  "Chi è IUSMK"
+
+6. PAGINA LOGIN ADMIN
+Nella pagina di accesso admin:
+- sostituisci la scritta "KRIS.ART" con "IUSMK"
+- imposta credenziali di accesso:
+  username: IUSMK
+  password: IUSMK123!
+- aggiungi un pulsante chiaro per tornare indietro alla home
+- il tasto può chiamarsi:
+  "Torna alla Home"
+  oppure
+  "Indietro"
+- mantieni il design coerente col pannello login esistente
+
+7. FOOTER
+Nella parte in fondo della pagina principale:
+- sostituisci "KRIS.ART" con "IUSMK"
+- sostituisci la voce/link "Chi è Kris" con:
+  "Chi è IUSMK"
+
+8. SEZIONE "CONNETTITI"
+Nella colonna "Connettiti":
+- rimuovi tutti i social attuali non richiesti
+- lascia soltanto:
+  Instagram: https://www.instagram.com/_iusmk_?igsh=cDFyejQ3djNqbnV1
+  TikTok: https://www.tiktok.com/@iusmk?_r=1&_t=ZN-94qnCVg4Fug
+- mostra solo le icone o link di Instagram e TikTok
+- mantieni stile elegante e pulito
+
+9. CONTROLLO GLOBALE
+- verifica che "KRIS.ART" venga sostituito con "IUSMK" anche in eventuali altri punti del sito visibili all’utente
+- verifica che "Chi siamo" / "Chi è Kris" non compaiano più dove non richiesto
+- non modificare il resto del progetto
+- non alterare palette, immagini, animazioni o struttura generale
+
+10. TEST FINALE
+Dopo le modifiche:
+- controlla che il pulsante WhatsApp apra correttamente il contatto
+- controlla che il login admin funzioni con:
+  username: IUSMK
+  password: IUSMK123!
+- controlla che il tasto "Torna alla Home" nella pagina admin funzioni
+- controlla che footer e navbar mostrino i nuovi nomi corretti
+
+Importante:
+fai modifiche reali ai file esistenti del progetto, non solo descrittive.

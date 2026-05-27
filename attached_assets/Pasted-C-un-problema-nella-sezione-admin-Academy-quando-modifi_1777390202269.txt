@@ -1,0 +1,83 @@
+C’è un problema nella sezione admin “Academy” quando modifico una categoria.
+
+NON modificare altre sezioni del sito. Correggi solo Academy.
+
+PROBLEMI ATTUALI:
+1. L’immagine/poster di anteprima del trailer a volte non si vede più.
+2. Alcune immagini/video nei “Media dimostrativi” diventano nere o mostrano icona rotta.
+3. Non posso eliminare o sostituire singolarmente i media dimostrativi.
+4. Quando creo o aggiorno una categoria ci mette troppo tempo a salvare/caricare.
+
+CORREZIONI RICHIESTE:
+
+1. FIX VISUALIZZAZIONE MEDIA
+- Controlla che tutti i media Academy salvino correttamente:
+  - url
+  - type: image/video
+  - mimeType se disponibile
+  - poster/thumbnail se disponibile
+- Se un media è immagine, renderizzalo sempre con img.
+- Se un media è video, renderizzalo sempre con video preview.
+- Non usare img per i video.
+- Non usare URL vuoti o poster inesistenti.
+- Se il poster del trailer manca, usa il primo frame/video preview invece di mostrare box nero.
+- Se un file non carica, mostra “Media non disponibile” e non lasciare quadrati neri o icone rotte.
+
+2. MEDIA DIMOSTRATIVI MODIFICABILI
+Nei “Media dimostrativi” ogni elemento deve avere:
+- anteprima visibile
+- pulsante elimina singolo media
+- pulsante sostituisci/cambia singolo media
+- possibilità di aggiungere nuovi media senza perdere quelli già presenti
+
+Quando elimino un media:
+- deve sparire subito dalla UI
+- deve essere rimosso dal salvataggio della categoria
+- non deve ricomparire dopo refresh
+
+Quando sostituisco un media:
+- deve aprire la galleria/file picker del dispositivo
+- deve caricare il nuovo file
+- deve aggiornare solo quel media, senza toccare gli altri
+
+3. FIX POSTER TRAILER
+La sezione “Poster del trailer” deve funzionare bene:
+- se carico un’immagine, deve vedersi subito
+- se elimino il poster, deve rimuoverlo davvero
+- se cambio poster, deve sostituire quello vecchio
+- se il poster non esiste più o URL è rotto, non deve mostrare immagine rotta
+
+4. VELOCITÀ CREAZIONE/AGGIORNAMENTO
+Il salvataggio categoria è troppo lento.
+Ottimizza così:
+- non ricaricare/re-uploadare media già esistenti quando aggiorno solo testi o ordine
+- carica solo i nuovi file aggiunti o sostituiti
+- comprimi immagini lato client o lato server come già succede in galleria/corsi
+- non bloccare tutto il form mentre carica media già salvati
+- mostra stato chiaro: “Caricamento media…” e “Salvataggio categoria…”
+- evita richieste duplicate
+- usa Promise.all solo per upload nuovi media, non per quelli già presenti
+- salva nel database solo i riferimenti/URL finali
+
+5. COMPATIBILITÀ
+- Non rompere categorie Academy già create.
+- Se ci sono vecchi media salvati come stringa URL, convertirli/gestirli in modo compatibile.
+- Se ci sono nuovi media salvati come oggetto, mantenerli.
+- La UI deve supportare entrambi i formati senza crash.
+
+6. LATO CLIENTE
+Nella pagina categoria Academy:
+- immagine copertina, poster trailer e media dimostrativi devono vedersi sempre correttamente
+- foto e video devono aprirsi nel lightbox
+- video con primi 2 secondi in loop come anteprima
+- nessun box nero se il media è valido
+
+IMPORTANTE:
+- Non modificare galleria principale.
+- Non modificare corsi/video corsi se funzionano.
+- Non modificare login, acquisti, chat, notifiche.
+- Mantieni lo stile attuale IUSMK.
+- Testa su mobile perché il problema è visibile da telefono.
+
+RISULTATO FINALE:
+Nella modifica categoria Academy, tutte le immagini/video si vedono correttamente, posso eliminare o sostituire ogni media dimostrativo, e il salvataggio della categoria è molto più veloce perché non ricarica file già esistenti.

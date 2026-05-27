@@ -1,0 +1,79 @@
+Devo correggere il logo 3D nero in alto a sinistra dell’header del sito IUSMK.
+
+PROBLEMA:
+Il logo 3D gira correttamente, ma:
+1. Non è stato sostituito con il nuovo file che ho allegato.
+2. La dimensione è sbagliata.
+3. Deve avere la stessa grandezza del vecchio logo 2D che c’era prima nell’header.
+
+OBIETTIVO:
+Sostituire il logo attuale in alto a sinistra con il nuovo file 3D che allegherò ora, mantenendo la rotazione automatica già funzionante.
+
+ISTRUZIONI:
+
+1. USA IL NUOVO FILE ALLEGATO:
+- Ignora il vecchio modello 3D usato finora per il logo header.
+- Usa ESATTAMENTE il nuovo file .glb che ho appena allegato.
+- Aggiorna il percorso del modello, ad esempio:
+  const HEADER_LOGO_3D_SRC = "/nome-file-nuovo-logo.glb"
+
+2. SOSTITUZIONE REALE:
+- Trova il componente del logo in alto a sinistra dell’header.
+- Rimuovi completamente il vecchio logo 2D e il vecchio modello 3D sbagliato.
+- Renderizza solo il nuovo modello 3D allegato.
+
+3. GRANDEZZA:
+- Il logo 3D deve avere la stessa dimensione visiva del vecchio logo 2D dell’header.
+- Non deve essere più piccolo.
+- Non deve essere più grande.
+- Deve occupare lo stesso spazio che occupava prima il logo nero 2D.
+
+Dimensioni consigliate:
+- Mobile: larghezza visiva circa 65–85px
+- Desktop: larghezza visiva circa 80–110px
+- Altezza proporzionata automaticamente
+
+4. POSIZIONE:
+- Deve restare in alto a sinistra, nella stessa posizione del vecchio logo.
+- Non deve spostare menu, pulsanti o navbar.
+- Deve essere allineato verticalmente con gli altri elementi dell’header.
+
+5. ROTAZIONE:
+- Mantieni la rotazione automatica attuale, perché va bene.
+- Deve continuare a girare lentamente da solo sull’asse Y.
+- Non deve essere interattivo.
+- Il cliente NON deve poterlo ruotare o toccare.
+
+6. INTERAZIONE DISATTIVATA:
+- Nessun OrbitControls per il logo header.
+- Il canvas deve ignorare mouse/touch.
+- Usa pointer-events: none.
+
+7. CENTRO DI ROTAZIONE:
+- Mantieni il pivot corretto al centro del logo.
+- Calcola bounding box e centra il modello su (0,0,0).
+- Il logo deve girare su sé stesso, non da un lato.
+
+8. CANVAS:
+- Canvas trasparente.
+- Nessun bordo.
+- Nessun riquadro visibile.
+- Nessun crop.
+- Nessun overflow hidden che taglia il logo.
+- Il contenitore deve essere appena abbastanza grande per contenere il logo della stessa dimensione del vecchio logo 2D.
+
+9. NON MODIFICARE:
+- logo 3D centrale
+- intro video
+- testo intro
+- galleria
+- homepage
+- menu
+- login
+- corsi
+- admin
+- chat
+- pagamenti
+
+RISULTATO FINALE:
+Il logo in alto a sinistra deve essere il nuovo logo 3D che allego ora, della stessa grandezza del vecchio logo 2D, posizionato correttamente nell’header e con la rotazione automatica già funzionante.

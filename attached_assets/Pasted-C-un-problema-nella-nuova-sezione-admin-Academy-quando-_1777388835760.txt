@@ -1,0 +1,79 @@
+C’è un problema nella nuova sezione admin “Academy”: quando creo/modifico una categoria non riesco a caricare foto e video. Esce errore:
+“Upload galleria fallito: Request failed with status 404”.
+
+Devi correggere SOLO la nuova sezione Academy, senza modificare ciò che funziona già.
+
+OBIETTIVO:
+Il caricamento immagini/video nella sezione Academy deve funzionare esattamente come funziona già per:
+- galleria
+- corsi / video corsi
+
+NON voglio caricamento tramite URL manuale.
+Voglio scegliere foto e video direttamente dalla galleria/dispositivo.
+
+MODIFICHE RICHIESTE:
+1. Nella sezione admin Academy, sostituisci i campi URL con veri upload file:
+   - immagine di copertina
+   - trailer video
+   - poster trailer, se serve
+   - immagini/video dimostrativi della categoria
+
+2. Il pulsante “Carica” deve aprire la galleria/file picker del dispositivo.
+   Deve accettare:
+   - immagini: jpg, jpeg, png, webp
+   - video: mp4, mov, webm
+
+3. Riutilizza lo stesso sistema di upload già funzionante per la galleria e per i corsi.
+   - stessa API funzionante
+   - stesso storage
+   - stessa gestione dei file
+   - stessa compressione/ottimizzazione
+   - stesso modo di salvare URL e tipo file
+
+4. Non usare endpoint inesistenti.
+   L’errore 404 indica che la sezione Academy sta chiamando un endpoint sbagliato o non creato.
+   Controlla quale endpoint usano galleria e corsi per caricare media e usa quello anche per Academy, oppure crea l’endpoint mancante con la stessa logica già esistente.
+
+IMMAGINI:
+- Le immagini caricate in Academy devono essere ottimizzate come quelle della galleria.
+- Se sono pesanti, devono essere compresse automaticamente.
+- Devono caricarsi velocemente lato cliente.
+- Devono mantenere buona qualità visiva.
+
+VIDEO:
+- I video caricati in Academy devono funzionare come i video corsi.
+- Anche se sono pesanti, devono essere gestiti con lo stesso sistema già usato per i video corsi.
+- Devono avere anteprima/copertina con i primi 2 secondi in loop.
+- La preview deve essere:
+  - muted
+  - autoplay
+  - loop
+  - playsInline
+  - preload metadata
+- Non deve comparire box nero.
+- Nel dettaglio categoria, cliccando sul video deve aprirsi il viewer con controlli video.
+
+LATO ADMIN:
+- Dopo il caricamento, l’admin deve vedere l’anteprima del file caricato.
+- Se è immagine, mostra immagine.
+- Se è video, mostra preview video.
+- Deve essere possibile rimuovere/sostituire il media.
+- Deve essere possibile caricare più immagini/video dimostrativi nella categoria.
+
+LATO CLIENTE:
+Nella pagina dettaglio categoria Academy:
+- copertina, trailer e media dimostrativi devono comparire correttamente.
+- Foto e video devono aprirsi come nella galleria.
+- I video devono aprirsi e riprodursi, non schermata nera.
+- Su mobile deve funzionare bene.
+
+IMPORTANTE:
+- Non modificare la galleria principale se già funziona.
+- Non modificare i video corsi se già funzionano.
+- Riutilizza il loro funzionamento per Academy.
+- Non cambiare grafica generale.
+- Non rompere corsi, login, notifiche, chat o acquisti.
+- Non eliminare dati esistenti.
+
+RISULTATO FINALE:
+Nella sezione admin Academy, l’admin può caricare foto e video direttamente dal dispositivo, come già succede per galleria e corsi. I file vengono ottimizzati, salvati correttamente e mostrati lato cliente con anteprime funzionanti e video apribili.

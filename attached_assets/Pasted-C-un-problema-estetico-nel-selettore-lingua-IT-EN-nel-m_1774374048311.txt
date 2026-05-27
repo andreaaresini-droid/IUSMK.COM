@@ -1,0 +1,97 @@
+C’è un problema estetico nel selettore lingua (IT / EN) nel menu del sito IUSMK.
+
+PROBLEMA
+Attualmente il selettore lingua occupa tutta la larghezza (full width) creando troppo spazio vuoto.
+Non mi piace.
+
+==================================================
+OBIETTIVO
+==================================================
+
+Voglio che il selettore lingua diventi un piccolo riquadro compatto SOLO a sinistra, dove ci sono IT / EN.
+
+Deve essere:
+- piccolo
+- compatto
+- elegante
+- allineato a sinistra
+- senza spazio vuoto inutile a destra
+
+==================================================
+COME DEVE ESSERE
+==================================================
+
+- niente full width
+- il contenitore deve adattarsi al contenuto (IT / EN)
+- tipo “pill” o piccolo box
+- larghezza automatica (fit-content)
+- padding interno equilibrato
+- IT e EN affiancati
+- lingua attiva evidenziata (come ora)
+
+Esempio comportamento:
+[ IT | EN ] piccolo box, NON barra lunga
+
+==================================================
+COSA FARE
+==================================================
+
+1. Trova il componente del language switch nel menu
+2. Rimuovi:
+   - width: 100%
+   - eventuali flex che lo allargano
+   - container che occupa tutta la riga
+
+3. Imposta:
+   - width: fit-content (o equivalente)
+   - display inline-flex o flex compatto
+   - padding contenuto
+   - border radius coerente con design
+   - allineamento a sinistra
+
+4. Mantieni:
+   - stile attuale (colori rosso/attivo)
+   - font
+   - comportamento click
+   - logica di cambio lingua
+
+==================================================
+IMPORTANTE
+==================================================
+
+NON modificare:
+- logica traduzione
+- altre parti del menu
+- layout generale
+- pulsante Dashboard
+- navbar
+- colori del sito
+
+Modifica SOLO:
+- dimensione e layout del selettore lingua
+
+==================================================
+RISULTATO FINALE
+==================================================
+
+- selettore piccolo e compatto
+- posizionato a sinistra
+- senza spazio vuoto inutile
+- visivamente più pulito e premium
+
+==================================================
+TEST
+==================================================
+
+- mobile menu → selettore compatto
+- desktop → ok
+- cambio lingua → funziona
+- nessun layout rotto
+
+==================================================
+OUTPUT
+==================================================
+
+Fammi vedere:
+- classe/componente modificato
+- cosa hai cambiato (width / display / padding)

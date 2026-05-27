@@ -1,0 +1,121 @@
+PROBLEMA VIDEO CORSI – FIX COMPLETO
+
+Il video del corso (anche da 1 ora) non si vede lato studente.
+Il player resta nero e mostra 00:00 / 00:00.
+
+Questo significa che il browser NON sta ricevendo un video valido.
+
+NON voglio modifiche estetiche. Voglio debug tecnico reale.
+
+--------------------------------------------------
+
+1. LOG URL VIDEO
+
+Mostra temporaneamente in console:
+- videoUrl
+- lesson.videoUrl
+- course.videoUrl
+
+E verifica la risposta HTTP del file video:
+- 200
+- 206
+- 403
+- 404
+- 416
+
+--------------------------------------------------
+
+2. ENDPOINT STREAMING (OBBLIGATORIO)
+
+Il video deve essere servito così:
+
+GET /api/courses/videos/:videoId/stream
+
+E deve avere questi header:
+
+Accept-Ranges: bytes
+Content-Type: video/mp4
+Content-Range: bytes start-end/total
+Content-Length corretto
+Status: 206 Partial Content
+
+Se manca questo → su iPhone NON funziona.
+
+--------------------------------------------------
+
+3. FILE VIDEO ESISTENTE
+
+Controlla che:
+- il file esista davvero sul server/storage
+- non sia corrotto
+- non sia temporaneo
+- non venga perso dopo il deploy
+- dimensione corretta (es. 1GB reale)
+
+--------------------------------------------------
+
+4. COMPATIBILITÀ VIDEO (IMPORTANTISSIMO)
+
+Il video deve essere:
+- MP4
+- Codec video: H.264
+- Codec audio: AAC
+
+Se è:
+- HEVC
+- MOV
+- codec non compatibile
+
+Safari iPhone mostra schermo nero.
+
+Se non è compatibile:
+- mostra errore chiaro
+OPPURE
+- converti automaticamente in MP4 H.264
+
+--------------------------------------------------
+
+5. GESTIONE ERRORI
+
+Se il video non è riproducibile NON lasciare schermo nero.
+
+Mostra messaggio:
+
+"Video non riproducibile. Controlla formato o caricamento."
+
+--------------------------------------------------
+
+6. TEST OBBLIGATORIO
+
+Testa con:
+- video breve MP4
+- video da 1 ora
+- iPhone Safari
+
+Verifica:
+- durata visibile
+- play funziona
+- audio funziona
+- avanti/indietro funziona
+
+--------------------------------------------------
+
+7. OUTPUT FINALE
+
+Dimmi ESATTAMENTE:
+- qual era il problema reale
+- cosa hai corretto
+- quale endpoint usa il video ora
+- se il problema era:
+  - URL
+  - Range Requests
+  - codec
+  - file non salvato
+  - permessi
+
+--------------------------------------------------
+
+IMPORTANTE:
+Il problema NON è grafico.
+Il browser non riceve un video valido.
+Fixa il backend e lo streaming.

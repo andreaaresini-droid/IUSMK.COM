@@ -1,0 +1,332 @@
+Crea un sito web premium, artistico e moderno per un barber artist di alto livello, ispirato come struttura e impatto visivo a pelleossa.com, ma adattato completamente al mondo barber / hair art / formazione professionale.
+
+OBIETTIVO DEL SITO
+Il sito deve servire a:
+1. presentare il barber artist come professionista creativo e unico
+2. mostrare i suoi tagli artistici e lavori in una gallery di forte impatto
+3. raccogliere richieste di contatto / prenotazione
+4. vendere accesso a corsi video preregistrati riservati
+5. permettere la visione dei corsi solo a chi riceve un codice dal barber dopo il pagamento
+6. rendere ogni codice non condivisibile e non riutilizzabile liberamente da altre persone
+
+STILE GENERALE
+Voglio un design molto forte, editoriale, minimal ma artistico.
+Mood: premium, urban, fashion, creativo, contemporaneo, da vero artista del capello.
+L’interfaccia deve sembrare di fascia alta, non un classico sito da parrucchiere.
+Deve comunicare esclusività, talento, formazione professionale e identità visiva potente.
+
+ISPIRAZIONE STRUTTURALE
+Prendi ispirazione dal sito pelleossa.com per:
+- menu semplice e pulito
+- home molto visiva
+- sezione presentazione artista
+- gallery immersiva
+- call to action forti
+- sezione corsi/masterclass ben separata
+Non copiare il contenuto: crea un’identità completamente originale per un barber artist.
+
+PALETTE COLORI
+Basati sull’immagine hero che caricherò come immagine principale della home.
+Usa una palette derivata da essa:
+- Lavender background: #8D8FB8
+- Royal blue: #0962D1
+- Deep navy: #0A3A79
+- Electric green: #177930
+- Magenta: #822450
+- Mustard gold: #917C11
+- Charcoal / black: #21211D
+
+REGOLE DI UTILIZZO COLORI
+- sfondi principali chiari e sofisticati su base lavender/grigio freddo
+- sezioni scure in charcoal/deep navy
+- accenti forti con royal blue, electric green, magenta e mustard
+- testo sempre super leggibile
+- pulsanti premium con hover elegante
+- evitare effetto troppo carnevalesco: i colori forti devono essere usati con equilibrio, su dettagli, highlight, bordi, CTA, micro-elementi e overlay
+
+FONT E TIPOGRAFIA
+Usa una combinazione di font molto elegante e moderna:
+- un font display forte per titoli
+- un font sans-serif pulito per testi
+Titoli grandi, editoriali, impattanti.
+Tanta cura per spaziature, gerarchie, composizione.
+
+STACK TECNOLOGICO
+Usa uno stack moderno e professionale:
+- Next.js
+- TypeScript
+- Tailwind CSS
+- Framer Motion per animazioni
+- Firebase oppure Supabase per autenticazione, database e gestione codici
+- player video protetto con streaming HLS
+- se utile, Cloudflare Stream, Mux oppure Vimeo OTT/private embedding per protezione video
+- pannello admin semplice per il barber
+
+Crea il progetto in modo ordinato, scalabile e pronto per deploy.
+
+PAGINE DEL SITO
+
+1. HOME
+Hero section full screen con:
+- immagine principale fornita da me come protagonista assoluta
+- headline forte tipo:
+  “Hair is not just a cut. It’s identity.”
+  oppure una variante originale più forte
+- sottotitolo che spiega che il barber crea tagli artistici e forma nuovi professionisti
+- CTA:
+  “Scopri i lavori”
+  “Accedi ai corsi”
+  “Contattami”
+
+Sotto la hero inserisci:
+- breve presentazione del barber artist
+- numeri/indicatori eleganti (anni esperienza, studenti formati, lavori realizzati, ecc.)
+- sezione “signature style”
+- preview gallery
+- sezione corsi/masterclass
+- recensioni
+- CTA finale contatti
+
+2. ABOUT / ARTIST
+Pagina dedicata al barber:
+- bio intensa e professionale
+- filosofia artistica
+- approccio ai tagli
+- visione del brand
+- eventuali collaborazioni/eventi/masterclass
+- foto editoriali del barber
+
+3. GALLERY / PORTFOLIO
+Pagina molto visiva con:
+- masonry grid o layout editoriale
+- filtri per categoria:
+  fade, design cut, color, freestyle, transformation, beard, academy
+- click sulle immagini per aprire lightbox elegante
+- animazioni morbide
+- possibilità futura di aggiungere video short dei lavori
+
+4. CORSI / ACADEMY
+Pagina dedicata alla formazione con:
+- presentazione academy
+- elenco corsi disponibili
+- cards corso con:
+  titolo
+  descrizione
+  livello
+  durata
+  cosa imparerai
+  requisiti
+- spiega chiaramente che i corsi sono accessibili solo tramite codice fornito dopo il pagamento diretto al barber
+- CTA per richiedere informazioni e acquistare
+
+5. ACCESSO CORSI
+Pagina con:
+- campo inserimento codice
+- eventuale login con email + codice
+- design premium
+- messaggi chiari di accesso negato / accesso approvato
+- verifica lato server, mai solo lato client
+
+6. AREA RISERVATA STUDENTE
+Dashboard privata dove chi ha un accesso valido può:
+- vedere i corsi sbloccati
+- guardare i moduli video
+- vedere progresso
+- riprendere da dove aveva lasciato
+- visualizzare data di scadenza accesso se prevista
+
+7. CONTATTI
+Pagina contatti con:
+- form richiesta
+- WhatsApp
+- Instagram
+- email
+- eventuale mappa solo se utile
+- call to action per prenotazioni e corsi
+
+FUNZIONALITÀ FONDAMENTALI DEL SISTEMA CORSI
+
+A. CODICI DI ACCESSO SICURI
+Implementa un sistema professionale di codici con queste regole:
+- ogni codice viene generato dal pannello admin
+- ogni codice è associato a:
+  corso specifico
+  nome cliente
+  email cliente
+  data di creazione
+  stato attivo/disattivo
+  eventuale scadenza
+  numero massimo di dispositivi consentiti
+  numero massimo di attivazioni
+- il codice non deve essere pubblico né facilmente intuibile
+- usare codici lunghi e casuali
+
+B. ATTIVAZIONE CODICE
+Flusso consigliato:
+1. l’utente inserisce codice + email
+2. il sistema verifica il codice lato server
+3. se valido, crea un account studente associato a quel codice
+4. il codice diventa legato a quell’utente e non può essere usato liberamente da altri
+5. eventuali tentativi con email diversa devono essere bloccati o segnalati
+
+C. ANTI-CONDIVISIONE
+Implementa protezioni forti:
+- un codice può essere legato a 1 solo account
+- massimo 1 dispositivo attivo oppure al massimo 2 se configurabile
+- salvataggio di fingerprint dispositivo / sessione
+- logout automatico da altre sessioni se entra un nuovo device non autorizzato
+- rate limiting sui tentativi di accesso
+- blocco temporaneo dopo troppi tentativi errati
+- pannello admin con log accessi: data, IP, device, browser
+- possibilità per admin di revocare l’accesso
+
+D. PROTEZIONE VIDEO
+Importante: so che non si può impedire al 100% la registrazione schermo, ma voglio il massimo delle protezioni realistiche.
+Implementa:
+- streaming protetto, non semplice file mp4 pubblico
+- URL firmate e temporanee
+- video accessibili solo in sessione autenticata
+- nessun link diretto visibile
+- disabilitare download
+- disabilitare tasto destro dove possibile
+- offuscare sorgenti lato frontend
+- watermark dinamico sopra il video con nome, email o ID utente
+- watermark leggermente trasparente e in posizione variabile
+- rilevazione base di DevTools aperti e warning
+- protezioni base contro inspect element
+- blocco embed esterni non autorizzati
+- segmenti video serviti in modo protetto
+- scadenza sessione e refresh token sicuri
+
+E. PANNELLO ADMIN
+Crea un’area admin protetta per il barber dove possa:
+- fare login admin
+- caricare immagini portfolio
+- creare, modificare ed eliminare corsi
+- caricare moduli video dei corsi
+- generare codici di accesso
+- associare codici ai clienti
+- impostare scadenze
+- vedere chi ha attivato un codice
+- vedere log accessi e attività sospette
+- disattivare o revocare un codice
+- gestire recensioni e contenuti del sito
+
+CONTENUTI DELLA HOME
+Crea testi demo molto forti e raffinati in inglese o italiano premium, adatti a un barber artist internazionale.
+Esempi di sezioni:
+- Hero statement potente
+- “Not just cuts. Direction, identity, style.”
+- “Every haircut is a visual signature.”
+- “Learn the method. Master the detail.”
+Mantieni tono esclusivo, professionale, artistico.
+
+UX/UI
+Voglio:
+- sito super responsive
+- perfetto su mobile
+- animazioni moderne ma non pesanti
+- caricamento veloce
+- microinterazioni eleganti
+- effetto wow sulla home
+- look premium da brand artistico/fashion
+
+SEO
+Imposta struttura SEO base:
+- title e meta description per ogni pagina
+- heading corretti
+- alt text immagini
+- schema base per local business / professional service / course dove utile
+- performance ottimizzate
+
+STRUTTURA TECNICA DEL PROGETTO
+Crea:
+- frontend completo
+- backend/server actions/API necessarie
+- database schema per utenti, corsi, moduli, codici, attivazioni, log accessi, gallery, recensioni
+- autenticazione sicura
+- file ben organizzati
+- commenti chiari nel codice
+- componenti riutilizzabili
+
+DATABASE MODELS SUGGERITI
+Crea almeno queste entità:
+- Admin
+- StudentUser
+- Course
+- CourseModule
+- AccessCode
+- AccessActivation
+- DeviceSession
+- VideoAsset
+- GalleryItem
+- Testimonial
+- ContactRequest
+
+ESEMPI CAMPI IMPORTANTI
+
+AccessCode:
+- id
+- code
+- courseId
+- assignedName
+- assignedEmail
+- isActive
+- maxDevices
+- maxActivations
+- expiresAt
+- boundUserId
+- createdAt
+- updatedAt
+
+DeviceSession:
+- id
+- userId
+- accessCodeId
+- ipAddress
+- userAgent
+- fingerprint
+- lastSeenAt
+- isActive
+
+AccessActivation:
+- id
+- accessCodeId
+- userId
+- activatedAt
+- firstIp
+- firstUserAgent
+- status
+
+StudentUser:
+- id
+- name
+- email
+- passwordHash o magic link auth
+- activatedCodeId
+- createdAt
+
+RICHIESTE IMPORTANTI DI IMPLEMENTAZIONE
+- non simulare soltanto il sistema: costruiscilo davvero
+- evitare fake backend
+- crea pagine funzionanti e collegate
+- prevedi dati demo
+- inserisci immagini placeholder dove mancano contenuti
+- lascia semplice sostituire testi, foto e video dal pannello admin
+- usa come hero image principale l’immagine che caricherò io
+- fai in modo che l’intera brand identity parta da quell’immagine
+
+RISULTATO FINALE DESIDERATO
+Voglio un sito che sembri il portfolio + academy esclusiva di un barber artist di alto livello, con forte impatto visivo e con una vera area corsi protetta tramite codici univoci non condivisibili facilmente.
+
+In più:
+1. genera una homepage molto bella già pronta
+2. crea tutte le pagine
+3. crea il database schema
+4. implementa il sistema codice/accesso
+5. crea un admin panel base funzionante
+6. usa contenuti demo realistici
+7. aggiungi istruzioni README per configurazione, database e deploy
+8. aggiungi anche una sezione finale “Come migliorare ulteriormente la sicurezza dei video” nel README
+
+Se alcune protezioni anti-registrazione schermo non sono tecnicamente garantibili sul web, spiegalo chiaramente nel README e implementa le migliori alternative reali disponibili.

@@ -1,0 +1,25 @@
+packages:
+  "framer-motion": "For premium smooth entrance animations, page transitions, and interactive hover states."
+  "clsx": "Utility for constructing className strings conditionally."
+  "tailwind-merge": "Utility to merge Tailwind CSS classes without style conflicts."
+  "lucide-react": "Clean, consistent icons for the UI and Admin dashboard."
+  "date-fns": "For formatting dates in the admin dashboard and access expiry."
+
+images:
+  - path: "artifacts/barber-artist/public/images/gallery-placeholder-1.png"
+    description: "High fashion editorial photo of a sharp skin fade haircut on a male model, moody dramatic studio lighting, dark background"
+    aspect_ratio: "3:4"
+  - path: "artifacts/barber-artist/public/images/gallery-placeholder-2.png"
+    description: "Close up of an intricate hair design cut, artistic geometric patterns shaved into hair, sharp lighting"
+    aspect_ratio: "1:1"
+  - path: "artifacts/barber-artist/public/images/academy-course-1.png"
+    description: "Cinematic shot of a master barber's hands holding scissors and comb, dramatic moody lighting, luxury aesthetic"
+    aspect_ratio: "16:9"
+  - path: "artifacts/barber-artist/public/images/academy-course-2.png"
+    description: "Abstract conceptual shot of hair color mixing bowls and brushes with neon lighting accents, high fashion editorial style"
+    aspect_ratio: "16:9"
+
+notes:
+  - The API structure uses `/api/auth/me` to check session state via token stored in localStorage.
+  - The app routes non-authenticated users to `/access` (students) or `/admin` (admins).
+  - Admin login requires calling `/api/auth/admin/login` and student login uses `/api/auth/login`.

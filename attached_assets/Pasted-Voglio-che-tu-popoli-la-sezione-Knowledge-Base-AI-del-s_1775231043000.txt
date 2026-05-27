@@ -1,0 +1,377 @@
+Voglio che tu popoli la sezione “Knowledge Base AI” del sito IUSMK con nuove voci utili per permettere all’assistente AI di rispondere correttamente alle domande dei clienti.
+
+IMPORTANTE:
+- Non modificare ciò che già funziona nel sito.
+- Non toccare altre sezioni.
+- Crea queste voci direttamente nella Knowledge Base AI come record separati.
+- Ogni voce deve essere:
+  - pubblicata
+  - attiva
+  - modificabile dall’admin
+- Se esiste già una voce simile, aggiornala invece di creare duplicati inutili.
+- Usa campi chiari come:
+  - title
+  - content
+  - category
+  - keywords
+  - isPublished = true
+  - isActive = true
+
+OBIETTIVO:
+L’assistente AI deve riuscire a rispondere a domande frequenti su:
+- a cosa serve il sito
+- prenotazioni
+- acquisto corsi
+- accesso account
+- registrazione
+- notifiche
+- codice corso
+- password dimenticata
+- contatti
+- sezione contatto
+- Instagram
+- email
+- menu del sito
+
+CREA QUESTE VOCI NELLA KNOWLEDGE BASE:
+
+1)
+TITLE:
+A cosa serve il sito IUSMK
+CATEGORY:
+sito
+KEYWORDS:
+sito iusmk, a cosa serve, giuseppe, barber artist, informazioni, presentazione
+CONTENT:
+Il sito IUSMK serve per mostrare chi è Giuseppe, cosa fa e per permettere agli utenti di acquistare i suoi corsi. Il sito non è un sistema di prenotazione appuntamenti.
+
+2)
+TITLE:
+Si possono prenotare appuntamenti dal sito?
+CATEGORY:
+prenotazioni
+KEYWORDS:
+prenotare, appuntamento, booking, taglio, barba, prenotazione
+CONTENT:
+No, dal sito IUSMK non è possibile effettuare prenotazioni. Il sito serve solo per mostrare chi è Giuseppe, cosa fa e per acquistare i corsi disponibili.
+
+3)
+TITLE:
+Come prenotare un appuntamento
+CATEGORY:
+prenotazioni
+KEYWORDS:
+come prenoto, appuntamento, prenotazione, taglio, barba
+CONTENT:
+Al momento il sito IUSMK non permette di prenotare appuntamenti. Se l’utente cerca una prenotazione, l’assistente deve chiarire che il sito non offre questa funzione.
+
+4)
+TITLE:
+Dove si comprano i corsi
+CATEGORY:
+corsi
+KEYWORDS:
+comprare corso, acquistare corso, corsi, dove comprare, menu corsi
+CONTENT:
+I corsi si acquistano dal sito nella sezione “Corsi” presente nel menu.
+
+5)
+TITLE:
+Come acquistare un corso
+CATEGORY:
+corsi
+KEYWORDS:
+acquisto corso, comprare corso, comprare, acquistare, corsi menu
+CONTENT:
+Per acquistare un corso bisogna entrare nella sezione “Corsi” dal menu del sito e completare l’acquisto da lì.
+
+6)
+TITLE:
+Cosa succede dopo l’acquisto di un corso
+CATEGORY:
+corsi
+KEYWORDS:
+dopo acquisto, dopo aver comprato, corso acquistato, notifiche
+CONTENT:
+Dopo aver acquistato un corso, l’utente riceverà una notifica nella sezione “Notifiche” del menu del proprio account.
+
+7)
+TITLE:
+Dove arriva il codice del corso
+CATEGORY:
+notifiche
+KEYWORDS:
+codice corso, dove arriva il codice, notifiche, sbloccare corso
+CONTENT:
+Dopo l’acquisto, il codice arriva nella sezione “Notifiche” del menu, all’interno dell’account utente.
+
+8)
+TITLE:
+A cosa serve il codice del corso
+CATEGORY:
+corsi
+KEYWORDS:
+codice corso, sbloccare corso, accesso corso, codice accesso
+CONTENT:
+Il codice ricevuto dopo l’acquisto serve per sbloccare il corso acquistato.
+
+9)
+TITLE:
+Per vedere il codice bisogna accedere all’account
+CATEGORY:
+accesso
+KEYWORDS:
+account, accedere, login, notifiche, codice corso
+CONTENT:
+Sì, per vedere la notifica con il codice del corso bisogna prima effettuare l’accesso al proprio account.
+
+10)
+TITLE:
+Come creare un account
+CATEGORY:
+account
+KEYWORDS:
+creare account, registrazione, registrarsi, accedi, registrati ora
+CONTENT:
+Per creare un account bisogna premere in alto a destra su “Accedi” e poi su “Registrati ora”.
+
+11)
+TITLE:
+Come registrarsi al sito
+CATEGORY:
+account
+KEYWORDS:
+registrati, registrazione, creare profilo, nuovo account
+CONTENT:
+Chi non ha ancora un account può registrarsi cliccando su “Accedi” in alto a destra e poi su “Registrati ora”.
+
+12)
+TITLE:
+Come accedere al proprio account
+CATEGORY:
+accesso
+KEYWORDS:
+accedi, login, entrare, account, profilo
+CONTENT:
+Per accedere al proprio account bisogna usare il tasto “Accedi” in alto a destra del sito.
+
+13)
+TITLE:
+Password dimenticata
+CATEGORY:
+password
+KEYWORDS:
+password dimenticata, reset password, recupero password, non ricordo password
+CONTENT:
+Se l’utente ha dimenticato la password, deve premere sul tasto “Password dimenticata” nella sezione “Accedi”.
+
+14)
+TITLE:
+Come resettare la password
+CATEGORY:
+password
+KEYWORDS:
+resettare password, recuperare password, email reset, link reset
+CONTENT:
+Per resettare la password bisogna entrare nella sezione “Accedi”, premere su “Password dimenticata”, inserire la propria email e attendere l’email con il link per il reset.
+
+15)
+TITLE:
+Non arriva l’email per il reset password
+CATEGORY:
+password
+KEYWORDS:
+email non arriva, reset password, spam, recupero password
+CONTENT:
+Se l’email per il reset della password non arriva, bisogna controllare anche nella cartella spam.
+
+16)
+TITLE:
+Come contattare Giuseppe
+CATEGORY:
+contatti
+KEYWORDS:
+contattare giuseppe, contatti, assistenza, supporto
+CONTENT:
+Per contattare Giuseppe non si devono usare WhatsApp o numero di telefono. Il contatto avviene solo tramite email o Instagram, oppure tramite la sezione “Contatto” nel menu del sito.
+
+17)
+TITLE:
+Si può contattare Giuseppe su WhatsApp?
+CATEGORY:
+contatti
+KEYWORDS:
+whatsapp, telefono, numero, chiamare, messaggio
+CONTENT:
+No, Giuseppe non si contatta tramite WhatsApp o numero di telefono. I contatti disponibili sono email, Instagram e la sezione “Contatto” del sito.
+
+18)
+TITLE:
+Si può chiamare Giuseppe al telefono?
+CATEGORY:
+contatti
+KEYWORDS:
+telefono, chiamare, numero, contatto telefonico
+CONTENT:
+No, il contatto telefonico non è previsto. Per contattare Giuseppe bisogna usare email, Instagram oppure la sezione “Contatto” del menu del sito.
+
+19)
+TITLE:
+Contattare Giuseppe tramite sezione Contatto
+CATEGORY:
+contatti
+KEYWORDS:
+contatto, menu contatto, richiesta, messaggio sito
+CONTENT:
+Per qualsiasi richiesta si può contattare Giuseppe anche tramite la sezione “Contatto” presente nel menu del sito.
+
+20)
+TITLE:
+Contatti ufficiali di Giuseppe
+CATEGORY:
+contatti
+KEYWORDS:
+email, instagram, contatti ufficiali, supporto
+CONTENT:
+I contatti ufficiali di Giuseppe sono email, Instagram e la sezione “Contatto” del sito.
+
+21)
+TITLE:
+Link Instagram di Giuseppe
+CATEGORY:
+contatti
+KEYWORDS:
+instagram, profilo instagram, link instagram, social
+CONTENT:
+Per contattare Giuseppe tramite Instagram usa questo link:
+[INSERIRE_LINK_INSTAGRAM_REALE]
+
+22)
+TITLE:
+Email di contatto di Giuseppe
+CATEGORY:
+contatti
+KEYWORDS:
+email, mail, contatto email, supporto email
+CONTENT:
+Per contattare Giuseppe tramite email usa questo indirizzo:
+[INSERIRE_EMAIL_REALE]
+
+23)
+TITLE:
+Cosa fare se non trovo il codice del corso
+CATEGORY:
+supporto
+KEYWORDS:
+non trovo codice, codice assente, notifiche, corso bloccato
+CONTENT:
+Se non trovi il codice del corso, controlla prima di aver effettuato l’accesso al tuo account e poi verifica la sezione “Notifiche” nel menu.
+
+24)
+TITLE:
+Dove trovare le notifiche
+CATEGORY:
+notifiche
+KEYWORDS:
+notifiche, menu notifiche, dove sono le notifiche, account
+CONTENT:
+Le notifiche si trovano nella sezione “Notifiche” del menu, dopo aver effettuato l’accesso al proprio account.
+
+25)
+TITLE:
+Bisogna avere un account per usare notifiche e codici?
+CATEGORY:
+account
+KEYWORDS:
+account notifiche, login, codice corso, accesso utente
+CONTENT:
+Sì, per visualizzare notifiche e codici bisogna essere entrati nel proprio account.
+
+26)
+TITLE:
+Il sito serve per acquistare corsi
+CATEGORY:
+corsi
+KEYWORDS:
+masterclass, corsi, formazione, acquisto corsi
+CONTENT:
+Il sito IUSMK permette agli utenti di acquistare corsi dedicati ai contenuti di Giuseppe.
+
+27)
+TITLE:
+Domande su funzioni non disponibili
+CATEGORY:
+supporto
+KEYWORDS:
+funzione non disponibile, non disponibile, prenotazione, whatsapp, telefono
+CONTENT:
+Se un utente chiede una funzione non disponibile, come prenotazioni dal sito o contatto via WhatsApp/telefono, l’assistente deve chiarire che quella funzione al momento non è prevista e indicare il metodo corretto disponibile.
+
+28)
+TITLE:
+Come risponde l’assistente sulle prenotazioni
+CATEGORY:
+supporto
+KEYWORDS:
+prenotazione, appuntamento, taglio, risposta assistente
+CONTENT:
+Se un utente chiede come prenotare, l’assistente deve rispondere chiaramente che dal sito non si effettuano prenotazioni e che il sito serve solo a mostrare chi è Giuseppe, cosa fa e a vendere i corsi.
+
+29)
+TITLE:
+Come risponde l’assistente sui contatti
+CATEGORY:
+supporto
+KEYWORDS:
+contatti assistente, email, instagram, contatto menu
+CONTENT:
+Se un utente chiede come contattare Giuseppe, l’assistente deve dire che non si usa WhatsApp o telefono, ma solo email, Instagram o la sezione “Contatto” del menu.
+
+30)
+TITLE:
+Come risponde l’assistente su login e password
+CATEGORY:
+supporto
+KEYWORDS:
+login, password, registrazione, reset, email spam
+CONTENT:
+Se un utente ha problemi di accesso, l’assistente deve spiegare:
+- come registrarsi con “Accedi” > “Registrati ora”
+- come usare “Password dimenticata”
+- che il link di reset arriva via email
+- che bisogna controllare anche la cartella spam
+
+REGOLE IMPORTANTI:
+- Tutte queste voci devono essere aggiunte davvero nella Knowledge Base AI.
+- Tutte devono essere attive e pubblicate.
+- Se mancano email e link Instagram reali, crea comunque la voce con placeholder ben visibile:
+  - [INSERIRE_EMAIL_REALE]
+  - [INSERIRE_LINK_INSTAGRAM_REALE]
+- Non inventare numero di telefono, WhatsApp o altri contatti.
+- L’assistente deve usare queste voci per rispondere alle domande dei clienti in modo chiaro e coerente.
+- L’assistente non deve dire che si può prenotare dal sito.
+- L’assistente non deve dire che si può contattare Giuseppe via WhatsApp o telefono.
+- L’assistente deve dare priorità a queste voci quando riceve domande simili.
+
+MIGLIORIA EXTRA:
+Aggiungi anche più keywords possibili per ogni voce, includendo varianti naturali come:
+- comprare corso
+- acquistare corso
+- come compro
+- come acquisto
+- come mi registro
+- non ricordo password
+- non trovo email reset
+- non trovo il codice
+- dove trovo notifiche
+- come contatto giuseppe
+- posso prenotare
+- appuntamento
+- taglio
+
+FAI ANCHE QUESTO:
+Dopo aver creato le voci, verifica che:
+- siano salvate correttamente nel database
+- siano lette dal motore della chat AI
+- siano visibili nella sezione Knowledge Base AI della dashboard
+- siano usabili subito dall’assistente
