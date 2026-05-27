@@ -2,7 +2,7 @@ import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
 import { adminsTable, studentsTable, accessCodesTable, deviceSessionsTable, studentCourseAccessTable, passwordResetTokensTable } from "@workspace/db/schema";
 import { eq, and, isNotNull, sql, lt } from "drizzle-orm";
-import { comparePassword, hashPassword, generateToken, verifyToken, generateSessionToken, simpleHash, generateSecureResetToken, hashResetToken } from "../lib/auth";
+import { comparePassword, hashPassword, generateToken, verifyToken, generateSessionToken, simpleHash, generateSecureResetToken, hashResetToken, supabaseAdmin } from "../lib/auth";
 import { requireAuth, requireAdmin, AuthRequest } from "../middlewares/authMiddleware";
 import { sendEmail, sendPasswordResetEmail } from "../lib/email";
 import { sendPushToAdmin } from "../lib/webPush";
@@ -551,8 +551,73 @@ router.get("/me", async (req: AuthRequest, res) => {
     }
   }
 
+  // Prova token Supabase Auth
+  try {
+    const { data: { user }, error } = await supabaseAdmin.auth.getUser(token);
+    if (!error && user?.email) {
+      const student = await db.query.studentsTable.findFirst({
+        where: eq(studentsTable.email, user.email.toLowerCase()),
+      });
+      if (student) {
+        res.json({
+          id: student.id,
+          name: student.name,
+          firstName: student.firstName,
+          lastName: student.lastName,
+          email: student.email,
+          role: student.role,
+        });
+        return;
+      }
+    }
+  } catch {}
+
   console.log("[SESSION ERROR] invalid or expired token");
   res.status(401).json({ error: "Unauthorized", message: "Invalid token" });
+});
+
+// ─── SUPABASE AUTH SYNC ──────────────────────────────────────────────────────
+// Chiamato dopo supabase.auth.signUp() per creare il profilo nel DB locale
+router.post("/sync", async (req, res) => {
+  const { email, firstName, lastName, supabaseUserId } = req.body;
+
+  if (!email || !firstName || !lastName) {
+    res.status(400).json({ error: "Bad Request", message: "email, firstName e lastName obbligatori" });
+    return;
+  }
+
+  try {
+    const emailLower = String(email).toLowerCase().trim();
+    const existing = await db.query.studentsTable.findFirst({
+      where: eq(studentsTable.email, emailLower),
+    });
+
+    if (existing) {
+      res.json({ id: existing.id, name: existing.name, email: existing.email, role: existing.role });
+      return;
+    }
+
+    const fullName = `${String(firstName).trim()} ${String(lastName).trim()}`;
+    const [student] = await db.insert(studentsTable).values({
+      name: fullName,
+      firstName: String(firstName).trim(),
+      lastName: String(lastName).trim(),
+      email: emailLower,
+      passwordHash: supabaseUserId || "supabase-managed",
+      role: "customer",
+    }).returning();
+
+    sendPushToAdmin({
+      title: "Nuovo cliente registrato — IUSMK",
+      body: `${fullName} (${emailLower})`,
+      url: `/admin/accounts?userId=${student.id}`,
+    }).catch(() => {});
+
+    res.status(201).json({ id: student.id, name: student.name, email: student.email, role: student.role });
+  } catch (err) {
+    console.error("[AUTH SYNC] error:", (err as any)?.message);
+    res.status(500).json({ error: "Internal Server Error", message: "Sincronizzazione account fallita" });
+  }
 });
 
 export default router;

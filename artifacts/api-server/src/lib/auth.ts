@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
+import { createClient } from "@supabase/supabase-js";
 
 const JWT_SECRET = process.env.JWT_SECRET || "barber-artist-jwt-secret-change-in-production";
 const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET || "barber-artist-admin-jwt-secret-change-in-production";
@@ -73,3 +74,9 @@ export function verifyVideoToken(token: string): VideoTokenPayload | null {
     return null;
   }
 }
+
+export const supabaseAdmin = createClient(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  { auth: { autoRefreshToken: false, persistSession: false } },
+);
