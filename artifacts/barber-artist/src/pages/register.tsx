@@ -2,17 +2,21 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { useCustomerRegister, useCurrentUser } from "@/hooks/use-auth";
+import { useCurrentUser } from "@/hooks/use-auth";
+import { supabase } from "@/lib/supabase";
+import { useQueryClient } from "@tanstack/react-query";
 import { Loader2, Eye, EyeOff, ShoppingCart } from "lucide-react";
 
 export default function Register() {
   const [, setLocation] = useLocation();
   const { data: user } = useCurrentUser();
-  const register = useCustomerRegister();
+  const queryClient = useQueryClient();
 
   const [form, setForm] = useState({ firstName: "", lastName: "", email: "", password: "", confirmPassword: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [registerPending, setRegisterPending] = useState(false);
+  const [registerError, setRegisterError] = useState("");
   const hasCourseRedirect = typeof window !== "undefined" && !!sessionStorage.getItem("checkout_redirect");
 
   useEffect(() => {
@@ -40,15 +44,42 @@ export default function Register() {
     return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
-    register.mutate({
-      firstName: form.firstName.trim(),
-      lastName: form.lastName.trim(),
-      email: form.email.trim().toLowerCase(),
-      password: form.password,
-    });
+    setRegisterPending(true);
+    setRegisterError("");
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: form.email.trim().toLowerCase(),
+        password: form.password,
+        options: {
+          data: { firstName: form.firstName.trim(), lastName: form.lastName.trim(), full_name: `${form.firstName.trim()} ${form.lastName.trim()}` },
+        },
+      });
+      if (error) {
+        setRegisterError(error.message || "Registrazione fallita");
+        return;
+      }
+      // Sync profilo nel DB locale
+      const apiBase = (import.meta.env.VITE_API_URL as string | undefined) ?? "";
+      await fetch(`${apiBase}/api/auth/sync`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: form.email.trim().toLowerCase(),
+          firstName: form.firstName.trim(),
+          lastName: form.lastName.trim(),
+          supabaseUserId: data.user?.id,
+        }),
+      }).catch(() => {}); // Non bloccare se il sync fallisce
+      await queryClient.invalidateQueries({ queryKey: ["current-user"] });
+      // redirect handled by useEffect watching user
+    } catch {
+      setRegisterError("Errore di connessione. Riprova.");
+    } finally {
+      setRegisterPending(false);
+    }
   };
 
   const inputClass = (field: string) =>
@@ -154,18 +185,18 @@ export default function Register() {
               {errors.confirmPassword && <p className="text-red-400 text-xs mt-1">{errors.confirmPassword}</p>}
             </div>
 
-            {register.error && (
+            {registerError && (
               <div className="bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3 text-red-400 text-sm">
-                {(register.error as any).message || "Registrazione fallita. Riprova."}
+                {registerError}
               </div>
             )}
 
             <button
               type="submit"
-              disabled={register.isPending}
+              disabled={registerPending}
               className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white py-4 rounded-xl font-semibold text-base transition-colors disabled:opacity-60"
             >
-              {register.isPending ? (
+              {registerPending ? (
                 <><Loader2 size={18} className="animate-spin" /> Creazione account...</>
               ) : (
                 "Registrati"

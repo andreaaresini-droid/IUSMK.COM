@@ -1,54 +1,46 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { fetchApi } from "@/lib/api-client";
+import { supabase } from "@/lib/supabase";
 import { Loader2, Eye, EyeOff, CheckCircle, XCircle } from "lucide-react";
-
-// ── Read token from URL — robust multi-method approach ───────────────────────
-// Never calls any backend endpoint at page load.
-// Token must be present in URL for the form to appear.
-function readTokenFromUrl(): string {
-  // Primary: standard query string (?token=...)
-  const searchToken = new URLSearchParams(window.location.search).get("token") ?? "";
-  if (searchToken) {
-    console.log("[RESET_PAGE] token letto da URL (search param):", searchToken.slice(0, 8) + "..., lunghezza:", searchToken.length);
-    return searchToken.replace(/\s+/g, ""); // strip any whitespace from email encoding
-  }
-
-  // Fallback: check if token is in the hash (some email clients mangle URLs)
-  // e.g. /#/reset-password?token=... or #?token=...
-  const hashPart = window.location.hash;
-  if (hashPart.includes("token=")) {
-    const hashToken = new URLSearchParams(hashPart.replace(/^#\/?/, "").replace(/^.*\?/, "?")).get("token") ?? "";
-    if (hashToken) {
-      console.log("[RESET_PAGE] token letto da URL (hash fallback):", hashToken.slice(0, 8) + "..., lunghezza:", hashToken.length);
-      return hashToken.replace(/\s+/g, "");
-    }
-  }
-
-  console.log("[RESET_PAGE] token mancante — URL search:", window.location.search, "hash:", window.location.hash);
-  return "";
-}
 
 export default function ResetPassword() {
   const [, setLocation] = useLocation();
-
-  // Token is read ONCE on component creation — no API call, no side effects
-  const rawToken = readTokenFromUrl();
-
-  if (rawToken) {
-    console.log("[RESET_PAGE] token valido: SÌ (lunghezza ok, form mostrato)");
-  } else {
-    console.log("[RESET_PAGE] token valido: NO — nessun token nell'URL");
-  }
-
+  const [mode, setMode] = useState<"loading" | "form" | "no-token">("loading");
   const [form, setForm] = useState({ password: "", confirmPassword: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    let subscription: { unsubscribe: () => void } | null = null;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+
+    // Supabase detectSessionInUrl reads the hash automatically
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        setMode("form");
+      } else {
+        // Wait for auth state change (Supabase processes hash asynchronously)
+        const { data } = supabase.auth.onAuthStateChange((event, sess) => {
+          if ((event === "SIGNED_IN" || event === "PASSWORD_RECOVERY") && sess) {
+            setMode("form");
+          }
+        });
+        subscription = data.subscription;
+        // Timeout: show error if no session after 2s
+        timer = setTimeout(() => setMode(m => m === "loading" ? "no-token" : m), 2000);
+      }
+    });
+
+    return () => {
+      subscription?.unsubscribe();
+      if (timer !== null) clearTimeout(timer);
+    };
+  }, []);
 
   const validate = () => {
     const e: Record<string, string> = {};
@@ -59,29 +51,21 @@ export default function ResetPassword() {
     return Object.keys(e).length === 0;
   };
 
-  // POST: validates AND consumes the token — only on user-initiated submit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
-
     setSubmitting(true);
     setSubmitError("");
-
-    console.log("[RESET_PAGE] submit avviato — invio token al backend, lunghezza:", rawToken.length);
-
     try {
-      await fetchApi("/auth/customer/reset-password", {
-        method: "POST",
-        body: JSON.stringify({ token: rawToken, password: form.password }),
-      }, false);
-
-      console.log("[RESET_PAGE] reset completato con successo");
+      const { error } = await supabase.auth.updateUser({ password: form.password });
+      if (error) {
+        setSubmitError("Impossibile aggiornare la password. Il link potrebbe essere scaduto.");
+        return;
+      }
       setSuccess(true);
       setTimeout(() => setLocation("/login"), 4000);
-    } catch (err: any) {
-      const msg: string = err?.message ?? "Errore durante il reset della password";
-      console.log("[RESET_PAGE] errore ricevuto dal server:", msg);
-      setSubmitError(msg);
+    } catch {
+      setSubmitError("Errore di connessione. Riprova.");
     } finally {
       setSubmitting(false);
     }
@@ -106,7 +90,13 @@ export default function ResetPassword() {
 
           <div className="bg-card border border-white/10 rounded-2xl p-8">
 
-            {/* ── Success ── */}
+            {mode === "loading" && (
+              <div className="text-center py-8">
+                <Loader2 size={32} className="animate-spin text-primary mx-auto" />
+                <p className="text-muted-foreground text-sm mt-4">Verifica in corso...</p>
+              </div>
+            )}
+
             {success && (
               <div className="text-center space-y-4">
                 <CheckCircle size={48} className="text-primary mx-auto" />
@@ -121,12 +111,11 @@ export default function ResetPassword() {
               </div>
             )}
 
-            {/* ── No token in URL ── */}
-            {!success && !rawToken && (
+            {!success && mode === "no-token" && (
               <div className="text-center space-y-4">
                 <XCircle size={48} className="text-red-400 mx-auto" />
                 <p className="text-red-400 font-medium">
-                  Il link non è valido. Usa il link ricevuto via email.
+                  Il link non è valido o è scaduto. Usa il link ricevuto via email.
                 </p>
                 <Link href="/forgot-password" className="inline-block text-sm text-primary hover:underline mt-2">
                   Richiedi un nuovo link di recupero
@@ -134,8 +123,7 @@ export default function ResetPassword() {
               </div>
             )}
 
-            {/* ── Form: token present → show form immediately, no pre-validation ── */}
-            {!success && rawToken && (
+            {!success && mode === "form" && (
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
                   <label className="text-sm text-muted-foreground mb-1 block">Nuova password</label>
@@ -157,9 +145,7 @@ export default function ResetPassword() {
                       {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </div>
-                  {fieldErrors.password && (
-                    <p className="text-red-400 text-xs mt-1">{fieldErrors.password}</p>
-                  )}
+                  {fieldErrors.password && <p className="text-red-400 text-xs mt-1">{fieldErrors.password}</p>}
                 </div>
 
                 <div>
@@ -173,9 +159,7 @@ export default function ResetPassword() {
                     autoComplete="new-password"
                     required
                   />
-                  {fieldErrors.confirmPassword && (
-                    <p className="text-red-400 text-xs mt-1">{fieldErrors.confirmPassword}</p>
-                  )}
+                  {fieldErrors.confirmPassword && <p className="text-red-400 text-xs mt-1">{fieldErrors.confirmPassword}</p>}
                 </div>
 
                 {submitError && (

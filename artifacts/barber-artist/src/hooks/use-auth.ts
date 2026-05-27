@@ -3,11 +3,24 @@ import { fetchApi, fetchApiOptional } from "@/lib/api-client";
 import { getDeviceFingerprint } from "@/lib/device-fingerprint";
 import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/lib/supabase";
 
 export function useCurrentUser() {
   return useQuery({
     queryKey: ["current-user"],
-    queryFn: () => fetchApiOptional<any>("/auth/me"),
+    queryFn: async () => {
+      // Prova prima la sessione Supabase
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.access_token) {
+        const apiBase = (import.meta.env.VITE_API_URL as string | undefined) ?? "";
+        const res = await fetch(`${apiBase}/api/auth/me`, {
+          headers: { "Authorization": `Bearer ${session.access_token}` },
+        });
+        if (res.ok) return res.json();
+      }
+      // Fallback: JWT custom (student code-login)
+      return fetchApiOptional<any>("/auth/me");
+    },
     retry: false,
     staleTime: 5 * 60 * 1000,
   });
@@ -122,7 +135,10 @@ export function useLogout() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () => fetchApiOptional("/auth/logout", { method: "POST" }),
+    mutationFn: async () => {
+      await supabase.auth.signOut().catch(() => {});
+      await fetchApiOptional("/auth/logout", { method: "POST" });
+    },
     onSettled: () => {
       const role = queryClient.getQueryData<any>(["current-user"])?.role;
       localStorage.removeItem("barber_artist_token");
