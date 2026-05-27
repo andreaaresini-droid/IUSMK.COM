@@ -6,8 +6,8 @@ import fs from "fs";
 import router from "./routes/index.js";
 import { logger } from "./lib/logger.js";
 import { UPLOADS_DIR } from "./lib/paths.js";
-// Storage: Cloudinary (le immagini/video hanno URL Cloudinary diretti nel DB)
-// Pagamenti: SumUp payment links (Stripe rimosso)
+// Storage: Supabase Storage (immagini/video hanno URL Supabase nel DB)
+// Pagamenti: SumUp (Checkout API + webhook auto codice accesso)
 
 try {
   if (!fs.existsSync(UPLOADS_DIR)) {
@@ -45,9 +45,9 @@ app.use("/api/sumup/webhook", express.raw({ type: "application/json" }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// /api/storage/objects — endpoint legacy (i nuovi upload usano URL Cloudinary diretti)
+// /api/storage/objects — endpoint legacy
 app.use("/api/storage/objects", (_req, res) => {
-  res.status(404).json({ error: "Not Found", message: "Questo file non è più disponibile. Le nuove immagini usano URL Cloudinary diretti." });
+  res.status(404).json({ error: "Not Found", message: "File non più disponibile tramite questa API." });
 });
 
 const VIDEO_EXTENSIONS = [".mp4", ".webm", ".mov", ".avi", ".mkv", ".m4v"];
@@ -63,11 +63,11 @@ app.use("/api/uploads", (req, res, next) => {
 // ── Public gallery video streaming ──────────────────────────────────────────
 app.use("/api/gallery/video", (req, res) => {
   const videoUrl = req.path.replace(/^\//, "");
-  if (videoUrl.startsWith("https://res.cloudinary.com/")) {
+  if (videoUrl.startsWith("https://")) {
     res.redirect(302, videoUrl);
     return;
   }
-  res.status(404).json({ error: "Not Found", message: "Video non disponibile. I nuovi video usano URL Cloudinary diretti." });
+  res.status(404).json({ error: "Not Found", message: "Video non disponibile." });
 });
 
 app.use("/api", router);

@@ -10,8 +10,8 @@ const UPLOADS_DIR = path.resolve(__dirname, "../../uploads");
 const router = Router();
 
 // ── Main streaming endpoint ───────────────────────────────────────────────────
-// Cloudinary videos → 302 redirect all'URL Cloudinary (il browser parla direttamente con CDN)
-// Local disk        → server-side byte-range proxy (video legacy in sviluppo)
+// Supabase Storage / URL remoti → 302 redirect diretto (il browser parla direttamente con CDN)
+// Local disk                    → server-side byte-range proxy (video legacy in sviluppo)
 router.get("/stream", async (req, res) => {
   const { token } = req.query as { token?: string };
 
@@ -32,8 +32,8 @@ router.get("/stream", async (req, res) => {
     return;
   }
 
-  // Cloudinary URL (nuovo sistema)
-  if (videoPath.startsWith("https://res.cloudinary.com/")) {
+  // URL remoto: Supabase Storage o Cloudinary legacy → 302 redirect diretto
+  if (videoPath.startsWith("https://") || videoPath.startsWith("http://")) {
     res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, private");
     res.redirect(302, videoPath);
     return;
