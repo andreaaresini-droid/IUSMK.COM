@@ -27,8 +27,12 @@ const SORT_OPTIONS = [
 ];
 
 function extractLinkId(url: string): string {
-  const m = url.match(/plink_[a-zA-Z0-9]+/);
-  return m ? m[0] : "";
+  // Estrae l'ID da URL SumUp tipo: https://pay.sumup.com/b2c/QSTAKM7K
+  const m = url.match(/pay\.sumup\.com\/b2c\/([A-Z0-9]+)/i);
+  if (m) return m[1];
+  // Fallback: ultima parte del path
+  const parts = url.replace(/\/$/, "").split("/");
+  return parts[parts.length - 1] || "";
 }
 
 function LinkModal({ link, onClose }: { link: PaymentLink | null; onClose: () => void }) {
@@ -42,7 +46,7 @@ function LinkModal({ link, onClose }: { link: PaymentLink | null; onClose: () =>
   const [saving, setSaving] = useState(false);
 
   function handleUrlBlur(url: string) {
-    if (!form.paymentLinkId && url.includes("plink_")) {
+    if (!form.paymentLinkId && url.includes("sumup.com")) {
       setForm(f => ({ ...f, paymentLinkId: extractLinkId(url) }));
     }
   }
@@ -90,7 +94,7 @@ function LinkModal({ link, onClose }: { link: PaymentLink | null; onClose: () =>
             <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1.5">URL Payment Link *</label>
             <input
               className="w-full bg-background border border-white/10 text-white px-4 py-2.5 rounded focus:outline-none focus:border-primary placeholder-muted-foreground/40"
-              placeholder="https://buy.stripe.com/..."
+              placeholder="https://pay.sumup.com/b2c/..."
               value={form.paymentLinkUrl}
               onChange={e => setForm(f => ({ ...f, paymentLinkUrl: e.target.value }))}
               onBlur={e => handleUrlBlur(e.target.value)}
@@ -99,14 +103,14 @@ function LinkModal({ link, onClose }: { link: PaymentLink | null; onClose: () =>
           </div>
 
           <div>
-            <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1.5">ID Payment Link * <span className="text-primary font-mono">(plink_...)</span></label>
+            <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1.5">ID Payment Link * <span className="text-primary font-mono">(ID SumUp)</span></label>
             <input
               className="w-full bg-background border border-white/10 text-white px-4 py-2.5 rounded focus:outline-none focus:border-primary placeholder-muted-foreground/40 font-mono"
-              placeholder="plink_1ABC..."
+              placeholder="ID link SumUp (es. QSTAKM7K)"
               value={form.paymentLinkId}
               onChange={e => setForm(f => ({ ...f, paymentLinkId: e.target.value.trim() }))}
             />
-            <p className="text-muted-foreground/50 text-xs mt-1">Stripe Dashboard → Payment Links → seleziona il link → copia ID dall'URL.</p>
+            <p className="text-muted-foreground/50 text-xs mt-1">SumUp Dashboard → Payment Links → apri il link → copia l'ID dall'URL.</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -220,7 +224,7 @@ export default function AdminPaymentLinks() {
                 Link Pagamenti
               </h1>
               <p className="text-muted-foreground text-sm mt-1">
-                Gestisci i link Stripe. Associali ai corsi per attivare il webhook automatico.
+                Gestisci i link SumUp. Associali ai corsi per il pagamento tramite SumUp.
               </p>
             </div>
             <button
@@ -236,7 +240,7 @@ export default function AdminPaymentLinks() {
           <div className="bg-primary/8 border border-primary/20 rounded-lg p-4 mb-5 text-sm text-muted-foreground">
             <p className="font-semibold text-white mb-1">Come funziona?</p>
             <ol className="space-y-1 list-decimal list-inside text-xs">
-              <li>Aggiungi qui i tuoi Payment Link Stripe (URL + ID).</li>
+              <li>Aggiungi qui i tuoi Payment Link SumUp (URL + ID).</li>
               <li>Quando crei o modifichi un corso, seleziona il link dalla lista.</li>
               <li>Al pagamento, il webhook trova il corso tramite l'ID e assegna automaticamente il codice accesso.</li>
             </ol>
@@ -295,7 +299,7 @@ export default function AdminPaymentLinks() {
             <div className="text-center py-20 text-muted-foreground border border-dashed border-white/10 rounded-lg">
               <Link2 size={40} className="mx-auto mb-3 opacity-20" />
               <p className="font-medium">Nessun link salvato</p>
-              <p className="text-sm mt-1 opacity-60">Aggiungi il primo link Payment Link Stripe</p>
+              <p className="text-sm mt-1 opacity-60">Aggiungi il primo link Payment Link SumUp</p>
             </div>
           ) : filtered.length === 0 ? (
             <div className="text-center py-16 text-muted-foreground border border-dashed border-white/10 rounded-lg">
@@ -334,7 +338,7 @@ export default function AdminPaymentLinks() {
                           title="Apri link"
                         >
                           <ExternalLink size={11} />
-                          buy.stripe.com
+                          pay.sumup.com
                         </a>
                       </div>
                       {link.notes && (

@@ -57,7 +57,7 @@ export default function Checkout() {
     setSubmitting(true);
     try {
       const token = localStorage.getItem("barber_artist_token");
-      const res = await fetch("/api/stripe/checkout", {
+      const res = await fetch("/api/sumup/checkout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -67,7 +67,7 @@ export default function Checkout() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || "Errore durante il checkout");
+        setError(data.error || "Errore durante il pagamento");
         setSubmitting(false);
         return;
       }
@@ -78,7 +78,7 @@ export default function Checkout() {
     }
   };
 
-  const pageLoading = loading || userLoading || (isCustomer && ownedLoading);
+  const pageLoading = loading || userLoading || (isLoggedInUser && ownedLoading);
 
   if (pageLoading) {
     return (
@@ -209,14 +209,14 @@ export default function Checkout() {
               className="w-full flex items-center justify-center gap-3 bg-primary hover:bg-primary/90 text-white py-4 rounded-xl font-semibold text-base transition-colors disabled:opacity-60"
             >
               {submitting ? (
-                <><Loader2 size={18} className="animate-spin" /> Reindirizzamento a Stripe...</>
+                <><Loader2 size={18} className="animate-spin" /> Reindirizzamento a SumUp...</>
               ) : (
-                <><CreditCard size={18} /> Paga €{course.price?.toFixed(2)} con Stripe</>
+                <><CreditCard size={18} /> Paga €{course.price?.toFixed(2)} con SumUp</>
               )}
             </button>
 
             <p className="text-center text-xs text-muted-foreground">
-              Pagamento sicuro tramite Stripe. Se hai un codice sconto, inseriscilo direttamente nel checkout Stripe.
+              Pagamento sicuro tramite SumUp. Dopo il pagamento riceverai il codice di accesso via notifica.
             </p>
           </form>
         </div>
