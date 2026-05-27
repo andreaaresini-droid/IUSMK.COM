@@ -49,3 +49,11 @@ Thumbs.db
 # Replit
 .cache/
 .local/
+
+# Environment variables
+.env
+.env.local
+*.local
+
+# Uploads
+uploads/
