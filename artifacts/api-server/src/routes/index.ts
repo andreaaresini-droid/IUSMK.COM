@@ -11,7 +11,6 @@ import adminRouter from "./admin.js";
 import uploadRouter from "./upload.js";
 import studentRouter from "./student.js";
 import videoRouter from "./video.js";
-import stripeRouter from "./stripe.js";
 import customerRouter from "./customer.js";
 import aiRouter from "./ai.js";
 import adminAiRouter from "./admin-ai.js";
@@ -31,7 +30,6 @@ router.use("/contact", contactRouter);
 router.use("/admin", adminRouter);
 router.use("/upload", uploadRouter);
 router.use("/video", videoRouter);
-router.use("/stripe", stripeRouter);
 router.use("/ai", aiRouter);
 router.use("/admin/ai", adminAiRouter);
 
