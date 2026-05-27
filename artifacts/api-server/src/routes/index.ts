@@ -12,6 +12,7 @@ import uploadRouter from "./upload.js";
 import studentRouter from "./student.js";
 import videoRouter from "./video.js";
 import customerRouter from "./customer.js";
+import sumupRouter from "./sumup.js";
 import aiRouter from "./ai.js";
 import adminAiRouter from "./admin-ai.js";
 
@@ -30,6 +31,7 @@ router.use("/contact", contactRouter);
 router.use("/admin", adminRouter);
 router.use("/upload", uploadRouter);
 router.use("/video", videoRouter);
+router.use("/sumup", sumupRouter);
 router.use("/ai", aiRouter);
 router.use("/admin/ai", adminAiRouter);
 

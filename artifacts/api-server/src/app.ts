@@ -40,6 +40,8 @@ app.use(
   }),
 );
 app.use(cors());
+// Raw body per SumUp webhook (deve stare PRIMA di express.json())
+app.use("/api/sumup/webhook", express.raw({ type: "application/json" }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
