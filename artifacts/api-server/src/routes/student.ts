@@ -9,7 +9,7 @@ import {
   coursesTable,
   videoDisclaimerAcksTable,
 } from "@workspace/db/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, asc } from "drizzle-orm";
 import { requireAuth, AuthRequest } from "../middlewares/authMiddleware.js";
 import { generateVideoToken } from "../lib/auth.js";
 
@@ -268,4 +268,4 @@ router.post("/progress", async (req: AuthRequest, res) => {
   }
 });
 
-export default router;
+export default router;
