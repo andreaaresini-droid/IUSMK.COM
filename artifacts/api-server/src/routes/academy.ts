@@ -49,4 +49,6 @@ router.get("/:categoryId", async (req, res) => {
     req.log.error({ err }, "Get academy category error");
     res.status(500).json({ error: "Internal Server Error" });
   }
-});
+});
+
+export default router;

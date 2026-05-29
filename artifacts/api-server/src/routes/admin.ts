@@ -2221,3 +2221,5 @@ router.get("/broadcast/accounts", async (req: AuthRequest, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+export default router;
