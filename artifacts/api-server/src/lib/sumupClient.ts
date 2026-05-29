@@ -1,5 +1,13 @@
 import crypto from "crypto";
 
+// Local interface to work around @types/node Response being empty with TypeScript 5.9+
+interface HttpResponse {
+  readonly ok: boolean;
+  readonly status: number;
+  text(): Promise<string>;
+  json(): Promise<unknown>;
+}
+
 const SUMUP_API_BASE = "https://api.sumup.com";
 const SUMUP_API_KEY = process.env.SUMUP_API_KEY!;
 const SUMUP_MERCHANT_EMAIL = process.env.SUMUP_MERCHANT_EMAIL!;
@@ -35,7 +43,7 @@ export async function createSumUpCheckout(params: SumUpCheckoutParams): Promise<
       description: params.description,
       redirect_url: params.redirectUrl,
     }),
-  });
+  }) as unknown as HttpResponse;
 
   if (!res.ok) {
     const err = await res.text();
@@ -55,14 +63,4 @@ export function verifySumUpWebhookSignature(
     .digest("hex");
   try {
     return crypto.timingSafeEqual(
-      Buffer.from(expected, "hex"),
-      Buffer.from(signatureHeader.replace("sha256=", ""), "hex"),
-    );
-  } catch {
-    return false;
-  }
-}
-
-export function isSumUpConfigured(): boolean {
-  return !!(SUMUP_API_KEY && SUMUP_MERCHANT_EMAIL && SUMUP_WEBHOOK_SECRET);
-}
+      Buffer.from(expe
