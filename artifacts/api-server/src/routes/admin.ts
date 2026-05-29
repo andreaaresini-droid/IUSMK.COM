@@ -46,12 +46,12 @@ router.get("/stats", async (req: AuthRequest, res) => {
 router.get("/academy-categories", async (req: AuthRequest, res) => {
   try {
     const cats = await db.query.academyCategoriesTable.findMany({
-      orderBy: (c, { asc }) => [asc(c.orderIndex), asc(c.id)],
+      orderBy: [asc(academyCategoriesTable.orderIndex), asc(academyCategoriesTable.id)],
     });
     // Attach course count per category
     const withCounts = await Promise.all(cats.map(async (cat) => {
       const courses = await db.query.coursesTable.findMany({
-        where: (c, { eq, and }) => and(eq(c.academyCategoryId, cat.id), eq(c.isArchived, false)),
+        where: and(eq(coursesTable.academyCategoryId, cat.id), eq(coursesTable.isArchived, false)),
         columns: { id: true, title: true, isPublished: true, price: true, thumbnailUrl: true },
       });
       return { ...cat, courses };
@@ -168,13 +168,13 @@ router.get("/courses", async (req: AuthRequest, res) => {
       where: showArchived
         ? eq(coursesTable.isArchived, true)
         : eq(coursesTable.isArchived, false),
-      orderBy: (c, { desc: d }) => [d(c.createdAt)],
+      orderBy: [desc(coursesTable.createdAt)],
     });
 
     const result = await Promise.all(courses.map(async (course) => {
       const modules = await db.query.courseModulesTable.findMany({
         where: eq(courseModulesTable.courseId, course.id),
-        orderBy: (m, { asc }) => [asc(m.orderIndex)],
+        orderBy: [asc(courseModulesTable.orderIndex)],
       });
       const [activeCodes] = await db.select({ count: count() }).from(accessCodesTable)
         .where(and(eq(accessCodesTable.courseId, course.id), eq(accessCodesTable.isActive, true)));
@@ -448,7 +448,7 @@ router.delete("/courses/:courseId/modules/:moduleId", async (req: AuthRequest, r
 router.get("/access-codes", async (req: AuthRequest, res) => {
   try {
     const codes = await db.query.accessCodesTable.findMany({
-      orderBy: (c, { desc: d }) => [d(c.createdAt)],
+      orderBy: [desc(accessCodesTable.createdAt)],
     });
 
     const result = await Promise.all(codes.map(async (code) => {
@@ -794,7 +794,7 @@ router.delete("/gallery/:itemId", async (req: AuthRequest, res) => {
 
 router.get("/gallery/categories", async (req: AuthRequest, res) => {
   try {
-    const cats = await db.query.galleryCategoriesTable.findMany({ orderBy: (c, { asc }) => [asc(c.orderIndex)] });
+    const cats = await db.query.galleryCategoriesTable.findMany({ orderBy: [asc(galleryCategoriesTable.orderIndex)] });
     res.json(cats);
   } catch (err) {
     req.log.error({ err }, "Admin list gallery categories error");
@@ -915,7 +915,7 @@ router.get("/notifications/unread-count", async (req: AuthRequest, res) => {
 
 router.get("/contact-requests", async (req: AuthRequest, res) => {
   try {
-    const requests = await db.query.contactRequestsTable.findMany({ orderBy: (c, { desc: d }) => [d(c.createdAt)] });
+    const requests = await db.query.contactRequestsTable.findMany({ orderBy: [desc(contactRequestsTable.createdAt)] });
     res.setHeader("Cache-Control", "no-store");
     res.json(requests);
   } catch (err) {
@@ -1015,7 +1015,7 @@ router.get("/stripe/diagnostics", async (_req: AuthRequest, res) => {
 router.get("/discount-codes", async (req: AuthRequest, res) => {
   try {
     const codes = await db.query.discountCodesTable.findMany({
-      orderBy: (c, { desc: d }) => [d(c.createdAt)],
+      orderBy: [desc(discountCodesTable.createdAt)],
     });
     res.json(codes);
   } catch (err) {
@@ -1341,7 +1341,7 @@ router.get("/accounts/:studentId", async (req: AuthRequest, res) => {
 
     const codes = await db.query.accessCodesTable.findMany({
       where: or(eq(accessCodesTable.assignedEmail, student.email), eq(accessCodesTable.boundUserId, id)),
-      orderBy: (c, { desc: d }) => [d(c.createdAt)],
+      orderBy: [desc(accessCodesTable.createdAt)],
     });
     const codesEnriched = await Promise.all(codes.map(async (c) => {
       const course = await db.query.coursesTable.findFirst({ where: eq(coursesTable.id, c.courseId) });
@@ -2221,5 +2221,3 @@ router.get("/broadcast/accounts", async (req: AuthRequest, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
-export default router;

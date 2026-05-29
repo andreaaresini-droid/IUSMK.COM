@@ -10,7 +10,7 @@ const PAGE_SIZE = 12;
 router.get("/categories", async (_req, res) => {
   try {
     const cats = await db.query.galleryCategoriesTable.findMany({
-      orderBy: (c, { asc }) => [asc(c.orderIndex)],
+      orderBy: [asc(galleryCategoriesTable.orderIndex)],
     });
     res.json(cats);
   } catch (err) {
@@ -51,4 +51,4 @@ router.get("/", async (req, res) => {
   }
 });
 
-export default router;
+export default rout

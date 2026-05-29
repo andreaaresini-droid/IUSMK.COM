@@ -9,8 +9,8 @@ const router: IRouter = Router();
 router.get("/", async (req, res) => {
   try {
     const categories = await db.query.academyCategoriesTable.findMany({
-      where: (c, { eq }) => eq(c.isActive, true),
-      orderBy: (c, { asc }) => [asc(c.orderIndex), asc(c.id)],
+      where: eq(academyCategoriesTable.isActive, true),
+      orderBy: [asc(academyCategoriesTable.orderIndex), asc(academyCategoriesTable.id)],
     });
     res.json(categories);
   } catch (err) {
@@ -41,7 +41,7 @@ router.get("/:categoryId", async (req, res) => {
         eq(coursesTable.isPublished, true),
         eq(coursesTable.isArchived, false),
       ),
-      orderBy: (c, { asc }) => [asc(c.id)],
+      orderBy: [asc(coursesTable.id)],
     });
 
     res.json({ ...category, courses });
@@ -49,6 +49,4 @@ router.get("/:categoryId", async (req, res) => {
     req.log.error({ err }, "Get academy category error");
     res.status(500).json({ error: "Internal Server Error" });
   }
-});
-
-export default router;
+});

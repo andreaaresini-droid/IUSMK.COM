@@ -50,7 +50,7 @@ router.get("/courses", async (req: AuthRequest, res) => {
 
         let modules = await db.query.courseModulesTable.findMany({
           where: eq(courseModulesTable.courseId, course.id),
-          orderBy: (m, { asc }) => [asc(m.orderIndex)],
+          orderBy: [asc(courseModulesTable.orderIndex)],
         });
 
         if (modules.length === 0 && course.videoUrl) {
@@ -268,4 +268,4 @@ router.post("/progress", async (req: AuthRequest, res) => {
   }
 });
 
-export default router;
+export default router;
