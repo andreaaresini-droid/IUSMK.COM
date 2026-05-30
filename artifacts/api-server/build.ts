@@ -41,10 +41,20 @@ const allowlist = [
   "zod-validation-error",
 ];
 
+// Resolve workspace packages directly to their TypeScript source,
+// bypassing pnpm symlinks which Vercel may not set up before esbuild runs.
+const workspaceAlias: Record<string, string> = {
+  "@workspace/api-zod": path.resolve(__dirname, "../../lib/api-zod/src/index.ts"),
+  "@workspace/db": path.resolve(__dirname, "../../lib/db/src/index.ts"),
+  "@workspace/db/schema": path.resolve(__dirname, "../../lib/db/src/schema/index.ts"),
+  "@workspace/integrations-openai-ai-server": path.resolve(__dirname, "../../lib/integrations-openai-ai-server/src/index.ts"),
+};
+
 const sharedEsbuildOptions = {
   platform: "node" as const,
   bundle: true,
   format: "cjs" as const,
+  alias: workspaceAlias,
   // Shim import.meta.url for CJS bundles
   banner: { js: 'const __importMetaUrl = require("url").pathToFileURL(__filename).href;' },
   define: {
