@@ -85,8 +85,10 @@ async function setupWorkspacePackages() {
       await esbuild({
         entryPoints: [tsFile],
         outfile: outFile,
-        bundle: true,      // bundle local relative imports (./generated/*, etc.)
-        packages: "external", // keep npm packages (zod, drizzle-orm, ...) as require()
+        bundle: true,      // bundle everything: local imports AND npm deps
+        // No external packages — make each pre-compiled file fully self-contained.
+        // npm packages like zod are NOT in the Lambda's node_modules (they are
+        // bundled inside api/index.js), so we must inline them here too.
         format: "cjs",
         platform: "node",
         logLevel: "silent",
