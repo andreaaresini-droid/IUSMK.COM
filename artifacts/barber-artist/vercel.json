@@ -3,6 +3,10 @@
   "buildCommand": "pnpm run build",
   "outputDirectory": "dist",
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ]
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "installCommand": "pnpm install --no-frozen-lockfile"
 }
