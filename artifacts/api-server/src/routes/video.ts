@@ -1,10 +1,8 @@
 import { Router } from "express";
 import path from "path";
 import fs from "fs";
-import { fileURLToPath } from "url";
 import { verifyVideoToken } from "../lib/auth.js";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const UPLOADS_DIR = path.resolve(__dirname, "../../uploads");
 
 const router = Router();
