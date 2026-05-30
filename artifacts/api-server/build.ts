@@ -1,6 +1,5 @@
 import path from "path";
 import { fileURLToPath } from "url";
-import { execSync } from "child_process";
 import { build as esbuild } from "esbuild";
 import { rm, readFile } from "fs/promises";
 
@@ -75,22 +74,7 @@ const sharedEsbuildOptions = {
   },
 };
 
-function buildLibDeclarations() {
-  const root = path.resolve(__dirname, "../..");
-  const libs = ["lib/db", "lib/api-zod", "lib/integrations-openai-ai-server"];
-  for (const lib of libs) {
-    const libDir = path.join(root, lib);
-    console.log(`generating declarations: ${lib}`);
-    execSync(`pnpm exec tsc --build "${libDir}"`, {
-      cwd: root,
-      stdio: "inherit",
-    });
-  }
-}
-
 async function buildAll() {
-  buildLibDeclarations();
-
   const distDir = path.resolve(__dirname, "dist");
   await rm(distDir, { recursive: true, force: true });
 
