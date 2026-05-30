@@ -91,25 +91,34 @@ async function setupWorkspacePackages() {
         logLevel: "silent",
       });
 
+      // Create a real .d.ts alongside the .js so TypeScript finds types.
+      // We re-export from the original .ts source (path without extension);
+      // TypeScript follows this relative import, finds the .ts file, and
+      // gets proper types. skipLibCheck:true means the .d.ts itself is not
+      // type-checked — it just acts as a pointer.
+      const dtsFile = outFile.replace(/\.js$/, ".d.ts");
+      const relToSrc = path.relative(pkgDir, tsFile)
+        .replace(/\\/g, "/")
+        .replace(/\.ts$/, "");
+      await writeFile(dtsFile, `export * from "${relToSrc}";
+`);
+
       exportsMap[subpath] = "./" + rel;
     }
 
-    // Write a package.json that uses the compiled JS for runtime but points
-    // TypeScript back to the original .ts source for type checking.
-    // The "types" field and the "types" exports condition both tell tsc where
-    // to find the declarations so TS7016 does not fire.
-    const mainTsFile = Object.values(exports)[0]; // the "." entry TS source
-    const typesRelPath = path.relative(pkgDir, mainTsFile).replace(/\\/g, "/");
+    // Write a package.json that uses the compiled JS for runtime and points
+    // TypeScript to the generated .d.ts stubs (which re-export from the
+    // original TS source) so tsc can find types without TS7016.
     const structuredExports: Record<string, unknown> = {};
     for (const [subpath, jsPath] of Object.entries(exportsMap)) {
-      const subTsFile = exports[subpath];
-      const subTypesRel = path.relative(pkgDir, subTsFile).replace(/\\/g, "/");
-      structuredExports[subpath] = { types: subTypesRel, default: jsPath };
+      // .d.ts stub sits alongside the .js file
+      const dtsEntry = jsPath.replace(/\.js$/, ".d.ts");
+      structuredExports[subpath] = { types: dtsEntry, default: jsPath };
     }
     await writeFile(
       path.join(pkgDir, "package.json"),
       JSON.stringify(
-        { name: pkgName, main: "./index.js", types: typesRelPath, exports: structuredExports },
+        { name: pkgName, main: "./index.js", types: "./index.d.ts", exports: structuredExports },
         null,
         2,
       ),
