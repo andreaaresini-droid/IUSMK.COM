@@ -1,15 +1,12 @@
 import path from "path";
 import { fileURLToPath } from "url";
 import { build as esbuild } from "esbuild";
-import { rm, readFile } from "fs/promises";
+import { rm, readFile, writeFile, mkdir } from "fs/promises";
 import { readFileSync } from "fs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// server deps to bundle to reduce openat(2) syscalls
-// which helps cold start times without risking some
-// packages that are not bundle compatible
 const allowlist = [
   "@google/generative-ai",
   "@supabase/supabase-js",
@@ -41,27 +38,93 @@ const allowlist = [
   "zod-validation-error",
 ];
 
-// Map every @workspace/* import directly to its TypeScript source so that
-// esbuild bundles it inline — bypassing pnpm symlinks that may be broken
-// (or point outside the Lambda root) in the Vercel runtime.
-//
-// Using esbuild's built-in 'alias' option (exact-match substitution) rather
-// than a plugin, so there is no ambiguity about resolution order.
-const workspaceAlias: Record<string, string> = {
-  "@workspace/api-zod": path.resolve(__dirname, "../../lib/api-zod/src/index.ts"),
-  "@workspace/db": path.resolve(__dirname, "../../lib/db/src/index.ts"),
-  "@workspace/db/schema": path.resolve(__dirname, "../../lib/db/src/schema/index.ts"),
-  "@workspace/integrations-openai-ai-server": path.resolve(__dirname, "../../lib/integrations-openai-ai-server/src/index.ts"),
+// Workspace packages to pre-compile.
+// key = npm package name, value = map of export subpath -> absolute TS source file
+const WORKSPACE_PACKAGES: Record<string, Record<string, string>> = {
+  "@workspace/api-zod": {
+    ".": path.resolve(__dirname, "../../lib/api-zod/src/index.ts"),
+  },
+  "@workspace/db": {
+    ".": path.resolve(__dirname, "../../lib/db/src/index.ts"),
+    "./schema": path.resolve(__dirname, "../../lib/db/src/schema/index.ts"),
+  },
+  "@workspace/integrations-openai-ai-server": {
+    ".": path.resolve(__dirname, "../../lib/integrations-openai-ai-server/src/index.ts"),
+  },
 };
 
-console.log("[build] workspace aliases:", Object.keys(workspaceAlias));
+/**
+ * Replace every @workspace/* pnpm symlink with a REAL directory containing
+ * the package compiled to CJS JavaScript.  This means:
+ *
+ *  (a) esbuild can bundle the package even without the alias option
+ *  (b) if a require(@workspace/...) somehow survives into the final bundle,
+ *      Node.js can load the compiled JS at runtime without needing .ts support
+ */
+async function setupWorkspacePackages() {
+  console.log("[build] pre-compiling workspace packages...");
+
+  for (const [pkgName, exports] of Object.entries(WORKSPACE_PACKAGES)) {
+    // node_modules/@workspace/api-zod  (or db, etc.)
+    const parts = pkgName.split("/"); // ["@workspace", "api-zod"]
+    const pkgDir = path.resolve(__dirname, "node_modules", ...parts);
+
+    // Remove the pnpm symlink (or whatever is there) and create a real dir
+    await rm(pkgDir, { recursive: true, force: true });
+    await mkdir(pkgDir, { recursive: true });
+
+    const exportsMap: Record<string, string> = {};
+
+    for (const [subpath, tsFile] of Object.entries(exports)) {
+      // subpath "."         -> index.js
+      // subpath "./schema"  -> schema/index.js
+      const rel = subpath === "." ? "index.js" : subpath.replace(/^\.\//g, "") + ".js";
+      const outFile = path.join(pkgDir, rel);
+      await mkdir(path.dirname(outFile), { recursive: true });
+
+      await esbuild({
+        entryPoints: [tsFile],
+        outfile: outFile,
+        bundle: false,   // transpile TS -> JS only; no bundling of deps
+        format: "cjs",
+        platform: "node",
+        logLevel: "silent",
+      });
+
+      exportsMap[subpath] = "./" + rel;
+    }
+
+    // Write a package.json that uses the compiled JS (not TS source)
+    await writeFile(
+      path.join(pkgDir, "package.json"),
+      JSON.stringify(
+        { name: pkgName, main: "./index.js", exports: exportsMap },
+        null,
+        2,
+      ),
+    );
+
+    console.log("[build]   compiled:", pkgName, "->", Object.values(exportsMap).join(", "));
+  }
+}
+
+// Also alias workspace imports in esbuild so it bundles the TS source directly,
+// avoiding an extra JS->JS roundtrip.  This is an optimisation on top of the
+// pre-compiled fallback above.
+const workspaceAlias: Record<string, string> = Object.fromEntries(
+  Object.entries(WORKSPACE_PACKAGES).flatMap(([pkg, exports]) =>
+    Object.entries(exports).map(([subpath, tsFile]) => {
+      const key = subpath === "." ? pkg : pkg + "/" + subpath.replace(/^\.\//g, "");
+      return [key, tsFile];
+    }),
+  ),
+);
 
 const sharedEsbuildOptions = {
   platform: "node" as const,
   bundle: true,
   format: "cjs" as const,
   alias: workspaceAlias,
-  // Shim import.meta.url for CJS bundles
   banner: { js: 'const __importMetaUrl = require("url").pathToFileURL(__filename).href;' },
   define: {
     "import.meta.url": "__importMetaUrl",
@@ -76,15 +139,18 @@ function assertNoWorkspaceLeaks(filePath: string) {
     const count = matches.length;
     const base = path.basename(filePath);
     throw new Error(
-      `BUNDLE LEAK in ${base}: found ${count} "@workspace/" references. ` +
-      "esbuild did NOT inline workspace packages. Check alias config."
+      "BUNDLE LEAK in " + base + ": found " + count + " @workspace/ references. " +
+      "esbuild did NOT inline workspace packages. Check alias + pre-compile step.",
     );
   }
   const base = path.basename(filePath);
-  console.log(`[build] OK: no @workspace leaks in ${base}`);
+  console.log("[build] OK: no @workspace leaks in " + base);
 }
 
 async function buildAll() {
+  // 1. Replace pnpm workspace symlinks with real compiled-JS directories
+  await setupWorkspacePackages();
+
   const distDir = path.resolve(__dirname, "dist");
   await rm(distDir, { recursive: true, force: true });
 
