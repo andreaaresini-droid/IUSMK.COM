@@ -85,7 +85,8 @@ async function setupWorkspacePackages() {
       await esbuild({
         entryPoints: [tsFile],
         outfile: outFile,
-        bundle: false,   // transpile TS -> JS only; no bundling of deps
+        bundle: true,      // bundle local relative imports (./generated/*, etc.)
+        packages: "external", // keep npm packages (zod, drizzle-orm, ...) as require()
         format: "cjs",
         platform: "node",
         logLevel: "silent",
