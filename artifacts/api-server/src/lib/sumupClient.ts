@@ -63,4 +63,14 @@ export function verifySumUpWebhookSignature(
     .digest("hex");
   try {
     return crypto.timingSafeEqual(
-      Buffer.from(expe
+      Buffer.from(expected, "hex"),
+      Buffer.from(signatureHeader.replace("sha256=", ""), "hex"),
+    );
+  } catch {
+    return false;
+  }
+}
+
+export function isSumUpConfigured(): boolean {
+  return !!(SUMUP_API_KEY && SUMUP_MERCHANT_EMAIL && SUMUP_WEBHOOK_SECRET);
+}
