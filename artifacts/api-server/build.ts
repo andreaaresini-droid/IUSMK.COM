@@ -41,20 +41,32 @@ const allowlist = [
   "zod-validation-error",
 ];
 
-// Resolve workspace packages directly to their TypeScript source,
-// bypassing pnpm symlinks which Vercel may not set up before esbuild runs.
-const workspaceAlias: Record<string, string> = {
-  "@workspace/api-zod": path.resolve(__dirname, "../../lib/api-zod/src/index.ts"),
-  "@workspace/db": path.resolve(__dirname, "../../lib/db/src/index.ts"),
-  "@workspace/db/schema": path.resolve(__dirname, "../../lib/db/src/schema/index.ts"),
-  "@workspace/integrations-openai-ai-server": path.resolve(__dirname, "../../lib/integrations-openai-ai-server/src/index.ts"),
+// Plugin that resolves @workspace/* imports directly to TypeScript source,
+// bypassing pnpm symlinks which Vercel may not set up correctly before esbuild runs.
+const workspacePlugin = {
+  name: "workspace-resolver",
+  setup(build: any) {
+    build.onResolve({ filter: /^@workspace\// }, (args: any) => {
+      // "@workspace/api-zod"        -> lib/api-zod/src/index.ts
+      // "@workspace/db"             -> lib/db/src/index.ts
+      // "@workspace/db/schema"      -> lib/db/src/schema/index.ts
+      const parts = args.path.replace("@workspace/", "").split("/");
+      const pkgName = parts[0];
+      const subPath = parts.slice(1);
+      const root = path.resolve(__dirname, "../..");
+      const resolved = subPath.length > 0
+        ? path.join(root, "lib", pkgName, "src", ...subPath, "index.ts")
+        : path.join(root, "lib", pkgName, "src", "index.ts");
+      return { path: resolved };
+    });
+  },
 };
 
 const sharedEsbuildOptions = {
   platform: "node" as const,
   bundle: true,
   format: "cjs" as const,
-  alias: workspaceAlias,
+  plugins: [workspacePlugin],
   // Shim import.meta.url for CJS bundles
   banner: { js: 'const __importMetaUrl = require("url").pathToFileURL(__filename).href;' },
   define: {
