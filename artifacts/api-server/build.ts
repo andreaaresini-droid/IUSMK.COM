@@ -12,6 +12,7 @@ const __dirname = path.dirname(__filename);
 // packages that are not bundle compatible
 const allowlist = [
   "@google/generative-ai",
+  "@supabase/supabase-js",
   "axios",
   "connect-pg-simple",
   "cors",
@@ -33,6 +34,7 @@ const allowlist = [
   "pino",
   "pino-http",
   "uuid",
+  "web-push",
   "ws",
   "xlsx",
   "zod",
