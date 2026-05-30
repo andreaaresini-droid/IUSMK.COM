@@ -2,6 +2,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { build as esbuild } from "esbuild";
 import { rm, readFile } from "fs/promises";
+import { readFileSync } from "fs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -40,32 +41,26 @@ const allowlist = [
   "zod-validation-error",
 ];
 
-// Plugin that resolves @workspace/* imports directly to TypeScript source,
-// bypassing pnpm symlinks which Vercel may not set up correctly before esbuild runs.
-const workspacePlugin = {
-  name: "workspace-resolver",
-  setup(build: any) {
-    build.onResolve({ filter: /^@workspace\// }, (args: any) => {
-      // "@workspace/api-zod"        -> lib/api-zod/src/index.ts
-      // "@workspace/db"             -> lib/db/src/index.ts
-      // "@workspace/db/schema"      -> lib/db/src/schema/index.ts
-      const parts = args.path.replace("@workspace/", "").split("/");
-      const pkgName = parts[0];
-      const subPath = parts.slice(1);
-      const root = path.resolve(__dirname, "../..");
-      const resolved = subPath.length > 0
-        ? path.join(root, "lib", pkgName, "src", ...subPath, "index.ts")
-        : path.join(root, "lib", pkgName, "src", "index.ts");
-      return { path: resolved };
-    });
-  },
+// Map every @workspace/* import directly to its TypeScript source so that
+// esbuild bundles it inline — bypassing pnpm symlinks that may be broken
+// (or point outside the Lambda root) in the Vercel runtime.
+//
+// Using esbuild's built-in 'alias' option (exact-match substitution) rather
+// than a plugin, so there is no ambiguity about resolution order.
+const workspaceAlias: Record<string, string> = {
+  "@workspace/api-zod": path.resolve(__dirname, "../../lib/api-zod/src/index.ts"),
+  "@workspace/db": path.resolve(__dirname, "../../lib/db/src/index.ts"),
+  "@workspace/db/schema": path.resolve(__dirname, "../../lib/db/src/schema/index.ts"),
+  "@workspace/integrations-openai-ai-server": path.resolve(__dirname, "../../lib/integrations-openai-ai-server/src/index.ts"),
 };
+
+console.log("[build] workspace aliases:", Object.keys(workspaceAlias));
 
 const sharedEsbuildOptions = {
   platform: "node" as const,
   bundle: true,
   format: "cjs" as const,
-  plugins: [workspacePlugin],
+  alias: workspaceAlias,
   // Shim import.meta.url for CJS bundles
   banner: { js: 'const __importMetaUrl = require("url").pathToFileURL(__filename).href;' },
   define: {
@@ -73,6 +68,21 @@ const sharedEsbuildOptions = {
     "process.env.NODE_ENV": '"production"',
   },
 };
+
+function assertNoWorkspaceLeaks(filePath: string) {
+  const src = readFileSync(filePath, "utf-8");
+  const matches = src.match(/@workspace\//g);
+  if (matches) {
+    const count = matches.length;
+    const base = path.basename(filePath);
+    throw new Error(
+      `BUNDLE LEAK in ${base}: found ${count} "@workspace/" references. ` +
+      "esbuild did NOT inline workspace packages. Check alias config."
+    );
+  }
+  const base = path.basename(filePath);
+  console.log(`[build] OK: no @workspace leaks in ${base}`);
+}
 
 async function buildAll() {
   const distDir = path.resolve(__dirname, "dist");
@@ -99,6 +109,7 @@ async function buildAll() {
     external: externals,
     logLevel: "info",
   });
+  assertNoWorkspaceLeaks(path.resolve(distDir, "index.cjs"));
 
   console.log("building vercel handler...");
   await esbuild({
@@ -109,6 +120,7 @@ async function buildAll() {
     external: externals,
     logLevel: "info",
   });
+  assertNoWorkspaceLeaks(path.resolve(__dirname, "api/index.js"));
 }
 
 buildAll().catch((err) => {
