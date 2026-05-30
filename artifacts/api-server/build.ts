@@ -94,11 +94,22 @@ async function setupWorkspacePackages() {
       exportsMap[subpath] = "./" + rel;
     }
 
-    // Write a package.json that uses the compiled JS (not TS source)
+    // Write a package.json that uses the compiled JS for runtime but points
+    // TypeScript back to the original .ts source for type checking.
+    // The "types" field and the "types" exports condition both tell tsc where
+    // to find the declarations so TS7016 does not fire.
+    const mainTsFile = Object.values(exports)[0]; // the "." entry TS source
+    const typesRelPath = path.relative(pkgDir, mainTsFile).replace(/\\/g, "/");
+    const structuredExports: Record<string, unknown> = {};
+    for (const [subpath, jsPath] of Object.entries(exportsMap)) {
+      const subTsFile = exports[subpath];
+      const subTypesRel = path.relative(pkgDir, subTsFile).replace(/\\/g, "/");
+      structuredExports[subpath] = { types: subTypesRel, default: jsPath };
+    }
     await writeFile(
       path.join(pkgDir, "package.json"),
       JSON.stringify(
-        { name: pkgName, main: "./index.js", exports: exportsMap },
+        { name: pkgName, main: "./index.js", types: typesRelPath, exports: structuredExports },
         null,
         2,
       ),
