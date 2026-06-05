@@ -152,7 +152,7 @@ router.post("/chat", async (req, res) => {
     const context = buildContext(relevantItems);
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-5-mini",
+      model: "gpt-4o-mini",
       max_completion_tokens: 700,
       messages: [
         { role: "system", content: buildSystemPrompt(context, lang) },

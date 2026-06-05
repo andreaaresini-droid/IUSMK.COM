@@ -3,7 +3,6 @@ import { Link, useLocation } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { useCurrentUser } from "@/hooks/use-auth";
-import { supabase } from "@/lib/supabase";
 import { useQueryClient } from "@tanstack/react-query";
 import { Loader2, Eye, EyeOff, ShoppingCart } from "lucide-react";
 
@@ -50,29 +49,25 @@ export default function Register() {
     setRegisterPending(true);
     setRegisterError("");
     try {
-      const { data, error } = await supabase.auth.signUp({
-        email: form.email.trim().toLowerCase(),
-        password: form.password,
-        options: {
-          data: { firstName: form.firstName.trim(), lastName: form.lastName.trim(), full_name: `${form.firstName.trim()} ${form.lastName.trim()}` },
-        },
-      });
-      if (error) {
-        setRegisterError(error.message || "Registrazione fallita");
-        return;
-      }
-      // Sync profilo nel DB locale
       const apiBase = (import.meta.env.VITE_API_URL as string | undefined) ?? "";
-      await fetch(`${apiBase}/api/auth/sync`, {
+      const res = await fetch(`${apiBase}/api/auth/customer/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email: form.email.trim().toLowerCase(),
           firstName: form.firstName.trim(),
           lastName: form.lastName.trim(),
-          supabaseUserId: data.user?.id,
+          email: form.email.trim().toLowerCase(),
+          password: form.password,
         }),
-      }).catch(() => {}); // Non bloccare se il sync fallisce
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setRegisterError(data.message || "Registrazione fallita");
+        return;
+      }
+      if (data.token) {
+        localStorage.setItem("barber_artist_token", data.token);
+      }
       await queryClient.invalidateQueries({ queryKey: ["current-user"] });
       // redirect handled by useEffect watching user
     } catch {
