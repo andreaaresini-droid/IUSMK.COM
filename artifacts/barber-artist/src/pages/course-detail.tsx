@@ -211,7 +211,7 @@ function MediaLightbox({ items, startIndex, onClose }: {
               controls
               autoPlay
               playsInline
-              preload="auto"
+              preload="metadata"
               className="w-full max-h-[78vh] rounded-lg shadow-2xl bg-black outline-none"
               style={{ maxWidth: "100%" }}
               onClick={e => e.stopPropagation()}
@@ -454,7 +454,7 @@ export default function CourseDetail() {
         {!course.backgroundImageUrl && (
           <div className="absolute top-0 right-0 w-1/2 h-full opacity-20 pointer-events-none hidden lg:block">
             <ResilientImage
-              src={normalizeMediaUrl(course.thumbnailUrl) || `${import.meta.env.BASE_URL}images/academy-course-1.png`}
+              src={normalizeMediaUrl(course.thumbnailUrl) || `${import.meta.env.BASE_URL}images/academy-course-1.webp`}
               alt=""
               className="w-full h-full object-cover"
               style={{ WebkitMaskImage: "linear-gradient(to right, transparent, black)" } as any}

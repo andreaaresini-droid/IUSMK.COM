@@ -15,7 +15,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Logo3D } from "./Logo3D";
 
 const LOGO_SRC      = `${import.meta.env.BASE_URL}images/logo-iusmk-white.png`;
-const BG_SRC        = `${import.meta.env.BASE_URL}images/intro-bg.jpg`;
+const BG_SRC        = `${import.meta.env.BASE_URL}images/intro-bg.webp`;
 const AUDIO_SRC     = `${import.meta.env.BASE_URL}audio/intro-sound.mp3`;
 
 const OUTRO_MS  = 400;   // durata fade-out finale

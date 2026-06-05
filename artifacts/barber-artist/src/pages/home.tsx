@@ -12,9 +12,9 @@ import { useEffect, useRef, useState } from "react";
 import { Logo3D } from "@/components/Logo3D";
 
 const HERO_SLIDES = [
-  `${import.meta.env.BASE_URL}slide-2.jpg`,
-  `${import.meta.env.BASE_URL}slide-1.jpg`,
-  `${import.meta.env.BASE_URL}slide-3.jpg`,
+  `${import.meta.env.BASE_URL}slide-2.webp`,
+  `${import.meta.env.BASE_URL}slide-1.webp`,
+  `${import.meta.env.BASE_URL}slide-3.webp`,
 ];
 
 const SLIDE_DURATION = 2200;
@@ -78,6 +78,8 @@ export default function Home() {
               transition: `opacity ${FADE_DURATION}ms ease-in-out`,
               zIndex: i === activeIndex ? 1 : 0,
             }}
+            loading={i === 0 ? "eager" : "lazy"}
+            fetchPriority={i === 0 ? "high" : "low"}
           />
         ))}
 
