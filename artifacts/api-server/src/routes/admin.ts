@@ -2223,5 +2223,3 @@ router.get("/broadcast/accounts", async (req: AuthRequest, res) => {
 });
 
 export default router;
-
-export default router;
