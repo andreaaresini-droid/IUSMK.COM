@@ -48,6 +48,25 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes("node_modules")) return undefined;
+          if (id.includes("three") || id.includes("@react-three")) return "vendor-three";
+          if (id.includes("framer-motion")) return "vendor-motion";
+          if (id.includes("@radix-ui")) return "vendor-radix";
+          if (
+            id.includes("react-dom") ||
+            id.includes("react/") ||
+            id.includes("scheduler") ||
+            id.includes("@tanstack")
+          ) return "vendor-react";
+          if (id.includes("recharts") || id.includes("d3-")) return "vendor-charts";
+          return "vendor";
+        },
+      },
+    },
   },
   server: {
     port,

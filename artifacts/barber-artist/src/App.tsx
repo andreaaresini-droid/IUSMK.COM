@@ -1,60 +1,66 @@
 import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useState, useEffect } from "react";
+import { lazy, Suspense, useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import { IntroOverlay } from "@/components/IntroOverlay";
-import NotFound from "@/pages/not-found";
-import Home from "@/pages/home";
-import About from "@/pages/about";
-import Gallery from "@/pages/gallery";
-import Academy from "@/pages/academy";
-import CategoryDetail from "@/pages/category-detail";
-import CourseDetail from "@/pages/course-detail";
-import Access from "@/pages/access";
-import ActivateCourse from "@/pages/activate-course";
-import StudentDashboard from "@/pages/student-dashboard";
-import Contact from "@/pages/contact";
-import Register from "@/pages/register";
-import Login from "@/pages/login";
-import CustomerNotifications from "@/pages/customer-notifications";
-import NotificationDetail from "@/pages/notification-detail";
-import AdminLogin from "@/pages/admin/login";
-import AdminDashboard from "@/pages/admin/dashboard";
-import AdminCourses from "@/pages/admin/courses";
-import AdminAccessCodes from "@/pages/admin/access-codes";
-import AdminDiscountCodes from "@/pages/admin/discount-codes";
-import AdminPurchases from "@/pages/admin/purchases";
-import AdminNotifications from "@/pages/admin/notifications";
-import AdminGallery from "@/pages/admin/gallery";
-import AdminContacts from "@/pages/admin/contacts";
-import AdminSettings from "@/pages/admin/settings";
-import AdminKnowledgeBase from "@/pages/admin/knowledge-base";
-import AdminAiQuestions from "@/pages/admin/ai-questions";
-import AdminAiOverview from "@/pages/admin/ai-overview";
-import AdminAiLogs from "@/pages/admin/ai-logs";
-import AdminAiTest from "@/pages/admin/ai-test";
-import AdminAccounts from "@/pages/admin/accounts";
-import AdminChat from "@/pages/admin/chat";
-import AdminBroadcast from "@/pages/admin/broadcast";
-import AdminPaymentLinks from "@/pages/admin/payment-links";
-import AdminAcademyCategories from "@/pages/admin/academy-categories";
-import MyCourses from "@/pages/my-courses";
-import CustomerChat from "@/pages/chat";
 import { AiChatWidget } from "@/components/AiChatWidget";
 import { InstallPromptModal } from "@/components/InstallPromptModal";
-import Checkout from "@/pages/checkout";
-import CheckoutSuccess from "@/pages/checkout-success";
-import CheckoutCancel from "@/pages/checkout-cancel";
-import ForgotPassword from "@/pages/forgot-password";
-import ResetPassword from "@/pages/reset-password";
-import Terms from "@/pages/terms";
-import Privacy from "@/pages/privacy";
-import CookiePolicy from "@/pages/cookie-policy";
-import Returns from "@/pages/returns";
-import Legal from "@/pages/legal";
-import Faq from "@/pages/faq";
+
+// Eager — critical on first paint
+import Home from "@/pages/home";
+import NotFound from "@/pages/not-found";
+
+// Lazy — public pages
+const About = lazy(() => import("@/pages/about"));
+const Gallery = lazy(() => import("@/pages/gallery"));
+const Academy = lazy(() => import("@/pages/academy"));
+const CategoryDetail = lazy(() => import("@/pages/category-detail"));
+const CourseDetail = lazy(() => import("@/pages/course-detail"));
+const Access = lazy(() => import("@/pages/access"));
+const ActivateCourse = lazy(() => import("@/pages/activate-course"));
+const StudentDashboard = lazy(() => import("@/pages/student-dashboard"));
+const Contact = lazy(() => import("@/pages/contact"));
+const Register = lazy(() => import("@/pages/register"));
+const Login = lazy(() => import("@/pages/login"));
+const CustomerNotifications = lazy(() => import("@/pages/customer-notifications"));
+const NotificationDetail = lazy(() => import("@/pages/notification-detail"));
+const MyCourses = lazy(() => import("@/pages/my-courses"));
+const CustomerChat = lazy(() => import("@/pages/chat"));
+const Checkout = lazy(() => import("@/pages/checkout"));
+const CheckoutSuccess = lazy(() => import("@/pages/checkout-success"));
+const CheckoutCancel = lazy(() => import("@/pages/checkout-cancel"));
+const ForgotPassword = lazy(() => import("@/pages/forgot-password"));
+const ResetPassword = lazy(() => import("@/pages/reset-password"));
+const Terms = lazy(() => import("@/pages/terms"));
+const Privacy = lazy(() => import("@/pages/privacy"));
+const CookiePolicy = lazy(() => import("@/pages/cookie-policy"));
+const Returns = lazy(() => import("@/pages/returns"));
+const Legal = lazy(() => import("@/pages/legal"));
+const Faq = lazy(() => import("@/pages/faq"));
+
+// Lazy — admin pages (never visited by regular users)
+const AdminLogin = lazy(() => import("@/pages/admin/login"));
+const AdminDashboard = lazy(() => import("@/pages/admin/dashboard"));
+const AdminCourses = lazy(() => import("@/pages/admin/courses"));
+const AdminAccessCodes = lazy(() => import("@/pages/admin/access-codes"));
+const AdminDiscountCodes = lazy(() => import("@/pages/admin/discount-codes"));
+const AdminPurchases = lazy(() => import("@/pages/admin/purchases"));
+const AdminNotifications = lazy(() => import("@/pages/admin/notifications"));
+const AdminGallery = lazy(() => import("@/pages/admin/gallery"));
+const AdminContacts = lazy(() => import("@/pages/admin/contacts"));
+const AdminSettings = lazy(() => import("@/pages/admin/settings"));
+const AdminKnowledgeBase = lazy(() => import("@/pages/admin/knowledge-base"));
+const AdminAiQuestions = lazy(() => import("@/pages/admin/ai-questions"));
+const AdminAiOverview = lazy(() => import("@/pages/admin/ai-overview"));
+const AdminAiLogs = lazy(() => import("@/pages/admin/ai-logs"));
+const AdminAiTest = lazy(() => import("@/pages/admin/ai-test"));
+const AdminAccounts = lazy(() => import("@/pages/admin/accounts"));
+const AdminChat = lazy(() => import("@/pages/admin/chat"));
+const AdminBroadcast = lazy(() => import("@/pages/admin/broadcast"));
+const AdminPaymentLinks = lazy(() => import("@/pages/admin/payment-links"));
+const AdminAcademyCategories = lazy(() => import("@/pages/admin/academy-categories"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -65,69 +71,70 @@ const queryClient = new QueryClient({
   },
 });
 
+// Minimal dark fallback — matches site background, no flash
+const PageFallback = () => <div className="min-h-screen bg-black" />;
+
 function Router() {
   return (
-    <Switch>
-      <Route path="/" component={Home} />
-      <Route path="/about" component={About} />
-      <Route path="/gallery" component={Gallery} />
-      <Route path="/academy" component={Academy} />
-      <Route path="/academy/:categoryId" component={CategoryDetail} />
-      <Route path="/course/:courseId" component={CourseDetail} />
-      <Route path="/course/:courseId/activate" component={ActivateCourse} />
-      <Route path="/access" component={Access} />
-      <Route path="/dashboard" component={StudentDashboard} />
-      <Route path="/contact" component={Contact} />
-      <Route path="/register" component={Register} />
-      <Route path="/login" component={Login} />
-      <Route path="/notifications" component={CustomerNotifications} />
-      <Route path="/notifications/:id" component={NotificationDetail} />
-      <Route path="/admin" component={AdminLogin} />
-      <Route path="/admin/dashboard" component={AdminDashboard} />
-      <Route path="/admin/courses" component={AdminCourses} />
-      <Route path="/admin/access-codes" component={AdminAccessCodes} />
-      <Route path="/admin/discount-codes" component={AdminDiscountCodes} />
-      <Route path="/admin/purchases" component={AdminPurchases} />
-      <Route path="/admin/notifications" component={AdminNotifications} />
-      <Route path="/admin/gallery" component={AdminGallery} />
-      <Route path="/admin/contacts" component={AdminContacts} />
-      <Route path="/admin/settings" component={AdminSettings} />
-      <Route path="/admin/ai" component={AdminAiOverview} />
-      <Route path="/admin/knowledge-base" component={AdminKnowledgeBase} />
-      <Route path="/admin/ai-questions" component={AdminAiQuestions} />
-      <Route path="/admin/ai-logs" component={AdminAiLogs} />
-      <Route path="/admin/ai-test" component={AdminAiTest} />
-      <Route path="/admin/accounts" component={AdminAccounts} />
-      <Route path="/admin/chat" component={AdminChat} />
-      <Route path="/admin/broadcast" component={AdminBroadcast} />
-      <Route path="/admin/payment-links" component={AdminPaymentLinks} />
-      <Route path="/admin/academy" component={AdminAcademyCategories} />
-      <Route path="/my-courses" component={MyCourses} />
-      <Route path="/chat" component={CustomerChat} />
-      <Route path="/checkout" component={Checkout} />
-      <Route path="/checkout/success" component={CheckoutSuccess} />
-      <Route path="/checkout/cancel" component={CheckoutCancel} />
-      <Route path="/forgot-password" component={ForgotPassword} />
-      <Route path="/reset-password" component={ResetPassword} />
-      <Route path="/terms" component={Terms} />
-      <Route path="/privacy" component={Privacy} />
-      <Route path="/cookie-policy" component={CookiePolicy} />
-      <Route path="/returns" component={Returns} />
-      <Route path="/legal" component={Legal} />
-      <Route path="/faq" component={Faq} />
-      <Route component={NotFound} />
-    </Switch>
+    <Suspense fallback={<PageFallback />}>
+      <Switch>
+        <Route path="/" component={Home} />
+        <Route path="/about" component={About} />
+        <Route path="/gallery" component={Gallery} />
+        <Route path="/academy" component={Academy} />
+        <Route path="/academy/:categoryId" component={CategoryDetail} />
+        <Route path="/course/:courseId" component={CourseDetail} />
+        <Route path="/course/:courseId/activate" component={ActivateCourse} />
+        <Route path="/access" component={Access} />
+        <Route path="/dashboard" component={StudentDashboard} />
+        <Route path="/contact" component={Contact} />
+        <Route path="/register" component={Register} />
+        <Route path="/login" component={Login} />
+        <Route path="/notifications" component={CustomerNotifications} />
+        <Route path="/notifications/:id" component={NotificationDetail} />
+        <Route path="/admin" component={AdminLogin} />
+        <Route path="/admin/dashboard" component={AdminDashboard} />
+        <Route path="/admin/courses" component={AdminCourses} />
+        <Route path="/admin/access-codes" component={AdminAccessCodes} />
+        <Route path="/admin/discount-codes" component={AdminDiscountCodes} />
+        <Route path="/admin/purchases" component={AdminPurchases} />
+        <Route path="/admin/notifications" component={AdminNotifications} />
+        <Route path="/admin/gallery" component={AdminGallery} />
+        <Route path="/admin/contacts" component={AdminContacts} />
+        <Route path="/admin/settings" component={AdminSettings} />
+        <Route path="/admin/ai" component={AdminAiOverview} />
+        <Route path="/admin/knowledge-base" component={AdminKnowledgeBase} />
+        <Route path="/admin/ai-questions" component={AdminAiQuestions} />
+        <Route path="/admin/ai-logs" component={AdminAiLogs} />
+        <Route path="/admin/ai-test" component={AdminAiTest} />
+        <Route path="/admin/accounts" component={AdminAccounts} />
+        <Route path="/admin/chat" component={AdminChat} />
+        <Route path="/admin/broadcast" component={AdminBroadcast} />
+        <Route path="/admin/payment-links" component={AdminPaymentLinks} />
+        <Route path="/admin/academy" component={AdminAcademyCategories} />
+        <Route path="/my-courses" component={MyCourses} />
+        <Route path="/chat" component={CustomerChat} />
+        <Route path="/checkout" component={Checkout} />
+        <Route path="/checkout/success" component={CheckoutSuccess} />
+        <Route path="/checkout/cancel" component={CheckoutCancel} />
+        <Route path="/forgot-password" component={ForgotPassword} />
+        <Route path="/reset-password" component={ResetPassword} />
+        <Route path="/terms" component={Terms} />
+        <Route path="/privacy" component={Privacy} />
+        <Route path="/cookie-policy" component={CookiePolicy} />
+        <Route path="/returns" component={Returns} />
+        <Route path="/legal" component={Legal} />
+        <Route path="/faq" component={Faq} />
+        <Route component={NotFound} />
+      </Switch>
+    </Suspense>
   );
 }
 
 function ConditionalAiWidget() {
   const [location] = useLocation();
   const isAdmin = location === "/admin" || location.startsWith("/admin/");
-  if (isAdmin) {
-    console.log("[ASSISTANT] mount skipped — admin route:", location);
-    return null;
-  }
-  console.log("[ASSISTANT] mounted on route:", location);
+  if (isAdmin) return null;
   return <AiChatWidget />;
 }
 
