@@ -198,8 +198,12 @@ export function Navbar() {
   return (
     <header
       className={cn(
-        "fixed top-0 w-full z-50 transition-all duration-300 border-b",
-        scrolled || isOpen ? "bg-background/95 backdrop-blur-md border-white/5 py-4" : "bg-transparent border-transparent py-6"
+        "fixed top-0 w-full z-50 border-b",
+        isOpen
+          ? "bg-card border-white/5 py-4"
+          : scrolled
+          ? "bg-background/80 backdrop-blur-md border-white/5 py-4 transition-all duration-300"
+          : "bg-transparent border-transparent py-6 transition-all duration-300"
       )}
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
@@ -269,7 +273,7 @@ export function Navbar() {
       </div>
 
       {isOpen && (
-        <div className="md:hidden absolute top-full left-0 w-full bg-card border-b border-white/5 py-4 px-5 flex flex-col gap-1 shadow-2xl z-40">
+        <div className="md:hidden fixed inset-0 top-0 bg-card flex flex-col pt-20 pb-6 px-5 gap-1 overflow-y-auto z-40">
           {/* ── SEZIONE SUPERIORE: nav links allineati a sinistra ── */}
           {navLinks.map((link) => (
             <Link
