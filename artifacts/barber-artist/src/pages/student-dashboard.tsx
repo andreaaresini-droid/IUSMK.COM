@@ -25,7 +25,8 @@ export default function StudentDashboard() {
     return v ? parseInt(v, 10) : null;
   })();
 
-  const { data: courses, isLoading: coursesLoading } = useStudentCourses();
+  const isStudent = !authLoading && user?.role === "student";
+  const { data: courses, isLoading: coursesLoading } = useStudentCourses(isStudent);
   const { mutate: updateProgress } = useUpdateProgress();
 
   const [activeCourseId, setActiveCourseId] = useState<number | null>(null);

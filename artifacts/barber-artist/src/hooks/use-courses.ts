@@ -17,10 +17,11 @@ export function usePublicCourse(id: number) {
   });
 }
 
-export function useStudentCourses() {
+export function useStudentCourses(enabled = true) {
   return useQuery({
     queryKey: ["student", "courses"],
     queryFn: () => fetchApi<any[]>("/student/courses"),
+    enabled,
   });
 }
 
