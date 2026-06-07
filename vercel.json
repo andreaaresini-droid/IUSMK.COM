@@ -1,5 +1,16 @@
 {
   "version": 2,
-  "buildCommand": "bash scripts/vercel-build.sh",
-  "installCommand": "pnpm install --no-frozen-lockfile"
+  "buildCommand": "pnpm --filter @workspace/api-server run build",
+  "installCommand": "pnpm install --no-frozen-lockfile",
+  "functions": {
+    "api/index.js": {
+      "maxDuration": 60
+    }
+  },
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "api/index.js"
+    }
+  ]
 }
