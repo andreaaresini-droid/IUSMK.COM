@@ -18,9 +18,9 @@ export async function fetchApi<T>(endpoint: string, options: RequestInit = {}, r
 
   if (response.status === 401) {
     localStorage.removeItem("barber_artist_token");
-    if (redirectOn401 && !window.location.pathname.includes('/access') && !window.location.pathname.endsWith('/admin')) {
+    if (redirectOn401 && !window.location.pathname.includes('/login') && !window.location.pathname.endsWith('/admin')) {
       const isRouteAdmin = window.location.pathname.startsWith('/admin');
-      window.location.href = isRouteAdmin ? '/admin' : '/access';
+      window.location.href = isRouteAdmin ? '/admin' : '/login';
     }
   }
 

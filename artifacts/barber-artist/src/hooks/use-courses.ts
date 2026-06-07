@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchApi } from "@/lib/api-client";
+import { fetchApi, fetchApiOptional } from "@/lib/api-client";
 import { useToast } from "@/hooks/use-toast";
 
 export function usePublicCourses() {
@@ -46,7 +46,7 @@ export function useVideoToken(courseId: number, moduleId: number) {
 export function useOwnedCourseIds(isLoggedInUser: boolean) {
   return useQuery({
     queryKey: ["owned-course-ids"],
-    queryFn: () => fetchApi<{ courseIds: number[] }>("/customer/owned-course-ids"),
+    queryFn: () => fetchApiOptional<{ courseIds: number[] }>("/customer/owned-course-ids"),
     enabled: isLoggedInUser,
     staleTime: 60_000,
   });
@@ -56,7 +56,7 @@ export function useOwnedCourseIds(isLoggedInUser: boolean) {
 export function useOwnedModuleIds(isLoggedInUser: boolean) {
   return useQuery({
     queryKey: ["owned-module-ids"],
-    queryFn: () => fetchApi<{ moduleIds: number[] }>("/customer/owned-module-ids"),
+    queryFn: () => fetchApiOptional<{ moduleIds: number[] }>("/customer/owned-module-ids"),
     enabled: isLoggedInUser,
     staleTime: 60_000,
   });

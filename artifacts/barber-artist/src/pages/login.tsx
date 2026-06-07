@@ -1,12 +1,27 @@
-import { useState } from "react";
-import { Link } from "wouter";
+import { useState, useEffect } from "react";
+import { Link, useLocation } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { useCustomerLogin } from "@/hooks/use-auth";
+import { useCustomerLogin, useCurrentUser } from "@/hooks/use-auth";
 import { Loader2, Eye, EyeOff, ShoppingCart } from "lucide-react";
 
 export default function Login() {
+  const [, setLocation] = useLocation();
+  const { data: user } = useCurrentUser();
   const customerLogin = useCustomerLogin();
+
+  // Se già loggato, porta alla home
+  useEffect(() => {
+    if (user && (user.role === "customer" || user.role === "student")) {
+      const redirectTo = sessionStorage.getItem("checkout_redirect");
+      if (redirectTo) {
+        sessionStorage.removeItem("checkout_redirect");
+        setLocation(redirectTo);
+      } else {
+        setLocation("/");
+      }
+    }
+  }, [user]);
 
   const [form, setForm] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
