@@ -1,12 +1,15 @@
 {
   "version": 2,
-  "buildCommand": "pnpm --filter @workspace/barber-artist run build",
+  "buildCommand": "pnpm --filter @workspace/api-server run build && mkdir -p api && cp artifacts/api-server/api/index.js api/index.js && pnpm --filter @workspace/barber-artist run build",
   "outputDirectory": "artifacts/barber-artist/dist/public",
   "installCommand": "pnpm install --no-frozen-lockfile",
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
+  "functions": {
+    "api/index.js": {
+      "maxDuration": 60
     }
+  },
+  "rewrites": [
+    { "source": "/api(.*)", "destination": "/api/index.js" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
