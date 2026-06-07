@@ -199,7 +199,7 @@ export function Navbar() {
     <header
       className={cn(
         "fixed top-0 w-full z-50 transition-all duration-300 border-b",
-        scrolled ? "bg-background/80 backdrop-blur-md border-white/5 py-4" : "bg-transparent border-transparent py-6"
+        scrolled || isOpen ? "bg-background/95 backdrop-blur-md border-white/5 py-4" : "bg-transparent border-transparent py-6"
       )}
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">

@@ -1,34 +1,19 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { useCurrentUser } from "@/hooks/use-auth";
-import { useQueryClient } from "@tanstack/react-query";
-import { Loader2, Eye, EyeOff, ShoppingCart } from "lucide-react";
+import { Loader2, Eye, EyeOff, ShoppingCart, CheckCircle } from "lucide-react";
 
 export default function Register() {
   const [, setLocation] = useLocation();
-  const { data: user } = useCurrentUser();
-  const queryClient = useQueryClient();
 
   const [form, setForm] = useState({ firstName: "", lastName: "", email: "", password: "", confirmPassword: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [registerPending, setRegisterPending] = useState(false);
   const [registerError, setRegisterError] = useState("");
+  const [registered, setRegistered] = useState(false);
   const hasCourseRedirect = typeof window !== "undefined" && !!sessionStorage.getItem("checkout_redirect");
-
-  useEffect(() => {
-    if (user && user.role === "customer") {
-      const redirectTo = sessionStorage.getItem("checkout_redirect");
-      if (redirectTo) {
-        sessionStorage.removeItem("checkout_redirect");
-        setLocation(redirectTo);
-      } else {
-        setLocation("/academy");
-      }
-    }
-  }, [user]);
 
   const validate = () => {
     const e: Record<string, string> = {};
@@ -65,11 +50,8 @@ export default function Register() {
         setRegisterError(data.message || "Registrazione fallita");
         return;
       }
-      if (data.token) {
-        localStorage.setItem("barber_artist_token", data.token);
-      }
-      await queryClient.invalidateQueries({ queryKey: ["current-user"] });
-      // redirect handled by useEffect watching user
+      setRegistered(true);
+      setTimeout(() => setLocation("/login"), 3000);
     } catch {
       setRegisterError("Errore di connessione. Riprova.");
     } finally {
@@ -85,7 +67,7 @@ export default function Register() {
       <Navbar />
       <main className="pt-24 pb-20 px-4">
         <div className="max-w-md mx-auto">
-          {hasCourseRedirect && (
+          {!registered && hasCourseRedirect && (
             <div className="bg-primary/10 border border-primary/30 rounded-xl px-5 py-4 mb-6 flex gap-3">
               <ShoppingCart className="w-5 h-5 text-primary mt-0.5 shrink-0" />
               <div>
@@ -106,105 +88,121 @@ export default function Register() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="bg-card border border-white/10 rounded-2xl p-8 space-y-5">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm text-muted-foreground mb-1 block">Nome *</label>
-                <input
-                  value={form.firstName}
-                  onChange={(e) => setForm({ ...form, firstName: e.target.value })}
-                  placeholder="Mario"
-                  className={inputClass("firstName")}
-                  autoComplete="given-name"
-                />
-                {errors.firstName && <p className="text-red-400 text-xs mt-1">{errors.firstName}</p>}
+          {registered ? (
+            <div className="bg-card border border-white/10 rounded-2xl p-8 text-center space-y-4">
+              <div className="flex justify-center">
+                <CheckCircle size={56} className="text-primary" />
               </div>
-              <div>
-                <label className="text-sm text-muted-foreground mb-1 block">Cognome *</label>
-                <input
-                  value={form.lastName}
-                  onChange={(e) => setForm({ ...form, lastName: e.target.value })}
-                  placeholder="Rossi"
-                  className={inputClass("lastName")}
-                  autoComplete="family-name"
-                />
-                {errors.lastName && <p className="text-red-400 text-xs mt-1">{errors.lastName}</p>}
+              <p className="text-white font-semibold text-xl">Account creato con successo!</p>
+              <p className="text-muted-foreground text-sm leading-relaxed">
+                Il tuo account è pronto. Ora puoi accedere con le tue credenziali.
+              </p>
+              <p className="text-muted-foreground text-xs">Reindirizzamento al login in corso...</p>
+              <Link href="/login" className="inline-block text-sm text-primary hover:underline mt-2">
+                Vai al login ora →
+              </Link>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="bg-card border border-white/10 rounded-2xl p-8 space-y-5">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm text-muted-foreground mb-1 block">Nome *</label>
+                  <input
+                    value={form.firstName}
+                    onChange={(e) => setForm({ ...form, firstName: e.target.value })}
+                    placeholder="Mario"
+                    className={inputClass("firstName")}
+                    autoComplete="given-name"
+                  />
+                  {errors.firstName && <p className="text-red-400 text-xs mt-1">{errors.firstName}</p>}
+                </div>
+                <div>
+                  <label className="text-sm text-muted-foreground mb-1 block">Cognome *</label>
+                  <input
+                    value={form.lastName}
+                    onChange={(e) => setForm({ ...form, lastName: e.target.value })}
+                    placeholder="Rossi"
+                    className={inputClass("lastName")}
+                    autoComplete="family-name"
+                  />
+                  {errors.lastName && <p className="text-red-400 text-xs mt-1">{errors.lastName}</p>}
+                </div>
               </div>
-            </div>
 
-            <div>
-              <label className="text-sm text-muted-foreground mb-1 block">E-mail *</label>
-              <input
-                type="email"
-                value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-                placeholder="email@esempio.com"
-                className={inputClass("email")}
-                autoComplete="email"
-              />
-              {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email}</p>}
-            </div>
-
-            <div>
-              <label className="text-sm text-muted-foreground mb-1 block">Password *</label>
-              <div className="relative">
+              <div>
+                <label className="text-sm text-muted-foreground mb-1 block">E-mail *</label>
                 <input
-                  type={showPassword ? "text" : "password"}
-                  value={form.password}
-                  onChange={(e) => setForm({ ...form, password: e.target.value })}
-                  placeholder="Minimo 6 caratteri"
-                  className={inputClass("password") + " pr-10"}
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  placeholder="email@esempio.com"
+                  className={inputClass("email")}
+                  autoComplete="email"
+                />
+                {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email}</p>}
+              </div>
+
+              <div>
+                <label className="text-sm text-muted-foreground mb-1 block">Password *</label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={form.password}
+                    onChange={(e) => setForm({ ...form, password: e.target.value })}
+                    placeholder="Minimo 6 caratteri"
+                    className={inputClass("password") + " pr-10"}
+                    autoComplete="new-password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-white transition-colors"
+                  >
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+                {errors.password && <p className="text-red-400 text-xs mt-1">{errors.password}</p>}
+              </div>
+
+              <div>
+                <label className="text-sm text-muted-foreground mb-1 block">Conferma Password *</label>
+                <input
+                  type="password"
+                  value={form.confirmPassword}
+                  onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
+                  placeholder="Ripeti la password"
+                  className={inputClass("confirmPassword")}
                   autoComplete="new-password"
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-white transition-colors"
-                >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                </button>
+                {errors.confirmPassword && <p className="text-red-400 text-xs mt-1">{errors.confirmPassword}</p>}
               </div>
-              {errors.password && <p className="text-red-400 text-xs mt-1">{errors.password}</p>}
-            </div>
 
-            <div>
-              <label className="text-sm text-muted-foreground mb-1 block">Conferma Password *</label>
-              <input
-                type="password"
-                value={form.confirmPassword}
-                onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
-                placeholder="Ripeti la password"
-                className={inputClass("confirmPassword")}
-                autoComplete="new-password"
-              />
-              {errors.confirmPassword && <p className="text-red-400 text-xs mt-1">{errors.confirmPassword}</p>}
-            </div>
-
-            {registerError && (
-              <div className="bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3 text-red-400 text-sm">
-                {registerError}
-              </div>
-            )}
-
-            <button
-              type="submit"
-              disabled={registerPending}
-              className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white py-4 rounded-xl font-semibold text-base transition-colors disabled:opacity-60"
-            >
-              {registerPending ? (
-                <><Loader2 size={18} className="animate-spin" /> Creazione account...</>
-              ) : (
-                "Registrati"
+              {registerError && (
+                <div className="bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3 text-red-400 text-sm">
+                  {registerError}
+                </div>
               )}
-            </button>
 
-            <p className="text-center text-sm text-muted-foreground">
-              Hai già un account?{" "}
-              <Link href="/login" className="text-primary hover:underline font-medium">
-                Accedi
-              </Link>
-            </p>
-          </form>
+              <button
+                type="submit"
+                disabled={registerPending}
+                className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white py-4 rounded-xl font-semibold text-base transition-colors disabled:opacity-60"
+              >
+                {registerPending ? (
+                  <><Loader2 size={18} className="animate-spin" /> Creazione account...</>
+                ) : (
+                  "Registrati"
+                )}
+              </button>
+
+              <p className="text-center text-sm text-muted-foreground">
+                Hai già un account?{" "}
+                <Link href="/login" className="text-primary hover:underline font-medium">
+                  Accedi
+                </Link>
+              </p>
+            </form>
+          )}
         </div>
       </main>
       <Footer />

@@ -75,7 +75,7 @@ export function useCustomerLogin() {
         sessionStorage.removeItem("checkout_redirect");
         setLocation(redirectTo);
       } else {
-        setLocation("/academy");
+        setLocation("/");
       }
     },
     onError: (err: any) => {

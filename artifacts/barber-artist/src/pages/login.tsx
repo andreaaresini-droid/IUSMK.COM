@@ -1,60 +1,24 @@
-import { useState, useEffect } from "react";
-import { Link, useLocation } from "wouter";
+import { useState } from "react";
+import { Link } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { useCurrentUser } from "@/hooks/use-auth";
-import { supabase } from "@/lib/supabase";
-import { useQueryClient } from "@tanstack/react-query";
+import { useCustomerLogin } from "@/hooks/use-auth";
 import { Loader2, Eye, EyeOff, ShoppingCart } from "lucide-react";
 
 export default function Login() {
-  const [, setLocation] = useLocation();
-  const { data: user } = useCurrentUser();
-  const queryClient = useQueryClient();
+  const customerLogin = useCustomerLogin();
 
   const [form, setForm] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
-  const [loginPending, setLoginPending] = useState(false);
-  const [loginError, setLoginError] = useState("");
   const hasCourseRedirect = typeof window !== "undefined" && !!sessionStorage.getItem("checkout_redirect");
-
-  useEffect(() => {
-    if (user && (user.role === "customer" || user.role === "student")) {
-      console.log("[AUTH] session active — role:", user.role, "redirecting post-login");
-      const redirectTo = sessionStorage.getItem("checkout_redirect");
-      if (redirectTo) {
-        sessionStorage.removeItem("checkout_redirect");
-        setLocation(redirectTo);
-      } else if (user.role === "student") {
-        // Students (who activated a course) go directly to their courses
-        setLocation("/my-courses");
-      } else {
-        setLocation("/academy");
-      }
-    }
-  }, [user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.email.trim() || !form.password) return;
-    setLoginPending(true);
-    setLoginError("");
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email: form.email.trim().toLowerCase(),
-        password: form.password,
-      });
-      if (error) {
-        setLoginError("Email o password non corretti");
-        return;
-      }
-      await queryClient.invalidateQueries({ queryKey: ["current-user"] });
-      // redirect handled by useEffect watching user
-    } catch {
-      setLoginError("Errore di connessione. Riprova.");
-    } finally {
-      setLoginPending(false);
-    }
+    customerLogin.mutate({
+      email: form.email.trim().toLowerCase(),
+      password: form.password,
+    });
   };
 
   const inputClass = "w-full bg-background border border-white/10 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors";
@@ -127,18 +91,18 @@ export default function Login() {
               </Link>
             </div>
 
-            {loginError && (
+            {customerLogin.isError && (
               <div className="bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3 text-red-400 text-sm">
-                {loginError}
+                {(customerLogin.error as any)?.message || "Email o password non corretti"}
               </div>
             )}
 
             <button
               type="submit"
-              disabled={loginPending || !form.email || !form.password}
+              disabled={customerLogin.isPending || !form.email || !form.password}
               className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white py-4 rounded-xl font-semibold text-base transition-colors disabled:opacity-60"
             >
-              {loginPending ? (
+              {customerLogin.isPending ? (
                 <><Loader2 size={18} className="animate-spin" /> Accesso in corso...</>
               ) : (
                 "Accedi"

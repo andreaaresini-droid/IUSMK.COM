@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { supabase } from "@/lib/supabase";
 import { Loader2, ArrowLeft, CheckCircle } from "lucide-react";
 
 export default function ForgotPassword() {
@@ -17,17 +16,20 @@ export default function ForgotPassword() {
     setLoading(true);
     setError("");
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(
-        email.trim().toLowerCase(),
-        { redirectTo: `${window.location.origin}/reset-password` }
-      );
-      if (error) {
-        setError("Errore durante l'invio. Riprova.");
+      const apiBase = (import.meta.env.VITE_API_URL as string | undefined) ?? "";
+      const res = await fetch(`${apiBase}/api/auth/customer/forgot-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim().toLowerCase() }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError(data.message || "Errore durante l'invio. Riprova.");
         return;
       }
       setSubmitted(true);
-    } catch (err: any) {
-      setError(err.message || "Errore durante l'invio");
+    } catch {
+      setError("Errore di connessione. Riprova.");
     } finally {
       setLoading(false);
     }

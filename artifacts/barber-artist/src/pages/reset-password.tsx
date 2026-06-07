@@ -2,12 +2,12 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { supabase } from "@/lib/supabase";
 import { Loader2, Eye, EyeOff, CheckCircle, XCircle } from "lucide-react";
 
 export default function ResetPassword() {
   const [, setLocation] = useLocation();
   const [mode, setMode] = useState<"loading" | "form" | "no-token">("loading");
+  const [token, setToken] = useState("");
   const [form, setForm] = useState({ password: "", confirmPassword: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -16,30 +16,27 @@ export default function ResetPassword() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    let subscription: { unsubscribe: () => void } | null = null;
-    let timer: ReturnType<typeof setTimeout> | null = null;
+    const params = new URLSearchParams(window.location.search);
+    const rawToken = params.get("token");
 
-    // Supabase detectSessionInUrl reads the hash automatically
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        setMode("form");
-      } else {
-        // Wait for auth state change (Supabase processes hash asynchronously)
-        const { data } = supabase.auth.onAuthStateChange((event, sess) => {
-          if ((event === "SIGNED_IN" || event === "PASSWORD_RECOVERY") && sess) {
-            setMode("form");
-          }
-        });
-        subscription = data.subscription;
-        // Timeout: show error if no session after 2s
-        timer = setTimeout(() => setMode(m => m === "loading" ? "no-token" : m), 2000);
-      }
-    });
+    if (!rawToken) {
+      setMode("no-token");
+      return;
+    }
 
-    return () => {
-      subscription?.unsubscribe();
-      if (timer !== null) clearTimeout(timer);
-    };
+    setToken(rawToken);
+
+    const apiBase = (import.meta.env.VITE_API_URL as string | undefined) ?? "";
+    fetch(`${apiBase}/api/auth/customer/verify-reset-token?token=${encodeURIComponent(rawToken)}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.valid) {
+          setMode("form");
+        } else {
+          setMode("no-token");
+        }
+      })
+      .catch(() => setMode("no-token"));
   }, []);
 
   const validate = () => {
@@ -57,9 +54,15 @@ export default function ResetPassword() {
     setSubmitting(true);
     setSubmitError("");
     try {
-      const { error } = await supabase.auth.updateUser({ password: form.password });
-      if (error) {
-        setSubmitError("Impossibile aggiornare la password. Il link potrebbe essere scaduto.");
+      const apiBase = (import.meta.env.VITE_API_URL as string | undefined) ?? "";
+      const res = await fetch(`${apiBase}/api/auth/customer/reset-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, password: form.password }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setSubmitError(data.message || "Impossibile aggiornare la password. Il link potrebbe essere scaduto.");
         return;
       }
       setSuccess(true);
