@@ -124,7 +124,7 @@ export function useLogout() {
 
   return useMutation({
     mutationFn: async () => {
-      await supabase.auth.signOut().catch(() => {});
+      await supabase?.auth?.signOut()?.catch(() => {});
       await fetchApiOptional("/auth/logout", { method: "POST" });
     },
     onSettled: () => {
