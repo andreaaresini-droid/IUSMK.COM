@@ -8,23 +8,7 @@ import { supabase } from "@/lib/supabase";
 export function useCurrentUser() {
   return useQuery({
     queryKey: ["current-user"],
-    queryFn: async () => {
-      // Percorso veloce: se c'è un token custom (customer/student) usalo direttamente
-      const customToken = localStorage.getItem("barber_artist_token");
-      if (customToken) {
-        return fetchApiOptional<any>("/auth/me");
-      }
-      // Percorso legacy: verifica sessione Supabase (solo se non c'è token custom)
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.access_token) {
-        const apiBase = (import.meta.env.VITE_API_URL as string | undefined) ?? "";
-        const res = await fetch(`${apiBase}/api/auth/me`, {
-          headers: { "Authorization": `Bearer ${session.access_token}` },
-        });
-        if (res.ok) return res.json();
-      }
-      return null;
-    },
+    queryFn: () => fetchApiOptional<any>("/auth/me"),
     retry: false,
     staleTime: 5 * 60 * 1000,
   });
