@@ -273,7 +273,7 @@ export function Navbar() {
       </div>
 
       {isOpen && (
-        <div className="md:hidden fixed inset-0 top-0 bg-card flex flex-col pt-20 pb-6 px-5 gap-1 overflow-y-auto z-40">
+        <div className="md:hidden fixed inset-0 top-0 bg-card flex flex-col pt-[6.5rem] pb-6 px-5 gap-1 overflow-y-auto z-40">
           {/* ── SEZIONE SUPERIORE: nav links allineati a sinistra ── */}
           {navLinks.map((link) => (
             <Link
