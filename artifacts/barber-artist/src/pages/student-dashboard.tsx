@@ -54,8 +54,14 @@ export default function StudentDashboard() {
   // ─────────────────────────────────────────────────────────────────────────────
 
   useEffect(() => {
-    if (!authLoading && (!user || user.role !== "student")) {
-      setLocation("/access");
+    if (!authLoading) {
+      if (!user) {
+        setLocation("/login");
+      } else if (user.role === "customer") {
+        setLocation("/my-courses");
+      } else if (user.role !== "student") {
+        setLocation("/login");
+      }
     }
   }, [user, authLoading, setLocation]);
 

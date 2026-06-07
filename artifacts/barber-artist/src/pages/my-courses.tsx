@@ -195,8 +195,11 @@ export default function MyCourses() {
                   <div className="px-5 pb-5">
                     <button
                       onClick={() => {
-                        console.log("[COURSE ACCESS] user clicked access — courseId:", course.courseId, "unlocked:", true);
-                        setLocation(`/dashboard?courseId=${course.courseId}`);
+                        if (user?.role === "student") {
+                          setLocation(`/dashboard?courseId=${course.courseId}`);
+                        } else {
+                          setLocation("/access");
+                        }
                       }}
                       className="flex items-center justify-center gap-2 w-full sm:w-auto px-5 py-2.5 bg-primary hover:bg-primary/80 text-white font-bold rounded-xl text-sm transition-colors"
                     >
