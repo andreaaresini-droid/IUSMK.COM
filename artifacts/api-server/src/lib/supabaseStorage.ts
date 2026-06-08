@@ -64,6 +64,24 @@ export function isSupabaseStorageConfigured(): boolean {
   return !!(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY);
 }
 
+export async function createVideoUploadSession(
+  mimeType: string,
+): Promise<{ resumableUri: string; finalUrl: string }> {
+  const ext = mimeType.includes("webm") ? "webm" : mimeType.includes("quicktime") ? "mov" : "mp4";
+  const filename = `videos/${crypto.randomUUID()}.${ext}`;
+
+  const { data, error } = await supabase.storage
+    .from(BUCKET)
+    .createSignedUploadUrl(filename);
+
+  if (error || !data) throw new Error(error?.message || "Errore creazione upload session");
+
+  return {
+    resumableUri: data.signedUrl, // PUT directly to this URL — no server proxy needed
+    finalUrl: getPublicUrl(filename),
+  };
+}
+
 export async function getSignedVideoUrl(filename: string, expiresInSeconds = 14400): Promise<string> {
   const { data, error } = await supabase.storage
     .from(BUCKET)

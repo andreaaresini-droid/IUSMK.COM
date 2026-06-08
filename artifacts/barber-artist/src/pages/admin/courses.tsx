@@ -382,74 +382,54 @@ async function uploadImageFile(
   });
 }
 
-// ── Resumable video upload: browser → GCS XML API (chunk 8MB, retry 3×) ───────
-// Works for files of any size (tested on 2GB+). No server-side memory involved.
-// GCS resumable session is valid for 7 days — upload cannot timeout.
-const GCS_CHUNK_SIZE = 8 * 1024 * 1024; // 8 MB — must be multiple of 256 KB
-
+// ── Video upload: browser → Supabase Storage (signed URL, no server proxy) ──────
+// Backend creates a signed upload URL; browser PUTs the file directly to Supabase.
+// No file data passes through the Vercel serverless function → no 4.5 MB limit.
+// Requires Supabase Storage file-size limit ≥ video size (increase in Supabase
+// dashboard → Storage → Settings → "File size limit", default 50 MB → set 5 GB+).
 async function uploadVideoFile(
   file: File,
   onProgress: (pct: number) => void,
 ): Promise<string> {
-  const token = localStorage.getItem("barber_artist_token") || "";
+  const authToken = localStorage.getItem("barber_artist_token") || "";
 
-  // Step 1 — initiate resumable session on server (server calls GCS createResumableUpload)
+  // Step 1 — ask backend for a Supabase signed upload URL
   onProgress(1);
-  const initRes = await fetch(`${(import.meta.env.VITE_API_URL as string | undefined) ?? ""}/api/upload/video/resumable`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ contentType: file.type }),
-  });
+  const initRes = await fetch(
+    `${(import.meta.env.VITE_API_URL as string | undefined) ?? ""}/api/upload/video/resumable`,
+    {
+      method: "POST",
+      headers: { Authorization: `Bearer ${authToken}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ contentType: file.type }),
+    },
+  );
   if (!initRes.ok) {
     const errBody = await initRes.json().catch(() => ({}));
     throw new Error(errBody.error || "Errore nell'avvio dell'upload video.");
   }
   const { resumableUri, finalUrl } = await initRes.json();
 
-  // Step 2 — upload chunks directly to GCS (browser → GCS, no Replit proxy)
-  const fileSize = file.size;
-  let offset = 0;
+  // Step 2 — PUT file directly to Supabase signed URL (browser → Supabase CDN)
+  await new Promise<void>((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("PUT", resumableUri);
+    xhr.setRequestHeader("Content-Type", file.type);
 
-  while (offset < fileSize) {
-    const chunkEnd = Math.min(offset + GCS_CHUNK_SIZE, fileSize);
-    const chunk = file.slice(offset, chunkEnd);
-
-    let attempts = 0;
-    while (true) {
-      try {
-        const resp = await fetch(resumableUri, {
-          method: "PUT",
-          headers: {
-            "Content-Type": file.type,
-            "Content-Range": `bytes ${offset}-${chunkEnd - 1}/${fileSize}`,
-          },
-          body: chunk,
-        });
-
-        // GCS: 308 = chunk received, more expected
-        //       200 / 201 = upload complete (last chunk accepted)
-        if (resp.status === 308 || resp.status === 200 || resp.status === 201) {
-          offset = chunkEnd;
-          // Progress: 1% reserved for init, 98% for upload, 1% for final ack
-          onProgress(1 + Math.round((offset / fileSize) * 98));
-          break;
-        }
-
-        // Recoverable HTTP errors (500/503) — retry with backoff
-        if (resp.status >= 500 && attempts < 3) {
-          attempts++;
-          await new Promise((r) => setTimeout(r, 1500 * attempts));
-          continue;
-        }
-
-        throw new Error(`Errore GCS ${resp.status} durante il caricamento.`);
-      } catch (err: any) {
-        attempts++;
-        if (attempts >= 3) throw err;
-        await new Promise((r) => setTimeout(r, 2000 * attempts));
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable) {
+        onProgress(1 + Math.round((e.loaded / e.total) * 98));
       }
-    }
-  }
+    };
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        resolve();
+      } else {
+        reject(new Error(`Errore upload ${xhr.status}: ${xhr.responseText}`));
+      }
+    };
+    xhr.onerror = () => reject(new Error("Errore di rete durante l'upload. Controlla la connessione."));
+    xhr.send(file);
+  });
 
   onProgress(100);
   return finalUrl;

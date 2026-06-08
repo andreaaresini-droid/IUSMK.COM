@@ -1,7 +1,7 @@
 import { Router } from "express";
 import multer from "multer";
 import { requireAdmin } from "../middlewares/authMiddleware.js";
-import { uploadImage, uploadVideo, isSupabaseStorageConfigured } from "../lib/supabaseStorage.js";
+import { uploadImage, uploadVideo, isSupabaseStorageConfigured, createVideoUploadSession } from "../lib/supabaseStorage.js";
 
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/jpg"];
 const ALLOWED_VIDEO_TYPES = ["video/mp4", "video/quicktime", "video/webm"];
@@ -91,6 +91,23 @@ router.post("/video", (req, res) => {
       res.status(500).json({ error: "Errore durante il caricamento su Supabase Storage. Riprova." });
     }
   });
+});
+
+// ── Video upload session: returns Supabase signed URL for direct browser→Supabase PUT ──
+// No file passes through the server — Vercel 4.5 MB limit is not a concern.
+router.post("/video/resumable", async (req, res) => {
+  if (!isSupabaseStorageConfigured()) {
+    res.status(503).json({ error: "Storage non configurato. Controlla SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY." });
+    return;
+  }
+  const { contentType = "video/mp4" } = (req.body ?? {}) as { contentType?: string };
+  try {
+    const session = await createVideoUploadSession(contentType);
+    res.json(session); // { resumableUri, finalUrl }
+  } catch (err: any) {
+    console.error("[upload] video/resumable session error:", err);
+    res.status(500).json({ error: err.message || "Errore avvio upload video." });
+  }
 });
 
 export default router;
