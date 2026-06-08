@@ -1,12 +1,39 @@
 import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { lazy, Suspense, useState, useEffect } from "react";
+import { lazy, Suspense, useState, useEffect, Component } from "react";
+import type { ReactNode, ErrorInfo } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import { IntroOverlay } from "@/components/IntroOverlay";
 import { AiChatWidget } from "@/components/AiChatWidget";
 import { InstallPromptModal } from "@/components/InstallPromptModal";
+
+class AppErrorBoundary extends Component<
+  { children: ReactNode },
+  { error: Error | null }
+> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { error: null };
+  }
+  static getDerivedStateFromError(error: Error) { return { error }; }
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error("[AppErrorBoundary]", error, info.componentStack);
+  }
+  render() {
+    if (this.state.error) {
+      return (
+        <div style={{ padding: 32, color: "#fff", background: "#111", fontFamily: "monospace", minHeight: "100vh" }}>
+          <h2 style={{ color: "#FFD600", marginBottom: 16 }}>Errore di rendering</h2>
+          <pre style={{ whiteSpace: "pre-wrap", fontSize: 13 }}>{this.state.error.message}</pre>
+          <pre style={{ whiteSpace: "pre-wrap", fontSize: 11, opacity: 0.6, marginTop: 16 }}>{this.state.error.stack}</pre>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 // Eager — critical on first paint
 import Home from "@/pages/home";
@@ -159,6 +186,7 @@ function App() {
   };
 
   return (
+    <AppErrorBoundary>
     <QueryClientProvider client={queryClient}>
       <LanguageProvider>
         <TooltipProvider>
@@ -173,6 +201,7 @@ function App() {
         </TooltipProvider>
       </LanguageProvider>
     </QueryClientProvider>
+    </AppErrorBoundary>
   );
 }
 

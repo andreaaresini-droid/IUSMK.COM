@@ -55,10 +55,13 @@ export default defineConfig({
           if (id.includes("framer-motion")) return "vendor-motion";
           if (id.includes("@radix-ui")) return "vendor-radix";
           if (id.includes("@tanstack")) return "vendor-query";
+          // Use exact package-name regex to avoid accidentally matching paths
+          // like node_modules/some-pkg/react/... which would pull packages that
+          // import from vendor into vendor-react, creating a circular chunk dep.
           if (
-            id.includes("react-dom") ||
-            id.includes("react/") ||
-            id.includes("scheduler")
+            /node_modules\/react\//.test(id) ||
+            /node_modules\/react-dom\//.test(id) ||
+            /node_modules\/scheduler\//.test(id)
           ) return "vendor-react";
           if (id.includes("recharts") || id.includes("d3-")) return "vendor-charts";
           return "vendor";

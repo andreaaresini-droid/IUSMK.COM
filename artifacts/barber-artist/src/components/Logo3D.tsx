@@ -23,8 +23,10 @@ import * as THREE from "three";
 const MODEL_SRC        = `${import.meta.env.BASE_URL}logo-3d.glb`;
 const HEADER_LOGO_SRC  = `${import.meta.env.BASE_URL}logo-3d-nero.glb`;
 
-useGLTF.preload(MODEL_SRC);
-useGLTF.preload(HEADER_LOGO_SRC);
+// Wrapped in try-catch: if three/fiber aren't fully initialized yet due to
+// module evaluation order, this would throw and crash the entire module.
+try { useGLTF.preload(MODEL_SRC); } catch {}
+try { useGLTF.preload(HEADER_LOGO_SRC); } catch {}
 
 // ── WebGL check ───────────────────────────────────────────────────────────────
 function hasWebGL(): boolean {
