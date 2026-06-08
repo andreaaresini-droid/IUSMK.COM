@@ -177,6 +177,9 @@ export function IntroOverlay({ onComplete }: Props) {
                   ease:     "easeIn",
                 }
           }
+          onAnimationComplete={() => {
+            if (phase === "animating") startOutro();
+          }}
           style={{
             position:        "absolute",
             inset:           0,
