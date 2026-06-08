@@ -6,7 +6,8 @@ import { logger } from "./logger";
 
 export async function initializeDatabase(): Promise<void> {
   try {
-    const existingAdmin = await db.query.adminsTable.findFirst();
+    // Use query-builder API (not relational) to avoid cold-start schema init issues
+    const [existingAdmin] = await db.select().from(adminsTable).limit(1);
     if (!existingAdmin) {
       await db.insert(adminsTable).values({
         username: "iusmk",
@@ -28,19 +29,18 @@ export async function initializeDatabase(): Promise<void> {
       logger.info("Admin account updated");
     }
 
-    const existingCourse = await db.query.coursesTable.findFirst();
+    const [existingCourse] = await db.select().from(coursesTable).limit(1);
     if (!existingCourse) {
       const [course] = await db
         .insert(coursesTable)
         .values({
-          title: "taglio",
+          title: "Taglio Maschile",
           slug: "taglio",
           description:
             "Il corso professionale sul taglio maschile firmato IUSMK. Tecniche, stili e segreti del barbiere artista.",
           shortDescription: "Taglio maschile professionale — tecniche e stile IUSMK.",
           level: "intermediate",
           durationHours: 4,
-          thumbnailUrl: "/api/uploads/98bc3cd2ad2245deb3e8ffad1f019599.jpeg",
           price: 300,
           isPublished: true,
           whatYouLearn: [
@@ -55,7 +55,7 @@ export async function initializeDatabase(): Promise<void> {
 
       await db.insert(courseModulesTable).values({
         courseId: course.id,
-        title: "taglio",
+        title: "Taglio",
         description: "Modulo principale del corso taglio",
         orderIndex: 0,
         durationMinutes: 240,
@@ -65,6 +65,7 @@ export async function initializeDatabase(): Promise<void> {
       logger.info("Initial course created");
     }
   } catch (err) {
+    console.error("[INIT] Database initialization error:", err);
     logger.error({ err }, "Database initialization error");
   }
 }

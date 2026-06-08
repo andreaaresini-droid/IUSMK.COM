@@ -54,11 +54,11 @@ export default defineConfig({
           if (id.includes("three") || id.includes("@react-three")) return "vendor-three";
           if (id.includes("framer-motion")) return "vendor-motion";
           if (id.includes("@radix-ui")) return "vendor-radix";
+          if (id.includes("@tanstack")) return "vendor-query";
           if (
             id.includes("react-dom") ||
             id.includes("react/") ||
-            id.includes("scheduler") ||
-            id.includes("@tanstack")
+            id.includes("scheduler")
           ) return "vendor-react";
           if (id.includes("recharts") || id.includes("d3-")) return "vendor-charts";
           return "vendor";
