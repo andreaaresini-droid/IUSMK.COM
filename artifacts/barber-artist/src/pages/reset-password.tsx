@@ -30,13 +30,17 @@ export default function ResetPassword() {
     fetch(`${apiBase}/api/auth/customer/verify-reset-token?token=${encodeURIComponent(rawToken)}`)
       .then((res) => res.json())
       .then((data) => {
+        console.log("[reset-password] verify response:", data);
         if (data.valid) {
           setMode("form");
         } else {
           setMode("no-token");
         }
       })
-      .catch(() => setMode("no-token"));
+      .catch((err) => {
+        console.error("[reset-password] verify fetch error:", err);
+        setMode("no-token");
+      });
   }, []);
 
   const validate = () => {
@@ -118,10 +122,15 @@ export default function ResetPassword() {
               <div className="text-center space-y-4">
                 <XCircle size={48} className="text-red-400 mx-auto" />
                 <p className="text-red-400 font-medium">
-                  Il link non è valido o è scaduto. Usa il link ricevuto via email.
+                  Il link non è valido o è scaduto.
                 </p>
-                <Link href="/forgot-password" className="inline-block text-sm text-primary hover:underline mt-2">
-                  Richiedi un nuovo link di recupero
+                <p className="text-muted-foreground text-sm">
+                  Il link di reset è valido per 1 ora. Se è passato troppo tempo, richiedi un nuovo link.
+                </p>
+                <Link href="/forgot-password" className="inline-block mt-2">
+                  <button className="bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-xl font-semibold text-sm transition-colors">
+                    Richiedi nuovo link
+                  </button>
                 </Link>
               </div>
             )}
