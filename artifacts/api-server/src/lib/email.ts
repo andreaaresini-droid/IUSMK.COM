@@ -179,18 +179,19 @@ export async function sendPasswordResetEmail(
   firstName: string,
   resetToken: string,
 ): Promise<void> {
-  // APP_URL must be an explicit secret — never auto-detect from runtime/dev domains
   const appUrl = process.env.APP_URL;
 
   if (!appUrl) {
-    console.error("[RESET_LINK_ERROR] APP_URL mancante — impossibile costruire il link di reset");
-    console.error("[RESET_LINK_ERROR] Imposta il Secret APP_URL = https://iusmk.com (o il tuo dominio pubblico)");
-    console.error("[RESET_LINK_ERROR] Email di reset NON inviata a:", toEmail);
+    console.error("[RESET_LINK_ERROR] APP_URL mancante — email di reset NON inviata a:", toEmail);
     return;
   }
 
-  // Strip trailing slash so the URL is always clean
-  const baseUrl = appUrl.replace(/\/+$/, "");
+  // Normalize: strip trailing slash, add https:// if protocol is missing
+  let baseUrl = appUrl.replace(/\/+$/, "");
+  if (!baseUrl.startsWith("http://") && !baseUrl.startsWith("https://")) {
+    baseUrl = `https://${baseUrl}`;
+    console.warn("[RESET_LINK_WARN] APP_URL non aveva protocollo, aggiunto https:// automaticamente:", baseUrl);
+  }
   const resetUrl = `${baseUrl}/reset-password?token=${resetToken}`;
 
   console.log("[RESET_LINK] APP_URL usato:", baseUrl);
