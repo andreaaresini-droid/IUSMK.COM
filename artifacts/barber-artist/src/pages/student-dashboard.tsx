@@ -95,21 +95,27 @@ export default function StudentDashboard() {
   const activeCourse = courses?.find((c: any) => c.id === activeCourseId);
   const activeModule = activeCourse?.modules?.find((m: any) => m.id === activeModuleId);
 
+  // Resolve the stream URL to absolute: the backend returns a relative path (/api/video/stream?token=...)
+  // which must be prefixed with VITE_API_URL (the backend domain) — the <video> src is NOT routed via fetchApi.
+  const _apiBase = (import.meta.env.VITE_API_URL as string | undefined) ?? "";
+  const resolvedStreamUrl = videoData?.streamUrl
+    ? (videoData.streamUrl.startsWith("/") ? `${_apiBase}${videoData.streamUrl}` : videoData.streamUrl)
+    : null;
+
   // Debug: log video URLs to console so the browser DevTools shows the actual URLs
-  // This helps diagnose black-screen / 00:00 issues on any device
   useEffect(() => {
     if (!disclaimerConfirmed || !activeCourseId || !activeModuleId) return;
     const rawUrl = activeModule?.videoUrl ?? "(nessun video nel modulo)";
-    const streamUrl = videoData?.streamUrl ?? "(streamUrl non ancora disponibile)";
+    const streamUrl = resolvedStreamUrl ?? "(streamUrl non ancora disponibile)";
     console.log("[video-debug] rawVideoUrl:", rawUrl);
     console.log("[video-debug] streamUrl:", streamUrl);
-    if (videoData?.streamUrl) {
-      console.log("[video-debug] Testing stream HEAD:", videoData.streamUrl);
-      fetch(videoData.streamUrl, { method: "HEAD" })
+    if (resolvedStreamUrl) {
+      console.log("[video-debug] Testing stream HEAD:", resolvedStreamUrl);
+      fetch(resolvedStreamUrl, { method: "HEAD" })
         .then(r => console.log(`[video-debug] HEAD → ${r.status}, content-type: ${r.headers.get("content-type")}, content-length: ${r.headers.get("content-length")}, accept-ranges: ${r.headers.get("accept-ranges")}`))
         .catch(e => console.error("[video-debug] HEAD error:", e.message));
     }
-  }, [videoData, activeModule, disclaimerConfirmed, activeCourseId, activeModuleId]);
+  }, [resolvedStreamUrl, activeModule, disclaimerConfirmed, activeCourseId, activeModuleId]);
 
   // ─── Auto-save video progress every 15s ──────────────────────────────────────
   useEffect(() => {
@@ -287,13 +293,13 @@ export default function StudentDashboard() {
                             <p className="text-white/60 text-sm">Caricamento lezione...</p>
                           </div>
                         </div>
-                      ) : videoData?.streamUrl ? (
+                      ) : resolvedStreamUrl ? (
                         /* ── Inline video player ── */
                         <div className="relative w-full h-full">
                           <video
                             ref={videoRef}
-                            key={`${activeModuleId}-${videoData.streamUrl}`}
-                            src={videoData.streamUrl}
+                            key={`${activeModuleId}-${resolvedStreamUrl}`}
+                            src={resolvedStreamUrl}
                             controls
                             playsInline
                             preload="metadata"
