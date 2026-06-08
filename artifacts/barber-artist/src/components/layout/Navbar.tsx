@@ -206,7 +206,7 @@ export function Navbar() {
           : "bg-transparent border-transparent py-6 transition-all duration-300"
       )}
     >
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center relative z-50">
         <Link href="/" className="flex items-center shrink-0" style={{ overflow: "visible" }}>
           <Logo3D
             variant="header"
@@ -273,7 +273,7 @@ export function Navbar() {
       </div>
 
       {isOpen && (
-        <div className="md:hidden fixed inset-0 top-0 bg-card flex flex-col pt-[6.5rem] pb-6 px-5 gap-1 overflow-y-auto z-40">
+        <div className="md:hidden fixed inset-x-0 top-0 h-[65vh] bg-card border-b border-white/10 shadow-2xl flex flex-col pt-[6.5rem] pb-6 px-5 gap-1 overflow-y-auto z-40">
           {/* ── SEZIONE SUPERIORE: nav links allineati a sinistra ── */}
           {navLinks.map((link) => (
             <Link
