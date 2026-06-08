@@ -1,34 +1,15 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
-// ─── Gmail SMTP via Nodemailer ────────────────────────────────────────────────
-// Required secrets: SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM
-// Required for reset links: APP_URL (e.g. https://iusmk.com)
-//
-// APP_URL MUST be set explicitly in Replit Secrets.
-// Never use automatic/dev/preview domains — customers cannot reach them.
+// ─── Resend (transactional email for Vercel serverless) ───────────────────────
+// Required env vars:
+//   RESEND_API_KEY  — from resend.com dashboard
+//   RESEND_FROM     — verified sender, e.g. "IUSMK Academy <noreply@iusmk.com>"
+//   APP_URL         — public frontend URL, e.g. https://iusmk.vercel.app
 
-function getSmtpConfig() {
-  return {
-    host: process.env.SMTP_HOST,
-    port: Number(process.env.SMTP_PORT) || 587,
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-    from: process.env.SMTP_FROM,
-  };
-}
-
-function createTransporter() {
-  const cfg = getSmtpConfig();
-  const secure = cfg.port === 465;
-  return nodemailer.createTransport({
-    host: cfg.host,
-    port: cfg.port,
-    secure,
-    auth: {
-      user: cfg.user,
-      pass: cfg.pass,
-    },
-  });
+function getResendClient(): Resend | null {
+  const key = process.env.RESEND_API_KEY;
+  if (!key) return null;
+  return new Resend(key);
 }
 
 export async function sendEmail(
@@ -36,47 +17,29 @@ export async function sendEmail(
   subject: string,
   html: string,
 ): Promise<{ ok: boolean; result?: any; error?: any }> {
-  const cfg = getSmtpConfig();
+  const resend = getResendClient();
+  const from = process.env.RESEND_FROM || "IUSMK Academy <noreply@iusmk.com>";
 
-  console.log("[EMAIL_DEBUG] sendEmail called");
-  console.log("[EMAIL_DEBUG] to:", to);
-  console.log("[EMAIL_DEBUG] subject:", subject);
-  console.log("[EMAIL_DEBUG] from value:", cfg.from ?? "(NOT SET)");
-  console.log("[EMAIL_DEBUG] SMTP_HOST:", cfg.host ?? "(NOT SET)");
-  console.log("[EMAIL_DEBUG] SMTP_USER:", cfg.user ?? "(NOT SET)");
+  console.log("[EMAIL_DEBUG] sendEmail called — to:", to, "subject:", subject);
+  console.log("[EMAIL_DEBUG] from:", from);
+  console.log("[EMAIL_DEBUG] RESEND_API_KEY presente:", !!process.env.RESEND_API_KEY);
 
-  if (!cfg.host) {
-    console.error("[EMAIL_FAIL] SMTP_HOST mancante");
-    return { ok: false, error: "missing_smtp_host" };
-  }
-  if (!cfg.user) {
-    console.error("[EMAIL_FAIL] SMTP_USER mancante");
-    return { ok: false, error: "missing_smtp_user" };
-  }
-  if (!cfg.pass) {
-    console.error("[EMAIL_FAIL] SMTP_PASS mancante");
-    return { ok: false, error: "missing_smtp_pass" };
-  }
-  if (!cfg.from) {
-    console.error("[EMAIL_FAIL] SMTP_FROM mancante");
-    return { ok: false, error: "missing_smtp_from" };
+  if (!resend) {
+    console.error("[EMAIL_FAIL] RESEND_API_KEY mancante — imposta la variabile in Vercel");
+    return { ok: false, error: "missing_resend_api_key" };
   }
 
   try {
-    const transporter = createTransporter();
-    const info = await transporter.sendMail({
-      from: cfg.from,
-      to,
-      subject,
-      html,
-    });
-    console.log("[EMAIL_OK] email inviata correttamente");
-    console.log("[EMAIL_OK] messageId:", info.messageId);
-    return { ok: true, result: info };
+    const { data, error } = await resend.emails.send({ from, to, subject, html });
+    if (error) {
+      console.error("[EMAIL_FAIL] Resend error:", error);
+      return { ok: false, error };
+    }
+    console.log("[EMAIL_OK] email inviata — id:", data?.id);
+    return { ok: true, result: data };
   } catch (err: any) {
     const msg = err?.message || String(err);
-    console.error("[EMAIL_FAIL] errore SMTP completo:", msg);
-    console.error("[EMAIL_FAIL] stack:", err?.stack || "(no stack)");
+    console.error("[EMAIL_FAIL] eccezione:", msg);
     return { ok: false, error: msg };
   }
 }
