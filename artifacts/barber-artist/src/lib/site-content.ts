@@ -2,9 +2,9 @@ const BASE = import.meta.env.BASE_URL;
 
 export const SITE_CONTENT = {
   artist: {
-    photo: `${BASE}images/iusmk-portrait.png`,
+    photo: `${BASE}images/iusmk-portrait.webp`,
     photoAlt: "Giuseppe Musto — IUSMK, Barber Artist",
-    aboutBanner: `${BASE}images/iusmk-portrait.png`,
+    aboutBanner: `${BASE}images/iusmk-portrait.webp`,
     aboutBannerAlt: "Giuseppe Musto — IUSMK",
   },
 
