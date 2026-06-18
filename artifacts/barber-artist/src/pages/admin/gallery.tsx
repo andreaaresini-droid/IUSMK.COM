@@ -386,7 +386,8 @@ export default function AdminGallery() {
   ): Promise<{ url: string; thumbnailUrl?: string }> =>
     new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
-      xhr.open("POST", "/api/upload/image");
+      const apiBase = (import.meta.env.VITE_API_URL as string | undefined) ?? "";
+      xhr.open("POST", `${apiBase}/api/upload/image`);
       xhr.setRequestHeader("Authorization", `Bearer ${token}`);
       xhr.upload.onprogress = (e) => {
         if (e.lengthComputable) setUploadProgress(Math.round((e.loaded / e.total) * 100));
