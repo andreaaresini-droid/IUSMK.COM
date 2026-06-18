@@ -454,21 +454,23 @@ export default function AdminGallery() {
         uploadedUrl = result.url;
         imageThumbnailUrl = result.thumbnailUrl;
       } else {
-        // ── Video: signed URL direct upload — bypasses Replit proxy limit ──
-        // Step 1: ask server for a signed GCS PUT URL (no body sent)
+        // ── Video: signed URL direct upload — bypasses serverless body limit ──
+        // Step 1: ask server for a Supabase signed upload URL (no file sent)
         setUploadProgress(3);
-        const initRes = await fetch("/api/upload/video/init", {
+        const apiBase = (import.meta.env.VITE_API_URL as string | undefined) ?? "";
+        const initRes = await fetch(`${apiBase}/api/upload/video/resumable`, {
           method: "POST",
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+          body: JSON.stringify({ contentType: selectedFile.type }),
         });
         if (!initRes.ok) {
           const err = await initRes.json().catch(() => ({}));
           throw new Error(err.error || "Errore nella preparazione dell'upload video.");
         }
-        const { signedUrl, finalUrl } = await initRes.json();
+        const { resumableUri, finalUrl } = await initRes.json();
 
-        // Step 2: PUT file directly to GCS using signed URL
-        await uploadVideoToSignedUrl(signedUrl, selectedFile, (pct) => {
+        // Step 2: PUT file directly to Supabase Storage using the signed URL
+        await uploadVideoToSignedUrl(resumableUri, selectedFile, (pct) => {
           // map 5 → 98 while uploading
           setUploadProgress(5 + Math.round(pct * 0.93));
         });
