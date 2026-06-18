@@ -72,6 +72,57 @@ export function useCustomerLogin() {
   });
 }
 
+// Login unico: prova prima il login cliente, poi (in fallback) quello admin.
+// Usato dal form clienti (/login) così l'admin accede col proprio username.
+export function useUniversalLogin() {
+  const [, setLocation] = useLocation();
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async (data: { identifier: string; password: string }) => {
+      const id = data.identifier.trim().toLowerCase();
+      try {
+        // 1) login cliente (email)
+        return await fetchApi<any>("/auth/customer/login", {
+          method: "POST",
+          body: JSON.stringify({ email: id, password: data.password }),
+        }, false);
+      } catch {
+        // 2) fallback login admin (username)
+        try {
+          return await fetchApi<any>("/auth/admin/login", {
+            method: "POST",
+            body: JSON.stringify({ username: id, password: data.password }),
+          }, false);
+        } catch {
+          throw new Error("Credenziali non valide");
+        }
+      }
+    },
+    onSuccess: (data) => {
+      localStorage.setItem("barber_artist_token", data.token);
+      queryClient.setQueryData(["current-user"], data.user);
+      if (data.user?.role === "admin") {
+        toast({ title: "Benvenuto", description: "Accesso all'area admin effettuato." });
+        setLocation("/admin/dashboard");
+        return;
+      }
+      toast({ title: "Accesso effettuato", description: "Bentornato su IUSMK Academy." });
+      const redirectTo = sessionStorage.getItem("checkout_redirect");
+      if (redirectTo) {
+        sessionStorage.removeItem("checkout_redirect");
+        setLocation(redirectTo);
+      } else {
+        setLocation("/");
+      }
+    },
+    onError: (err: any) => {
+      toast({ title: "Accesso fallito", description: err.message || "Credenziali non valide", variant: "destructive" });
+    },
+  });
+}
+
 export function useStudentLogin() {
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();

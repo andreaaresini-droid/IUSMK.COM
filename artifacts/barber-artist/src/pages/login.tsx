@@ -2,17 +2,22 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { useCustomerLogin, useCurrentUser } from "@/hooks/use-auth";
+import { useUniversalLogin, useCurrentUser } from "@/hooks/use-auth";
 import { Loader2, Eye, EyeOff, ShoppingCart } from "lucide-react";
 
 export default function Login() {
   const [, setLocation] = useLocation();
   const { data: user } = useCurrentUser();
-  const customerLogin = useCustomerLogin();
+  const universalLogin = useUniversalLogin();
 
-  // Se già loggato, porta alla home
+  // Se già loggato, reindirizza in base al ruolo
   useEffect(() => {
-    if (user && (user.role === "customer" || user.role === "student")) {
+    if (!user) return;
+    if (user.role === "admin") {
+      setLocation("/admin/dashboard");
+      return;
+    }
+    if (user.role === "customer" || user.role === "student") {
       const redirectTo = sessionStorage.getItem("checkout_redirect");
       if (redirectTo) {
         sessionStorage.removeItem("checkout_redirect");
@@ -30,8 +35,8 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.email.trim() || !form.password) return;
-    customerLogin.mutate({
-      email: form.email.trim().toLowerCase(),
+    universalLogin.mutate({
+      identifier: form.email,
       password: form.password,
     });
   };
@@ -66,14 +71,14 @@ export default function Login() {
 
           <form onSubmit={handleSubmit} className="bg-card border border-white/10 rounded-2xl p-8 space-y-5">
             <div>
-              <label className="text-sm text-muted-foreground mb-1 block">E-mail</label>
+              <label className="text-sm text-muted-foreground mb-1 block">Email o username</label>
               <input
-                type="email"
+                type="text"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
-                placeholder="email@esempio.com"
+                placeholder="La tua email o username"
                 className={inputClass}
-                autoComplete="email"
+                autoComplete="username"
                 required
               />
             </div>
@@ -106,18 +111,18 @@ export default function Login() {
               </Link>
             </div>
 
-            {customerLogin.isError && (
+            {universalLogin.isError && (
               <div className="bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3 text-red-400 text-sm">
-                {(customerLogin.error as any)?.message || "Email o password non corretti"}
+                {(universalLogin.error as any)?.message || "Credenziali non corrette"}
               </div>
             )}
 
             <button
               type="submit"
-              disabled={customerLogin.isPending || !form.email || !form.password}
+              disabled={universalLogin.isPending || !form.email || !form.password}
               className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white py-4 rounded-xl font-semibold text-base transition-colors disabled:opacity-60"
             >
-              {customerLogin.isPending ? (
+              {universalLogin.isPending ? (
                 <><Loader2 size={18} className="animate-spin" /> Accesso in corso...</>
               ) : (
                 "Accedi"

@@ -95,17 +95,6 @@ export function Footer() {
             &copy; {new Date().getFullYear()} IUSMK — Giuseppe Musto. {f.rights}
           </p>
 
-          {/* Admin panel — centered, below copyright */}
-          <div className="flex flex-col items-center gap-1.5 pt-1">
-            <p className="text-xs text-white/25 uppercase tracking-widest">{f.adminPanel}</p>
-            <Link
-              href="/admin"
-              className="text-sm font-semibold text-primary hover:text-primary/80 hover:underline transition-colors"
-            >
-              {f.adminAccess}
-            </Link>
-          </div>
-
         </div>
 
       </div>
