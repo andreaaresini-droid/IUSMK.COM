@@ -9,7 +9,7 @@ import { db } from "@workspace/db";
 import { notificationsTable } from "@workspace/db/schema";
 import { eq } from "drizzle-orm";
 import { logger } from "./logger";
-import { sendPushToUser, sendPushToAdmin, sendPushToUsers } from "./webPush";
+import { notifyUser, notifyAdmin, notifyUsers } from "./pushDispatch";
 
 // ─── Notification types ───────────────────────────────────────────────────────
 
@@ -197,18 +197,17 @@ export async function dispatchNotificationToUser(
 
   // 3. Send push
   try {
-    const result = await sendPushToUser(userId, payload);
-    const pushed = result.sent > 0;
+    await notifyUser(userId, payload);
     await db.update(notificationsTable)
       .set({
-        pushSent:  pushed,
-        pushSentAt: pushed ? new Date() : null,
-        pushError: result.failed > 0 ? `${result.failed} failed` : null,
-        updatedAt: new Date(),
+        pushSent:   true,
+        pushSentAt: new Date(),
+        pushError:  null,
+        updatedAt:  new Date(),
       })
       .where(eq(notificationsTable.id, notif.id));
 
-    logger.info({ notifId: notif.id, userId, ...result }, "[NOTIFY] Push result for user");
+    logger.info({ notifId: notif.id, userId }, "[NOTIFY] dispatched to user");
   } catch (err) {
     logger.error({ err, notifId: notif.id, userId }, "[NOTIFY] Push send error");
     await db.update(notificationsTable)
@@ -254,18 +253,17 @@ export async function dispatchNotificationToAdmin(
   });
 
   try {
-    const result = await sendPushToAdmin(payload);
-    const pushed = result.sent > 0;
+    await notifyAdmin(payload);
     await db.update(notificationsTable)
       .set({
-        pushSent:   pushed,
-        pushSentAt: pushed ? new Date() : null,
-        pushError:  result.failed > 0 ? `${result.failed} failed` : null,
+        pushSent:   true,
+        pushSentAt: new Date(),
+        pushError:  null,
         updatedAt:  new Date(),
       })
       .where(eq(notificationsTable.id, notif.id));
 
-    logger.info({ notifId: notif.id, ...result }, "[NOTIFY] Push result for admin");
+    logger.info({ notifId: notif.id }, "[NOTIFY] dispatched to admin");
   } catch (err) {
     logger.error({ err, notifId: notif.id }, "[NOTIFY] Admin push send error");
     await db.update(notificationsTable)
@@ -312,7 +310,7 @@ export async function dispatchBroadcast(
     videoUrl: opts.videoUrl ?? undefined,
   });
 
-  const { sent, failed } = await sendPushToUsers(userIds, payload);
-  logger.info({ saved: userIds.length, sent, failed }, "[NOTIFY] Broadcast push result");
-  return { saved: userIds.length, sent, failed };
+  await notifyUsers(userIds, payload);
+  logger.info({ saved: userIds.length }, "[NOTIFY] Broadcast push dispatched");
+  return { saved: userIds.length, sent: 0, failed: 0 };
 }
