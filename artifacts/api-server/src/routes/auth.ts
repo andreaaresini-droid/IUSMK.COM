@@ -5,7 +5,7 @@ import { eq, and, isNotNull, sql, lt } from "drizzle-orm";
 import { comparePassword, hashPassword, generateToken, verifyToken, generateSessionToken, simpleHash, generateSecureResetToken, hashResetToken, supabaseAdmin } from "../lib/auth";
 import { requireAuth, requireAdmin, AuthRequest } from "../middlewares/authMiddleware";
 import { sendEmail, sendPasswordResetEmail } from "../lib/email";
-import { sendPushToAdmin } from "../lib/webPush";
+import { notifyAdmin } from "../lib/pushDispatch";
 
 const router: IRouter = Router();
 
@@ -44,7 +44,7 @@ router.post("/customer/register", async (req, res) => {
     console.log("[REGISTER] account creato con successo — id:", student.id, "email:", emailLower);
 
     // Notify admin of new registration
-    sendPushToAdmin({
+    notifyAdmin({
       title: "Nuovo cliente registrato — IUSMK",
       body: `${fullName} (${emailLower})`,
       url: `/admin/accounts?userId=${student.id}`,
@@ -607,7 +607,7 @@ router.post("/sync", async (req, res) => {
       role: "customer",
     }).returning();
 
-    sendPushToAdmin({
+    notifyAdmin({
       title: "Nuovo cliente registrato — IUSMK",
       body: `${fullName} (${emailLower})`,
       url: `/admin/accounts?userId=${student.id}`,

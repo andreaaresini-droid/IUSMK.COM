@@ -1,7 +1,7 @@
 import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
 import { contactRequestsTable, notificationsTable } from "@workspace/db/schema";
-import { sendPushToAdmin } from "../lib/webPush";
+import { notifyAdmin } from "../lib/pushDispatch";
 
 const SUBJECT_LABELS: Record<string, string> = {
   booking: "Prenotazione",
@@ -41,7 +41,7 @@ router.post("/", async (req, res) => {
       }),
     }).catch((err) => req.log.error({ err }, "Contact notification insert error"));
 
-    sendPushToAdmin({
+    notifyAdmin({
       title: "Nuovo messaggio — IUSMK",
       body: `${name}: ${label}`,
       url: `/admin/contacts?id=${inserted.id}`,

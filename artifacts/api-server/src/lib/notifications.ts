@@ -9,7 +9,7 @@ import { db } from "@workspace/db";
 import { notificationsTable } from "@workspace/db/schema";
 import { eq } from "drizzle-orm";
 import { logger } from "./logger";
-import { sendPushToUser, sendPushToAdmin, sendPushToUsers } from "./webPush";
+import { notifyUser, notifyAdmin, notifyUsers } from "./pushDispatch";
 
 // ─── Notification types ───────────────────────────────────────────────────────
 
@@ -197,7 +197,7 @@ export async function dispatchNotificationToUser(
 
   // 3. Send push
   try {
-    const result = await sendPushToUser(userId, payload);
+    const result = await notifyUser(userId, payload);
     const pushed = result.sent > 0;
     await db.update(notificationsTable)
       .set({
@@ -254,7 +254,7 @@ export async function dispatchNotificationToAdmin(
   });
 
   try {
-    const result = await sendPushToAdmin(payload);
+    const result = await notifyAdmin(payload);
     const pushed = result.sent > 0;
     await db.update(notificationsTable)
       .set({
@@ -312,7 +312,7 @@ export async function dispatchBroadcast(
     videoUrl: opts.videoUrl ?? undefined,
   });
 
-  const { sent, failed } = await sendPushToUsers(userIds, payload);
+  const { sent, failed } = await notifyUsers(userIds, payload);
   logger.info({ saved: userIds.length, sent, failed }, "[NOTIFY] Broadcast push result");
   return { saved: userIds.length, sent, failed };
 }

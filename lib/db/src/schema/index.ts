@@ -12,6 +12,7 @@ export * from "./contactRequests";
 export * from "./adminSessions";
 export * from "./studentCourseAccess";
 export * from "./pushSubscriptions";
+export * from "./nativePushTokens";
 export * from "./discountCodes";
 export * from "./coursePurchases";
 export * from "./notifications";

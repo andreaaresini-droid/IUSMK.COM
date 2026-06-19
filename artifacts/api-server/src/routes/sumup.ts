@@ -9,7 +9,7 @@ import crypto from "crypto";
 import { requireCustomerAuth, AuthRequest } from "../middlewares/authMiddleware.js";
 import { createSumUpCheckout, verifySumUpWebhookSignature } from "../lib/sumupClient.js";
 import { generateAccessCode } from "../lib/auth.js";
-import { sendPushToUser } from "../lib/webPush.js";
+import { notifyUser } from "../lib/pushDispatch.js";
 
 const router = Router();
 
@@ -183,7 +183,7 @@ router.post("/webhook", async (req: Request, res: Response) => {
     });
 
     // Invia push notification (ignora errori push — non bloccare il webhook)
-    sendPushToUser(userId, {
+    notifyUser(userId, {
       title: "Pagamento confermato — IUSMK",
       body: `Corso "${course.title}" acquistato! Il tuo codice di accesso è: ${code}`,
       url: "/notifications",
