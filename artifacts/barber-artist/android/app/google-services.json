@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "440088226950",
+    "project_id": "iusmk-eac1e",
+    "storage_bucket": "iusmk-eac1e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:440088226950:android:a914b81717b19304c13507",
+        "android_client_info": {
+          "package_name": "com.iusmk.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7WyzyTf1zbQMfkR15I74pt4pk8kH1KXc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
