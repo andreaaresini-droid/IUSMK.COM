@@ -9,6 +9,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.105.0",
     "cloudinary": "^2.6.1",
     "@workspace/api-zod": "workspace:*",
     "@workspace/db": "workspace:*",

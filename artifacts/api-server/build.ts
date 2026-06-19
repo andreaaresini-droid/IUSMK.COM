@@ -8,6 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const allowlist = [
+  "@anthropic-ai/sdk",
   "@google/generative-ai",
   "@supabase/supabase-js",
   "axios",

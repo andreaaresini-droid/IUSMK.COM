@@ -2,7 +2,7 @@ import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
 import { unansweredQuestionsTable, aiChatLogsTable } from "@workspace/db/schema";
 import { eq } from "drizzle-orm";
-import { openai } from "@workspace/integrations-openai-ai-server";
+import { anthropic, ASSISTANT_MODEL } from "../lib/anthropic.js";
 import {
   sanitizeInput,
   normalizeText,
@@ -151,17 +151,19 @@ router.post("/chat", async (req, res) => {
     // ── AI path (risposta singola JSON — compatibile con Vercel serverless) ──────
     const context = buildContext(relevantItems);
 
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      max_completion_tokens: 700,
+    const completion = await anthropic.messages.create({
+      model:      ASSISTANT_MODEL,
+      max_tokens: 700,
+      system:     buildSystemPrompt(context, lang),
       messages: [
-        { role: "system", content: buildSystemPrompt(context, lang) },
-        { role: "user",   content: sanitized },
+        { role: "user", content: sanitized },
       ],
-      stream: false,
     });
 
-    let fullReply = completion.choices[0]?.message?.content ?? "";
+    let fullReply = completion.content
+      .map((block) => (block.type === "text" ? block.text : ""))
+      .join("")
+      .trim();
 
     // Modello ha restituito risposta vuota — sintetizza dalla KB
     if (!fullReply && relevantItems.length > 0) {
