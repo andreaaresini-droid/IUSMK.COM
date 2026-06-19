@@ -55,6 +55,14 @@ Thumbs.db
 .env.local
 *.local
 
+# Firebase service-account / Admin SDK keys — SECRET, never commit.
+# (google-services.json is NOT secret and is intentionally committed.)
+*service-account*.json
+*serviceAccount*.json
+*-adminsdk-*.json
+firebase-adminsdk*.json
+iusmk-eac1e-*.json
+
 # Uploads
 uploads/
 .vercel
