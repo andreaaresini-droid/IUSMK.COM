@@ -32,6 +32,7 @@ async function requireStudentChatAccess(req: AuthRequest, res: Response, next: N
   }
 }
 import { getVapidPublicKey, saveSubscription, deleteSubscription } from "../lib/webPush";
+import { saveNativeToken, deleteNativeToken } from "../lib/fcmPush";
 import { dispatchNotificationToAdmin } from "../lib/notifications";
 import { generateVideoToken } from "../lib/auth";
 
@@ -551,6 +552,33 @@ router.delete("/push/subscribe", requireCustomerAuth, async (req: AuthRequest, r
     res.json({ success: true });
   } catch (err) {
     req.log.error({ err, userId: req.userId }, "[PUSH] Customer delete push subscription error");
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.post("/push/native-token", requireCustomerAuth, async (req: AuthRequest, res) => {
+  const { token, platform } = req.body;
+  if (!token) { res.status(400).json({ error: "token required" }); return; }
+  try {
+    const userAgent = req.headers["user-agent"] ?? null;
+    await saveNativeToken(token, req.userId!, "customer", platform ?? null, userAgent);
+    req.log.info({ userId: req.userId, platform }, "[FCM] Customer native token saved");
+    res.json({ success: true });
+  } catch (err) {
+    req.log.error({ err, userId: req.userId }, "[FCM] Customer save native token error");
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.delete("/push/native-token", requireCustomerAuth, async (req: AuthRequest, res) => {
+  const { token } = req.body;
+  if (!token) { res.status(400).json({ error: "token required" }); return; }
+  try {
+    await deleteNativeToken(token);
+    req.log.info({ userId: req.userId }, "[FCM] Customer native token removed");
+    res.json({ success: true });
+  } catch (err) {
+    req.log.error({ err, userId: req.userId }, "[FCM] Customer delete native token error");
     res.status(500).json({ error: "Internal Server Error" });
   }
 });

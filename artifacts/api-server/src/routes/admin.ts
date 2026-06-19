@@ -11,6 +11,7 @@ import { eq, desc, count, and, isNotNull, sql, ilike, or, ne, gte, asc } from "d
 import { requireAdmin, AuthRequest } from "../middlewares/authMiddleware";
 import { generateAccessCode, simpleHash, comparePassword } from "../lib/auth";
 import { getVapidPublicKey, saveSubscription, deleteSubscription, getUserPushStats } from "../lib/webPush";
+import { saveNativeToken, deleteNativeToken } from "../lib/fcmPush";
 import { dispatchNotificationToUser, dispatchNotificationToAdmin, dispatchBroadcast } from "../lib/notifications";
 // SumUp payment links non supportano l'API per promo codes — no-op mantenuto per compatibilità chiamanti.
 async function enablePromoCodesOnPaymentLink(_paymentLinkId: string | null | undefined): Promise<void> {
@@ -2009,6 +2010,32 @@ router.delete("/push/subscribe", async (req: AuthRequest, res) => {
     res.json({ success: true });
   } catch (err) {
     req.log.error({ err }, "[PUSH] Delete admin push subscription error");
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.post("/push/native-token", async (req: AuthRequest, res) => {
+  const { token, platform } = req.body;
+  if (!token) { res.status(400).json({ error: "token required" }); return; }
+  try {
+    const userAgent = req.headers["user-agent"] ?? null;
+    await saveNativeToken(token, req.userId ?? null, "admin", platform ?? null, userAgent);
+    req.log.info({ userId: req.userId, platform }, "[FCM] Admin native token saved");
+    res.json({ success: true });
+  } catch (err) {
+    req.log.error({ err }, "[FCM] Admin save native token error");
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.delete("/push/native-token", async (req: AuthRequest, res) => {
+  const { token } = req.body;
+  if (!token) { res.status(400).json({ error: "token required" }); return; }
+  try {
+    await deleteNativeToken(token);
+    res.json({ success: true });
+  } catch (err) {
+    req.log.error({ err }, "[FCM] Admin delete native token error");
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
