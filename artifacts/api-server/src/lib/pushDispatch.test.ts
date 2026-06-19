@@ -1,7 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-const webPush = vi.hoisted(() => ({ sendPushToUser: vi.fn(), sendPushToUsers: vi.fn(), sendPushToAdmin: vi.fn() }));
-const fcmPush = vi.hoisted(() => ({ sendFcmToUser: vi.fn(), sendFcmToUsers: vi.fn(), sendFcmToAdmin: vi.fn() }));
+const webPush = vi.hoisted(() => ({
+  sendPushToUser:  vi.fn().mockResolvedValue({ sent: 1, failed: 0 }),
+  sendPushToUsers: vi.fn().mockResolvedValue({ sent: 1, failed: 0 }),
+  sendPushToAdmin: vi.fn().mockResolvedValue({ sent: 1, failed: 0 }),
+}));
+const fcmPush = vi.hoisted(() => ({
+  sendFcmToUser:  vi.fn().mockResolvedValue({ sent: 1, failed: 0 }),
+  sendFcmToUsers: vi.fn().mockResolvedValue({ sent: 1, failed: 0 }),
+  sendFcmToAdmin: vi.fn().mockResolvedValue({ sent: 1, failed: 0 }),
+}));
 vi.mock("./webPush", () => webPush);
 vi.mock("./fcmPush", () => fcmPush);
 
@@ -29,5 +37,11 @@ describe("pushDispatch fan-out", () => {
     await notifyUsers([1, 2], payload);
     expect(webPush.sendPushToUsers).toHaveBeenCalledWith([1, 2], payload);
     expect(fcmPush.sendFcmToUsers).toHaveBeenCalledWith([1, 2], payload);
+  });
+
+  it("notifyUser returns aggregated sent/failed from both channels", async () => {
+    const payload = { title: "t", body: "b" };
+    const result = await notifyUser(5, payload);
+    expect(result).toEqual({ sent: 2, failed: 0 });
   });
 });

@@ -197,17 +197,18 @@ export async function dispatchNotificationToUser(
 
   // 3. Send push
   try {
-    await notifyUser(userId, payload);
+    const result = await notifyUser(userId, payload);
+    const pushed = result.sent > 0;
     await db.update(notificationsTable)
       .set({
-        pushSent:   true,
-        pushSentAt: new Date(),
-        pushError:  null,
-        updatedAt:  new Date(),
+        pushSent:  pushed,
+        pushSentAt: pushed ? new Date() : null,
+        pushError: result.failed > 0 ? `${result.failed} failed` : null,
+        updatedAt: new Date(),
       })
       .where(eq(notificationsTable.id, notif.id));
 
-    logger.info({ notifId: notif.id, userId }, "[NOTIFY] dispatched to user");
+    logger.info({ notifId: notif.id, userId, ...result }, "[NOTIFY] Push result for user");
   } catch (err) {
     logger.error({ err, notifId: notif.id, userId }, "[NOTIFY] Push send error");
     await db.update(notificationsTable)
@@ -253,17 +254,18 @@ export async function dispatchNotificationToAdmin(
   });
 
   try {
-    await notifyAdmin(payload);
+    const result = await notifyAdmin(payload);
+    const pushed = result.sent > 0;
     await db.update(notificationsTable)
       .set({
-        pushSent:   true,
-        pushSentAt: new Date(),
-        pushError:  null,
+        pushSent:   pushed,
+        pushSentAt: pushed ? new Date() : null,
+        pushError:  result.failed > 0 ? `${result.failed} failed` : null,
         updatedAt:  new Date(),
       })
       .where(eq(notificationsTable.id, notif.id));
 
-    logger.info({ notifId: notif.id }, "[NOTIFY] dispatched to admin");
+    logger.info({ notifId: notif.id, ...result }, "[NOTIFY] Push result for admin");
   } catch (err) {
     logger.error({ err, notifId: notif.id }, "[NOTIFY] Admin push send error");
     await db.update(notificationsTable)
@@ -310,7 +312,7 @@ export async function dispatchBroadcast(
     videoUrl: opts.videoUrl ?? undefined,
   });
 
-  await notifyUsers(userIds, payload);
-  logger.info({ saved: userIds.length }, "[NOTIFY] Broadcast push dispatched");
-  return { saved: userIds.length, sent: 0, failed: 0 };
+  const { sent, failed } = await notifyUsers(userIds, payload);
+  logger.info({ saved: userIds.length, sent, failed }, "[NOTIFY] Broadcast push result");
+  return { saved: userIds.length, sent, failed };
 }
