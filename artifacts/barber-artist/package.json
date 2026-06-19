@@ -10,6 +10,11 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {
+    "@capacitor/android": "^8.4.0",
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^8.4.0",
+    "@capacitor/core": "^8.4.0",
+    "@capacitor/ios": "^8.4.0",
     "@hookform/resolvers": "^3.10.0",
     "@radix-ui/react-accordion": "^1.2.4",
     "@radix-ui/react-alert-dialog": "^1.1.7",
@@ -66,6 +71,7 @@
     "react-icons": "^5.4.0",
     "react-resizable-panels": "^2.1.7",
     "recharts": "^2.15.2",
+    "sharp": "^0.34.5",
     "sonner": "^2.0.7",
     "tailwind-merge": "catalog:",
     "tailwindcss": "catalog:",
@@ -80,5 +86,11 @@
     "@react-three/fiber": "^9.6.0",
     "@supabase/supabase-js": "^2.45.0",
     "three": "^0.184.0"
+  },
+  "optionalDependencies": {
+    "@esbuild/win32-x64": "0.27.3",
+    "@rollup/rollup-win32-x64-msvc": "^4.62.0",
+    "@tailwindcss/oxide-win32-x64-msvc": "^4.3.1",
+    "lightningcss-win32-x64-msvc": "1.31.1"
   }
 }
