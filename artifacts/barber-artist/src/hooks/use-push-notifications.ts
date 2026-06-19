@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { fetchApi } from "@/lib/api-client";
+import { Capacitor } from "@capacitor/core";
+import { PushNotifications } from "@capacitor/push-notifications";
 
 function urlBase64ToUint8Array(base64String: string): ArrayBuffer {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
@@ -38,7 +40,61 @@ export function usePushNotifications(role: "admin" | "customer" = "admin") {
     "serviceWorker" in navigator &&
     "PushManager" in window;
 
+  const isNative = typeof Capacitor !== "undefined" && Capacitor.isNativePlatform();
+
+  // ── NATIVE (Capacitor) push via FCM/APNs ───────────────────────────
   useEffect(() => {
+    if (!isNative) return;
+
+    let removeListeners: (() => void) | undefined;
+
+    (async () => {
+      const perm = await PushNotifications.checkPermissions();
+      if (perm.receive === "denied") { setStatus("denied"); return; }
+      setStatus(perm.receive === "granted" ? "subscribed" : "unsubscribed");
+
+      const regHandle = await PushNotifications.addListener("registration", async (tok) => {
+        console.log("[push-native] token:", tok.value.slice(0, 24) + "…");
+        try {
+          await fetchApi(`${base}/push/native-token`, {
+            method: "POST",
+            body: JSON.stringify({ token: tok.value, platform: Capacitor.getPlatform() }),
+          }, false);
+          setStatus("subscribed");
+        } catch (err) {
+          console.warn("[push-native] token save failed:", err);
+        }
+      });
+
+      const errHandle = await PushNotifications.addListener("registrationError", (e) => {
+        console.error("[push-native] registration error:", e);
+        setError("Errore registrazione notifiche native");
+      });
+
+      const tapHandle = await PushNotifications.addListener(
+        "pushNotificationActionPerformed",
+        (action) => {
+          const url = (action.notification.data as Record<string, string> | undefined)?.url;
+          if (url) window.location.assign(url);
+        },
+      );
+
+      removeListeners = () => {
+        regHandle.remove();
+        errHandle.remove();
+        tapHandle.remove();
+      };
+
+      if (perm.receive === "granted") {
+        await PushNotifications.register();
+      }
+    })();
+
+    return () => { removeListeners?.(); };
+  }, [isNative, base]);
+
+  useEffect(() => {
+    if (isNative) return;
     if (!supported) {
       console.warn("[push] Web push not supported in this browser");
       setStatus("unsupported");
@@ -90,6 +146,17 @@ export function usePushNotifications(role: "admin" | "customer" = "admin") {
   }, [supported, swPath, base]);
 
   const subscribe = useCallback(async () => {
+    if (isNative) {
+      setError(null);
+      const req = await PushNotifications.requestPermissions();
+      if (req.receive !== "granted") {
+        setStatus("denied");
+        setError("Permesso notifiche negato. Abilitalo nelle impostazioni del telefono.");
+        return;
+      }
+      await PushNotifications.register(); // triggers the "registration" listener → token POST
+      return;
+    }
     if (!supported) {
       setError("Notifiche push non supportate da questo browser");
       return;
@@ -143,9 +210,14 @@ export function usePushNotifications(role: "admin" | "customer" = "admin") {
       console.error("[push] Subscribe error:", err);
       setError(err.message || "Errore durante l'attivazione delle notifiche");
     }
-  }, [supported, base]);
+  }, [supported, base, isNative]);
 
   const unsubscribe = useCallback(async () => {
+    if (isNative) {
+      // Native unsubscribe is best-effort; we simply stop showing as subscribed.
+      setStatus("unsubscribed");
+      return;
+    }
     if (!supported) return;
     setError(null);
     try {
@@ -171,7 +243,7 @@ export function usePushNotifications(role: "admin" | "customer" = "admin") {
       console.error("[push] Unsubscribe error:", err);
       setError(err.message || "Errore durante la disattivazione delle notifiche");
     }
-  }, [supported, base]);
+  }, [supported, base, isNative]);
 
   return { status, error, subscribe, unsubscribe };
 }
