@@ -62,6 +62,7 @@ const ForgotPassword = lazy(() => import("@/pages/forgot-password"));
 const ResetPassword = lazy(() => import("@/pages/reset-password"));
 const Terms = lazy(() => import("@/pages/terms"));
 const Privacy = lazy(() => import("@/pages/privacy"));
+const DeleteAccount = lazy(() => import("@/pages/delete-account"));
 const CookiePolicy = lazy(() => import("@/pages/cookie-policy"));
 const Returns = lazy(() => import("@/pages/returns"));
 const Legal = lazy(() => import("@/pages/legal"));
@@ -148,6 +149,8 @@ function Router() {
         <Route path="/reset-password" component={ResetPassword} />
         <Route path="/terms" component={Terms} />
         <Route path="/privacy" component={Privacy} />
+        <Route path="/delete-account" component={DeleteAccount} />
+        <Route path="/elimina-account" component={DeleteAccount} />
         <Route path="/cookie-policy" component={CookiePolicy} />
         <Route path="/returns" component={Returns} />
         <Route path="/legal" component={Legal} />
