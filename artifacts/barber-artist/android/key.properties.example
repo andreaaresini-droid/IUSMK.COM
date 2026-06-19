@@ -1,0 +1,8 @@
+# Copy this file to "key.properties" (gitignored) and fill in real values.
+# These are the credentials for the upload/signing keystore generated with keytool.
+#
+# storeFile: path to the .jks, relative to the android/app folder (where build.gradle lives)
+storeFile=iusmk-upload-key.jks
+storePassword=CHANGE_ME
+keyAlias=iusmk-upload
+keyPassword=CHANGE_ME
