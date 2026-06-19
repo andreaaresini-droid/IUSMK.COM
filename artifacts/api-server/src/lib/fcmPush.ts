@@ -84,7 +84,13 @@ async function sendToTokens(tokens: string[], payload: PushPayload) {
     data,
   });
 
-  const dead = deadTokensFromResponses(tokens, res.responses as any);
+  const dead = deadTokensFromResponses(
+    tokens,
+    res.responses.map((r) => ({
+      success: r.success,
+      error: r.error ? { code: r.error.code } : undefined,
+    })),
+  );
   if (dead.length > 0) {
     await db
       .update(nativePushTokensTable)
