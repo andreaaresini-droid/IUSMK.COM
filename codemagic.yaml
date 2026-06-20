@@ -62,6 +62,9 @@ workflows:
           cd artifacts/barber-artist/ios/App
           agvtool new-version -all "$BUILD_NUMBER"
 
+      - name: Genera certificati e profili di firma
+        script: |
+          app-store-connect fetch-signing-files "com.iusmk.app" --type IOS_APP_STORE --create
       - name: Applica profili di firma
         script: |
           xcode-project use-profiles
