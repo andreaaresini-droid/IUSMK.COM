@@ -1,15 +1,15 @@
 # Codemagic CI/CD — build iOS cloud per IUSMK (Capacitor 8 + SPM, niente CocoaPods).
 # Fase A: build web (Vite) -> cap sync ios -> firma automatica (App Store Connect API key)
-#         -> IPA -> upload a TestFlight. Le PUSH iOS sono Fase B (non incluse qui).
+# -> IPA -> upload a TestFlight. Le PUSH iOS sono Fase B (non incluse qui).
 #
 # PREREQUISITI lato Codemagic UI (una tantum, vedi guida nella chat):
-#   1. Account Codemagic con repo andreaaresini-droid/IUSMK.COM collegato.
-#   2. Integrazione "App Store Connect" caricando AuthKey_UQX3VX94PK.p8
-#      (Key ID: UQX3VX94PK, + Issuer ID). Nome integrazione: deve combaciare con
-#      `app_store_connect:` qui sotto -> "IUSMK ASC Key".
-#   3. App record com.iusmk.app gia' creato su App Store Connect.
-#   4. Gruppo variabili "iusmk_vite" con (cifrate): VITE_API_URL, VITE_SUPABASE_URL,
-#      VITE_SUPABASE_ANON_KEY.
+# 1. Account Codemagic con repo andreaaresini-droid/IUSMK.COM collegato.
+# 2. Integrazione "App Store Connect" caricando AuthKey_UQX3VX94PK.p8
+# (Key ID: UQX3VX94PK, + Issuer ID). Nome integrazione: deve combaciare con
+# `app_store_connect:` qui sotto -> "IUSMK ASC Key".
+# 3. App record com.iusmk.app gia' creato su App Store Connect.
+# 4. Gruppo variabili "iusmk_vite" con (cifrate): VITE_API_URL, VITE_SUPABASE_URL,
+# VITE_SUPABASE_ANON_KEY.
 
 workflows:
   ios-testflight:
@@ -22,13 +22,10 @@ workflows:
 
     environment:
       groups:
-        - iusmk_vite           # VITE_API_URL / VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier: com.iusmk.app
-      vars:
-        XCODE_PROJECT: "artifacts/barber-artist/ios/App/App.xcodeproj"
-        XCODE_SCHEME: "App"
+        - iusmk_vite # VITE_API_URL / VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY
+    vars:
+      XCODE_PROJECT: "artifacts/barber-artist/ios/App/App.xcodeproj"
+      XCODE_SCHEME: "App"
       node: 20
 
     cache:
@@ -39,42 +36,35 @@ workflows:
       - name: Installa pnpm
         script: |
           npm install -g pnpm@9
-
       - name: Riabilita binari nativi macOS + installa dipendenze
         script: |
           # Il workspace rimuove i binari darwin (cosi' Vercel/Linux li salta).
           # Qui siamo su macOS arm64: li riabilitiamo SOLO in CI (non committato).
           sed -i '' "/-darwin-arm64: '-'/d; /-darwin-x64: '-'/d" pnpm-workspace.yaml
           pnpm install --no-frozen-lockfile
-
       - name: Build web (Vite)
         script: |
           cd artifacts/barber-artist
           ./node_modules/.bin/vite build --config vite.config.ts
-
       - name: Capacitor sync iOS
         script: |
           cd artifacts/barber-artist
           ./node_modules/.bin/cap sync ios
-
       - name: Imposta build number
         script: |
           cd artifacts/barber-artist/ios/App
           agvtool new-version -all "$BUILD_NUMBER"
-
       - name: Genera certificati e profili di firma
         script: |
           app-store-connect fetch-signing-files "com.iusmk.app" --type IOS_APP_STORE --create
       - name: Applica profili di firma
         script: |
           xcode-project use-profiles
-
       - name: Build IPA
         script: |
           xcode-project build-ipa \
             --project "$XCODE_PROJECT" \
             --scheme "$XCODE_SCHEME"
-
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
