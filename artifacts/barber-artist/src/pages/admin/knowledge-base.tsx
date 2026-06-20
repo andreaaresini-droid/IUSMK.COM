@@ -1,11 +1,11 @@
 import { AdminSidebar } from "@/components/layout/AdminSidebar";
 import { useCurrentUser } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchApi } from "@/lib/api-client";
 import { useToast } from "@/hooks/use-toast";
-import { Brain, Plus, Pencil, Trash2, Check, X, Eye, EyeOff, Power } from "lucide-react";
+import { Brain, Plus, Pencil, Trash2, Check, X, Eye, EyeOff, Power, Upload } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type KBItem = {
@@ -112,6 +112,35 @@ export default function AdminKnowledgeBase() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (e.target) e.target.value = ""; // permette di ricaricare lo stesso file
+    if (!file) return;
+    const isTxt = /\.txt$/i.test(file.name) || file.type === "text/plain";
+    if (!isTxt) {
+      toast({ title: "Carica un file .txt", variant: "destructive" });
+      return;
+    }
+    try {
+      const text = await file.text();
+      if (!text.trim()) {
+        toast({ title: "Il file è vuoto", variant: "destructive" });
+        return;
+      }
+      const title = (file.name.replace(/\.txt$/i, "").trim() || "Documento").slice(0, 255);
+      createMutation.mutate({
+        ...emptyForm,
+        title,
+        content: text,
+        sourcePath: file.name,
+      });
+    } catch {
+      toast({ title: "Errore nella lettura del file", variant: "destructive" });
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.title.trim() || !form.content.trim()) {
@@ -147,13 +176,31 @@ export default function AdminKnowledgeBase() {
               Solo le voci <span className="text-green-400">pubblicate</span> e <span className="text-green-400">attive</span> sono usate dall'assistente
             </p>
           </div>
-          <button
-            onClick={() => { cancelForm(); setShowForm((s) => !s); }}
-            className="flex items-center gap-2 px-4 py-2 bg-primary/15 hover:bg-primary/25 text-primary border border-primary/30 rounded-xl text-sm font-medium transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-            Nuova voce
-          </button>
+          <div className="flex items-center gap-2">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".txt,text/plain"
+              onChange={handleFileUpload}
+              className="hidden"
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={createMutation.isPending}
+              title="Carica un file .txt: il suo contenuto diventa una voce pubblicata che l'assistente leggerà"
+              className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 text-white/80 border border-white/10 rounded-xl text-sm font-medium transition-colors disabled:opacity-50"
+            >
+              <Upload className="w-4 h-4" />
+              Carica .txt
+            </button>
+            <button
+              onClick={() => { cancelForm(); setShowForm((s) => !s); }}
+              className="flex items-center gap-2 px-4 py-2 bg-primary/15 hover:bg-primary/25 text-primary border border-primary/30 rounded-xl text-sm font-medium transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              Nuova voce
+            </button>
+          </div>
         </div>
 
         {/* Form */}
