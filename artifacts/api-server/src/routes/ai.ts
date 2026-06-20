@@ -1,16 +1,10 @@
 import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
-import { unansweredQuestionsTable, aiChatLogsTable } from "@workspace/db/schema";
-import { eq } from "drizzle-orm";
+import { knowledgeBaseTable, unansweredQuestionsTable, aiChatLogsTable } from "@workspace/db/schema";
+import { eq, and } from "drizzle-orm";
 import { anthropic, ASSISTANT_MODEL } from "../lib/anthropic.js";
-import {
-  sanitizeInput,
-  normalizeText,
-  searchKB,
-  buildContext,
-  buildSystemPrompt,
-  MIN_SCORE_THRESHOLD,
-} from "../lib/kb-search.js";
+import { sanitizeInput, normalizeText, buildSystemPrompt } from "../lib/kb-search.js";
+import { KB_DOCUMENT } from "../lib/kb-document.js";
 
 const router: IRouter = Router();
 
@@ -124,37 +118,29 @@ router.post("/chat", async (req, res) => {
   dbg(`[AI] Q: "${sanitized}"`);
 
   try {
-    const relevantItems = await searchKB(sanitized, dbg);
-    const topScore      = relevantItems[0]?.score ?? 0;
-    const hasContext    = topScore >= MIN_SCORE_THRESHOLD;
+    // ── Carica l'INTERA knowledge base (voci pubblicate + attive) ────────────────
+    const entries = await db
+      .select({ id: knowledgeBaseTable.id, title: knowledgeBaseTable.title, content: knowledgeBaseTable.content })
+      .from(knowledgeBaseTable)
+      .where(and(eq(knowledgeBaseTable.isPublished, true), eq(knowledgeBaseTable.isActive, true)));
 
-    dbg(`[AI] topScore=${topScore} threshold=${MIN_SCORE_THRESHOLD} hasContext=${hasContext}`);
-    if (hasContext) {
-      dbg(`[AI] Using: ${relevantItems.map((i) => `"${i.title}"(${i.score})`).join(", ")}`);
-    }
+    const dbText = entries
+      .map((e) => `### ${e.title}\n${e.content}`)
+      .join("\n\n---\n\n")
+      .trim();
+
+    // Se il DB ha contenuti li usa (self-service admin); altrimenti il documento
+    // KB incorporato nel backend, così l'assistente conosce comunque tutto.
+    const knowledgeText = dbText || KB_DOCUMENT;
+
+    dbg(`[AI] fonte KB: ${dbText ? "db" : "incorporata"} | voci DB: ${entries.length} | caratteri: ${knowledgeText.length}`);
     console.log(debugLines.join("\n"));
 
-    // ── FALLBACK path ──────────────────────────────────────────────────────────
-    if (!hasContext) {
-      await saveUnansweredQuestion(sanitized, normalized, {
-        pageUrl, sessionId, customerName, customerEmail, aiFallbackMessage: fallbackMsg,
-      });
-      await saveChatLog({
-        sessionId, userMessage: sanitized, aiReply: fallbackMsg,
-        sourceKnowledgeIds: [], confidenceScore: topScore,
-        usedFallback: true, escalatedToAdmin: true, pageUrl, ipAddress: ip,
-      });
-      res.json({ answer: fallbackMsg, confidence: "low", usedItems: [], usedFallback: true });
-      return;
-    }
-
-    // ── AI path (risposta singola JSON — compatibile con Vercel serverless) ──────
-    const context = buildContext(relevantItems);
-
+    // L'intero documento va a Claude: nessun filtro per parole chiave.
     const completion = await anthropic.messages.create({
       model:      ASSISTANT_MODEL,
       max_tokens: 700,
-      system:     buildSystemPrompt(context, lang),
+      system:     buildSystemPrompt(knowledgeText, lang),
       messages: [
         { role: "user", content: sanitized },
       ],
@@ -165,32 +151,29 @@ router.post("/chat", async (req, res) => {
       .join("")
       .trim();
 
-    // Modello ha restituito risposta vuota — sintetizza dalla KB
-    if (!fullReply && relevantItems.length > 0) {
-      const synthesized = relevantItems
-        .slice(0, 2)
-        .map((i) => i.content.split(".")[0].trim())
-        .join(". ")
-        .replace(/\s+/g, " ")
-        .slice(0, 300);
-      fullReply = synthesized
-        ? synthesized + "."
-        : "Per maggiori informazioni puoi contattare Giuseppe tramite la sezione Contatto del sito o tramite email e Instagram.";
+    if (!fullReply) fullReply = fallbackMsg;
+
+    // L'assistente non ha trovato la risposta nel documento → segnala al team.
+    const unanswered = /non trovo questa informazione|i can'?t find this information|i cannot find this information/i.test(fullReply);
+    if (unanswered) {
+      await saveUnansweredQuestion(sanitized, normalized, {
+        pageUrl, sessionId, customerName, customerEmail, aiFallbackMessage: fullReply,
+      });
     }
 
     res.json({
-      answer:      fullReply,
-      confidence:  "high",
-      usedItems:   relevantItems.map((i) => ({ id: i.id, title: i.title })),
-      usedFallback: false,
+      answer:       fullReply,
+      confidence:   unanswered ? "low" : "high",
+      usedItems:    entries.slice(0, 20).map((e) => ({ id: e.id, title: e.title })),
+      usedFallback: unanswered,
     });
 
     // fire-and-forget log
     saveChatLog({
       sessionId, userMessage: sanitized, aiReply: fullReply,
-      sourceKnowledgeIds: relevantItems.map((i) => i.id),
-      confidenceScore:    topScore,
-      usedFallback:       false, escalatedToAdmin: false, pageUrl, ipAddress: ip,
+      sourceKnowledgeIds: entries.map((e) => e.id),
+      confidenceScore:    unanswered ? 0 : 1,
+      usedFallback:       unanswered, escalatedToAdmin: unanswered, pageUrl, ipAddress: ip,
     });
 
   } catch (err) {
