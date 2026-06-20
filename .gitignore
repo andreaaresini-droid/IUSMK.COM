@@ -63,6 +63,12 @@ Thumbs.db
 firebase-adminsdk*.json
 iusmk-eac1e-*.json
 
+# Apple keys (APNs auth key, App Store Connect API key) — SECRET, never commit.
+# (GoogleService-Info.plist is NOT secret and is intentionally committed, like
+#  google-services.json on Android.)
+*.p8
+AuthKey_*.p8
+
 # Uploads
 uploads/
 .vercel
