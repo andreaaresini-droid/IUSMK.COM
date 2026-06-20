@@ -35,7 +35,7 @@ workflows:
     scripts:
       - name: Installa pnpm
         script: |
-          npm install -g pnpm@9
+          npm install -g pnpm@9 --force
       - name: Riabilita binari nativi macOS + installa dipendenze
         script: |
           # Il workspace rimuove i binari darwin (cosi' Vercel/Linux li salta).
