@@ -23,10 +23,10 @@ workflows:
     environment:
       groups:
         - iusmk_vite # VITE_API_URL / VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY
-    vars:
-      XCODE_PROJECT: "artifacts/barber-artist/ios/App/App.xcodeproj"
-      XCODE_SCHEME: "App"
-      node: 20
+      vars:
+        XCODE_PROJECT: "artifacts/barber-artist/ios/App/App.xcodeproj"
+        XCODE_SCHEME: "App"
+        node: 20
 
     cache:
       cache_paths:
