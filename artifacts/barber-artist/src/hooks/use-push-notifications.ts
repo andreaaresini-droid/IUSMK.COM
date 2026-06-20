@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { fetchApi } from "@/lib/api-client";
 import { Capacitor } from "@capacitor/core";
-import { PushNotifications } from "@capacitor/push-notifications";
 
 function urlBase64ToUint8Array(base64String: string): ArrayBuffer {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
@@ -24,6 +23,12 @@ export type PushStatus = "unsupported" | "denied" | "subscribed" | "unsubscribed
  * On mount, if a push subscription already exists in the browser,
  * this hook automatically re-syncs it to the server (silently, no redirect on 401).
  * This ensures subscriptions survive page refreshes, re-logins, and token renewals.
+ *
+ * Native (Capacitor) uses Firebase Cloud Messaging on BOTH platforms via
+ * @capacitor-firebase/messaging, so getToken() returns an FCM token on Android
+ * and iOS alike — the backend keeps sending uniformly via firebase-admin.
+ * The plugin is imported dynamically so the web bundle never pulls the Firebase
+ * JS SDK (browsers use the VAPID web-push path below instead).
  */
 export function usePushNotifications(role: "admin" | "customer" = "admin") {
   const [status, setStatus] = useState<PushStatus>("loading");
@@ -42,55 +47,60 @@ export function usePushNotifications(role: "admin" | "customer" = "admin") {
 
   const isNative = typeof Capacitor !== "undefined" && Capacitor.isNativePlatform();
 
-  // ── NATIVE (Capacitor) push via FCM/APNs ───────────────────────────
+  // ── NATIVE (Capacitor) push via Firebase Cloud Messaging ────────────
   useEffect(() => {
     if (!isNative) return;
 
     let removeListeners: (() => void) | undefined;
+    let cancelled = false;
+
+    const saveToken = async (token: string) => {
+      console.log("[push-native] FCM token:", token.slice(0, 24) + "…");
+      try {
+        await fetchApi(`${base}/push/native-token`, {
+          method: "POST",
+          body: JSON.stringify({ token, platform: Capacitor.getPlatform() }),
+        }, false);
+        if (!cancelled) setStatus("subscribed");
+      } catch (err) {
+        console.warn("[push-native] token save failed:", err);
+      }
+    };
 
     (async () => {
-      const perm = await PushNotifications.checkPermissions();
-      if (perm.receive === "denied") { setStatus("denied"); return; }
-      setStatus(perm.receive === "granted" ? "subscribed" : "unsubscribed");
+      const { FirebaseMessaging } = await import("@capacitor-firebase/messaging");
 
-      const regHandle = await PushNotifications.addListener("registration", async (tok) => {
-        console.log("[push-native] token:", tok.value.slice(0, 24) + "…");
-        try {
-          await fetchApi(`${base}/push/native-token`, {
-            method: "POST",
-            body: JSON.stringify({ token: tok.value, platform: Capacitor.getPlatform() }),
-          }, false);
-          setStatus("subscribed");
-        } catch (err) {
-          console.warn("[push-native] token save failed:", err);
-        }
+      const perm = await FirebaseMessaging.checkPermissions();
+      if (perm.receive === "denied") { if (!cancelled) setStatus("denied"); return; }
+      if (!cancelled) setStatus(perm.receive === "granted" ? "subscribed" : "unsubscribed");
+
+      // FCM may rotate the token at any time → keep the server in sync.
+      const tokenHandle = await FirebaseMessaging.addListener("tokenReceived", (event) => {
+        if (event?.token) void saveToken(event.token);
       });
 
-      const errHandle = await PushNotifications.addListener("registrationError", (e) => {
-        console.error("[push-native] registration error:", e);
-        setError("Errore registrazione notifiche native");
-      });
-
-      const tapHandle = await PushNotifications.addListener(
-        "pushNotificationActionPerformed",
-        (action) => {
-          const url = (action.notification.data as Record<string, string> | undefined)?.url;
+      const tapHandle = await FirebaseMessaging.addListener(
+        "notificationActionPerformed",
+        (event) => {
+          const url = (event.notification?.data as Record<string, string> | undefined)?.url;
           if (url) window.location.assign(url);
         },
       );
 
-      removeListeners = () => {
-        regHandle.remove();
-        errHandle.remove();
-        tapHandle.remove();
-      };
+      removeListeners = () => { tokenHandle.remove(); tapHandle.remove(); };
 
       if (perm.receive === "granted") {
-        await PushNotifications.register();
+        try {
+          const { token } = await FirebaseMessaging.getToken();
+          if (token) await saveToken(token);
+        } catch (err) {
+          console.error("[push-native] getToken error:", err);
+          if (!cancelled) setError("Errore registrazione notifiche native");
+        }
       }
     })();
 
-    return () => { removeListeners?.(); };
+    return () => { cancelled = true; removeListeners?.(); };
   }, [isNative, base]);
 
   useEffect(() => {
@@ -148,13 +158,26 @@ export function usePushNotifications(role: "admin" | "customer" = "admin") {
   const subscribe = useCallback(async () => {
     if (isNative) {
       setError(null);
-      const req = await PushNotifications.requestPermissions();
+      const { FirebaseMessaging } = await import("@capacitor-firebase/messaging");
+      const req = await FirebaseMessaging.requestPermissions();
       if (req.receive !== "granted") {
         setStatus("denied");
         setError("Permesso notifiche negato. Abilitalo nelle impostazioni del telefono.");
         return;
       }
-      await PushNotifications.register(); // triggers the "registration" listener → token POST
+      try {
+        const { token } = await FirebaseMessaging.getToken();
+        if (token) {
+          await fetchApi(`${base}/push/native-token`, {
+            method: "POST",
+            body: JSON.stringify({ token, platform: Capacitor.getPlatform() }),
+          });
+          setStatus("subscribed");
+        }
+      } catch (err: any) {
+        console.error("[push-native] subscribe error:", err);
+        setError(err?.message || "Errore durante l'attivazione delle notifiche");
+      }
       return;
     }
     if (!supported) {
@@ -214,7 +237,14 @@ export function usePushNotifications(role: "admin" | "customer" = "admin") {
 
   const unsubscribe = useCallback(async () => {
     if (isNative) {
-      // Native unsubscribe is best-effort; we simply stop showing as subscribed.
+      // Native unsubscribe is best-effort: drop the FCM token locally and
+      // simply stop showing as subscribed.
+      try {
+        const { FirebaseMessaging } = await import("@capacitor-firebase/messaging");
+        await FirebaseMessaging.deleteToken();
+      } catch (err) {
+        console.warn("[push-native] deleteToken failed:", err);
+      }
       setStatus("unsubscribed");
       return;
     }
