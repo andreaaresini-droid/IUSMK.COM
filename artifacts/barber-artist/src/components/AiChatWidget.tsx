@@ -272,7 +272,8 @@ export function AiChatWidget() {
       : "Si è verificato un errore. Riprova tra un momento.";
 
     try {
-      const res = await fetch(`/api/ai/chat`, {
+      const apiBase = (import.meta.env.VITE_API_URL as string | undefined) ?? "";
+      const res = await fetch(`${apiBase}/api/ai/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
