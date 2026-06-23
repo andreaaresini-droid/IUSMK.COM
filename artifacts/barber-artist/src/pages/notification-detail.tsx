@@ -11,6 +11,7 @@ import {
   Loader2, AlertTriangle, X, ZoomIn, Video, Calendar, Tag, Copy, Check,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLang } from "@/i18n/LanguageContext";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -34,23 +35,24 @@ function notifIcon(type: NotifType, size = 22) {
   }
 }
 
-function notifTypeLabel(type: NotifType): string {
+function notifTypeLabel(type: NotifType, t: any): string {
+  const ty = t.notifications.types;
   switch (type) {
-    case "chat_message":        return "Messaggio";
-    case "course_code_assigned":return "Codice corso";
-    case "code_resent":         return "Codice reinviato";
-    case "course_update":       return "Aggiornamento corso";
+    case "chat_message":        return ty.message;
+    case "course_code_assigned":return ty.courseCode;
+    case "code_resent":         return ty.codeResent;
+    case "course_update":       return ty.courseUpdate;
     case "order_update":
-    case "purchase":            return "Ordine";
-    case "account_update":      return "Account";
-    case "promo_notification":  return "Promozione";
-    case "discount_code":       return "Coupon sconto";
+    case "purchase":            return ty.order;
+    case "account_update":      return ty.account;
+    case "promo_notification":  return ty.promo;
+    case "discount_code":       return ty.coupon;
     case "admin_notification":
-    case "private_message":     return "Comunicazione admin";
-    case "broadcast":           return "Comunicazione";
-    case "reminder":            return "Promemoria";
-    case "system_notification": return "Sistema";
-    default:                    return "Notifica";
+    case "private_message":     return ty.adminComm;
+    case "broadcast":           return ty.broadcast;
+    case "reminder":            return ty.reminder;
+    case "system_notification": return ty.system;
+    default:                    return ty.default;
   }
 }
 
@@ -68,9 +70,9 @@ function notifTypeBadgeColor(type: NotifType): string {
   }
 }
 
-function formatDate(dateStr: string) {
+function formatDate(dateStr: string, lang: string) {
   const d = new Date(dateStr);
-  return d.toLocaleDateString("it-IT", {
+  return d.toLocaleDateString(lang === "it" ? "it-IT" : "en-GB", {
     weekday: "long", day: "2-digit", month: "long", year: "numeric",
     hour: "2-digit", minute: "2-digit",
   });
@@ -112,6 +114,8 @@ function VideoPlayer({ notifId }: { notifId: number }) {
   const [state, setState] = useState<"idle" | "loading" | "ready" | "error">("idle");
   const [streamUrl, setStreamUrl] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
+  const { t } = useLang();
+  const td = t.notifDetail;
   const videoRef = useRef<HTMLVideoElement>(null);
 
   async function loadVideo() {
@@ -126,7 +130,7 @@ function VideoPlayer({ notifId }: { notifId: number }) {
       setStreamUrl(data.streamUrl);
       setState("ready");
     } catch (err: any) {
-      const msg = err.message || "Impossibile caricare il video";
+      const msg = err.message || td.videoError;
       console.error("[VideoPlayer] Error fetching token:", msg);
       setErrorMsg(msg);
       setState("error");
@@ -142,7 +146,7 @@ function VideoPlayer({ notifId }: { notifId: number }) {
       "MEDIA_ERR_DECODE", "MEDIA_ERR_SRC_NOT_SUPPORTED",
     ][code] || "UNKNOWN";
     console.error("[VideoPlayer] HTMLVideoElement error:", mediaErr, v.error?.message);
-    setErrorMsg(`Errore player: ${mediaErr}`);
+    setErrorMsg(`${td.playerError} ${mediaErr}`);
     setState("error");
   }
 
@@ -157,8 +161,8 @@ function VideoPlayer({ notifId }: { notifId: number }) {
             <Play size={28} className="text-primary ml-1" />
           </div>
           <div className="text-center">
-            <p className="text-white font-semibold">Video allegato</p>
-            <p className="text-white/40 text-sm mt-1">Tocca per riprodurre</p>
+            <p className="text-white font-semibold">{td.videoAttached}</p>
+            <p className="text-white/40 text-sm mt-1">{td.tapToPlay}</p>
           </div>
         </div>
       </div>
@@ -169,7 +173,7 @@ function VideoPlayer({ notifId }: { notifId: number }) {
     return (
       <div className="rounded-2xl border border-white/10 bg-black/60 flex flex-col items-center justify-center py-14 gap-3">
         <Loader2 size={32} className="animate-spin text-primary" />
-        <p className="text-white/50 text-sm">Caricamento video in corso...</p>
+        <p className="text-white/50 text-sm">{td.videoLoading}</p>
       </div>
     );
   }
@@ -179,14 +183,14 @@ function VideoPlayer({ notifId }: { notifId: number }) {
       <div className="rounded-2xl border border-red-500/20 bg-red-500/8 flex flex-col items-center justify-center py-10 gap-3 px-4">
         <AlertTriangle size={28} className="text-red-400" />
         <div className="text-center">
-          <p className="text-red-300 font-semibold text-sm">Impossibile caricare il video</p>
+          <p className="text-red-300 font-semibold text-sm">{td.videoError}</p>
           {errorMsg && <p className="text-red-400/60 text-xs mt-1">{errorMsg}</p>}
         </div>
         <button
           onClick={loadVideo}
           className="mt-1 flex items-center gap-2 px-4 py-2 bg-primary/20 hover:bg-primary/30 border border-primary/30 text-primary font-semibold text-sm rounded-xl transition-colors"
         >
-          <Play size={14} /> Riprova
+          <Play size={14} /> {td.retry}
         </button>
         {streamUrl && (
           <a
@@ -195,7 +199,7 @@ function VideoPlayer({ notifId }: { notifId: number }) {
             rel="noreferrer"
             className="flex items-center gap-1.5 text-xs text-white/40 hover:text-white/70 transition-colors"
           >
-            <ExternalLink size={12} /> Apri in una nuova scheda
+            <ExternalLink size={12} /> {td.openNewTab}
           </a>
         )}
       </div>
@@ -227,6 +231,8 @@ export default function NotificationDetail() {
   const params = useParams<{ id: string }>();
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
+  const { t, lang } = useLang();
+  const td = t.notifDetail;
   const { data: user, isLoading: userLoading } = useCurrentUser();
   const [lightbox, setLightbox] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -282,13 +288,13 @@ export default function NotificationDetail() {
         <Navbar />
         <main className="pt-32 pb-20 px-4 text-center">
           <AlertTriangle size={48} className="text-red-400 mx-auto mb-4" />
-          <h1 className="text-xl font-bold text-white mb-2">Notifica non trovata</h1>
-          <p className="text-muted-foreground mb-6">Questa notifica non esiste o non ti appartiene.</p>
+          <h1 className="text-xl font-bold text-white mb-2">{td.notFoundTitle}</h1>
+          <p className="text-muted-foreground mb-6">{td.notFoundDesc}</p>
           <button
             onClick={() => setLocation("/notifications")}
             className="inline-flex items-center gap-2 bg-primary hover:bg-primary/80 text-white px-6 py-3 rounded-xl font-semibold text-sm transition-colors"
           >
-            <ArrowLeft size={16} /> Torna alle notifiche
+            <ArrowLeft size={16} /> {td.backToNotifs}
           </button>
         </main>
         <Footer />
@@ -317,7 +323,7 @@ export default function NotificationDetail() {
             className="flex items-center gap-2 text-white/50 hover:text-white transition-colors text-sm mb-6 group"
           >
             <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
-            Centro notifiche
+            {td.notifCenter}
           </button>
 
           {/* Hero image */}
@@ -333,7 +339,7 @@ export default function NotificationDetail() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
               <div className="absolute bottom-3 right-3 flex items-center gap-1.5 bg-black/60 backdrop-blur-sm px-2.5 py-1.5 rounded-lg text-white/80 text-xs">
-                <ZoomIn size={12} /> Apri in grande
+                <ZoomIn size={12} /> {td.openLarge}
               </div>
             </div>
           )}
@@ -357,22 +363,22 @@ export default function NotificationDetail() {
                   <div className="flex items-center gap-2 flex-wrap mb-1">
                     {notif && (
                       <span className={cn("text-xs font-semibold px-2 py-1 rounded-lg border", notifTypeBadgeColor(notif.type))}>
-                        {notifTypeLabel(notif.type)}
+                        {notifTypeLabel(notif.type, t)}
                       </span>
                     )}
                     {notif?.isRead === false && (
                       <span className="text-xs px-2 py-1 rounded-lg border border-primary/30 bg-primary/10 text-primary font-semibold">
-                        Non letta
+                        {td.unreadBadge}
                       </span>
                     )}
                     {hasImage && (
                       <span className="text-xs px-2 py-1 rounded-lg border border-white/10 bg-white/5 text-white/40 flex items-center gap-1">
-                        📷 Immagine
+                        📷 {td.imageBadge}
                       </span>
                     )}
                     {hasVideo && (
                       <span className="text-xs px-2 py-1 rounded-lg border border-white/10 bg-white/5 text-white/40 flex items-center gap-1">
-                        <Video size={10} /> Video
+                        <Video size={10} /> {td.videoBadge}
                       </span>
                     )}
                   </div>
@@ -401,7 +407,7 @@ export default function NotificationDetail() {
                 <div className="bg-primary/10 border border-primary/20 rounded-xl px-5 py-4 flex items-center gap-3">
                   <KeyRound size={20} className="text-primary shrink-0" />
                   <div>
-                    <p className="text-xs text-primary/70 font-semibold uppercase tracking-wide mb-1">Il tuo codice di accesso</p>
+                    <p className="text-xs text-primary/70 font-semibold uppercase tracking-wide mb-1">{td.yourAccessCode}</p>
                     <span className="font-mono font-bold text-primary tracking-[0.3em] text-2xl">
                       {notif.accessCode}
                     </span>
@@ -416,18 +422,18 @@ export default function NotificationDetail() {
               <div className="space-y-2 text-sm text-white/40">
                 <div className="flex items-center gap-2">
                   <Calendar size={14} className="shrink-0" />
-                  <span>{notif && formatDate(notif.createdAt)}</span>
+                  <span>{notif && formatDate(notif.createdAt, lang)}</span>
                 </div>
                 {meta.senderName && (
                   <div className="flex items-center gap-2">
                     <User size={14} className="shrink-0" />
-                    <span>Da <span className="text-white/60 font-semibold">{meta.senderName}</span></span>
+                    <span>{td.from} <span className="text-white/60 font-semibold">{meta.senderName}</span></span>
                   </div>
                 )}
                 {notif?.type && (
                   <div className="flex items-center gap-2">
                     <Tag size={14} className="shrink-0" />
-                    <span>{notifTypeLabel(notif.type)}</span>
+                    <span>{notifTypeLabel(notif.type, t)}</span>
                   </div>
                 )}
               </div>
@@ -437,11 +443,11 @@ export default function NotificationDetail() {
                 <div className="bg-amber-500/10 border border-amber-500/25 rounded-xl px-5 py-4 flex items-center gap-3">
                   <Tag size={20} className="text-amber-400 shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs text-amber-400/70 font-semibold uppercase tracking-wide mb-1">Il tuo codice coupon</p>
+                    <p className="text-xs text-amber-400/70 font-semibold uppercase tracking-wide mb-1">{td.yourCoupon}</p>
                     <span className="font-mono font-bold text-amber-300 tracking-[0.3em] text-2xl">
                       {notif.accessCode}
                     </span>
-                    <p className="text-xs text-white/40 mt-1">Inserisci questo codice nel campo "Codice promozionale" al checkout Stripe</p>
+                    <p className="text-xs text-white/40 mt-1">{td.couponHint}</p>
                   </div>
                 </div>
               )}
@@ -453,7 +459,7 @@ export default function NotificationDetail() {
                     onClick={() => setLocation("/chat")}
                     className="flex items-center justify-center gap-2 bg-primary hover:bg-primary/80 text-white font-semibold px-5 py-3 rounded-xl text-sm transition-colors"
                   >
-                    <MessageSquare size={16} /> Apri chat
+                    <MessageSquare size={16} /> {td.openChat}
                   </button>
                 )}
 
@@ -465,13 +471,13 @@ export default function NotificationDetail() {
                       className="flex items-center justify-center gap-2 bg-amber-600 hover:bg-amber-500 text-white font-semibold px-5 py-3 rounded-xl text-sm transition-colors"
                     >
                       {copied ? <Check size={16} /> : <Copy size={16} />}
-                      {copied ? "Copiato!" : "Copia codice coupon"}
+                      {copied ? td.copied : td.copyCoupon}
                     </button>
                     <button
                       onClick={() => setLocation("/academy")}
                       className="flex items-center justify-center gap-2 bg-primary hover:bg-primary/80 text-white font-semibold px-5 py-3 rounded-xl text-sm transition-colors"
                     >
-                      <BookOpen size={16} /> Vai ai corsi
+                      <BookOpen size={16} /> {td.goCourses}
                     </button>
                   </>
                 )}
@@ -483,7 +489,7 @@ export default function NotificationDetail() {
                     className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold px-5 py-3 rounded-xl text-sm transition-colors"
                   >
                     {copied ? <Check size={16} /> : <Copy size={16} />}
-                    {copied ? "Copiato!" : "Copia codice"}
+                    {copied ? td.copied : td.copyCode}
                   </button>
                 )}
 
@@ -504,7 +510,7 @@ export default function NotificationDetail() {
                     }}
                     className="flex items-center justify-center gap-2 bg-primary hover:bg-primary/80 text-white font-semibold px-5 py-3 rounded-xl text-sm transition-colors"
                   >
-                    <BookOpen size={16} /> {user?.role === "student" ? "Vai al corso" : "Accedi al corso"}
+                    <BookOpen size={16} /> {user?.role === "student" ? td.goToCourse : td.accessCourse}
                   </button>
                 )}
 
@@ -525,7 +531,7 @@ export default function NotificationDetail() {
                     }}
                     className="flex items-center justify-center gap-2 bg-primary hover:bg-primary/80 text-white font-semibold px-5 py-3 rounded-xl text-sm transition-colors"
                   >
-                    <BookOpen size={16} /> {user?.role === "student" ? "Accedi al corso" : "Sblocca il corso"}
+                    <BookOpen size={16} /> {user?.role === "student" ? td.accessCourse : td.unlockCourse}
                   </button>
                 )}
 
@@ -542,7 +548,7 @@ export default function NotificationDetail() {
                     rel="noreferrer"
                     className="flex items-center justify-center gap-2 bg-primary hover:bg-primary/80 text-white font-semibold px-5 py-3 rounded-xl text-sm transition-colors"
                   >
-                    <ExternalLink size={16} /> Apri contenuto
+                    <ExternalLink size={16} /> {td.openContent}
                   </a>
                 )}
 
@@ -551,14 +557,14 @@ export default function NotificationDetail() {
                     onClick={() => setLightbox(true)}
                     className="flex items-center justify-center gap-2 border border-white/15 hover:border-white/25 text-white/60 hover:text-white font-semibold px-5 py-3 rounded-xl text-sm transition-colors"
                   >
-                    <ZoomIn size={16} /> Visualizza immagine
+                    <ZoomIn size={16} /> {td.viewImage}
                   </button>
                 )}
                 <button
                   onClick={() => setLocation("/notifications")}
                   className="flex items-center justify-center gap-2 border border-white/10 hover:border-white/20 text-white/40 hover:text-white px-5 py-3 rounded-xl text-sm transition-colors sm:ml-auto"
                 >
-                  <ArrowLeft size={16} /> Tutte le notifiche
+                  <ArrowLeft size={16} /> {td.allNotifs}
                 </button>
               </div>
             </div>
