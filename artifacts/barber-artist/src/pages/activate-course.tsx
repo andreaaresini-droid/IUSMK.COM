@@ -13,14 +13,16 @@ import { useCurrentUser } from "@/hooks/use-auth";
 import { fetchApi } from "@/lib/api-client";
 import { getDeviceFingerprint } from "@/lib/device-fingerprint";
 import { resolveCoverUrl } from "@/lib/media-utils";
-
-const activateSchema = z.object({
-  code: z.string().min(1, "Il codice è obbligatorio"),
-  email: z.string().email("Email non valida"),
-  name: z.string().min(2, "Il nome è obbligatorio"),
-});
+import { useLang } from "@/i18n/LanguageContext";
 
 export default function ActivateCourse() {
+  const { t } = useLang();
+  const at = t.activateCourse;
+  const activateSchema = z.object({
+    code: z.string().min(1, at.errCode),
+    email: z.string().email(at.errEmail),
+    name: z.string().min(2, at.errName),
+  });
   const { courseId: courseIdStr } = useParams<{ courseId: string }>();
   const courseId = parseInt(courseIdStr ?? "0", 10);
   const [, setLocation] = useLocation();
@@ -132,10 +134,10 @@ export default function ActivateCourse() {
                   <Lock className="w-6 h-6 text-primary" />
                 </div>
                 <h1 className="text-2xl font-display font-bold text-white uppercase tracking-wider mb-2">
-                  Accedi per continuare
+                  {at.loginTitle}
                 </h1>
                 <p className="text-muted-foreground text-sm">
-                  Devi essere connesso al tuo account per attivare il corso.
+                  {at.loginDesc}
                 </p>
               </div>
               <div className="space-y-3">
@@ -146,7 +148,7 @@ export default function ActivateCourse() {
                     setLocation("/login");
                   }}
                 >
-                  <LogIn className="mr-2 h-4 w-4" /> Accedi
+                  <LogIn className="mr-2 h-4 w-4" /> {at.login}
                 </Button>
                 <Button
                   variant="outline"
@@ -156,7 +158,7 @@ export default function ActivateCourse() {
                     setLocation("/register");
                   }}
                 >
-                  Crea account gratuito
+                  {at.createAccount}
                 </Button>
               </div>
             </div>
@@ -202,7 +204,7 @@ export default function ActivateCourse() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
               {course?.title && (
                 <div className="absolute bottom-3 left-4 right-4">
-                  <span className="text-xs font-bold uppercase tracking-widest text-primary">Corso</span>
+                  <span className="text-xs font-bold uppercase tracking-widest text-primary">{at.courseBadge}</span>
                   <h2 className="text-white font-display font-bold text-lg leading-tight">
                     {course.title}
                   </h2>
@@ -225,20 +227,20 @@ export default function ActivateCourse() {
                   <CheckCircle className="w-8 h-8 text-green-400" />
                 </div>
                 <h1 className="text-2xl font-display font-bold text-white uppercase tracking-wider mb-2">
-                  Corso Sbloccato!
+                  {at.unlockedTitle}
                 </h1>
                 {course?.title && (
                   <p className="text-muted-foreground text-sm mb-6">
-                    Hai sbloccato con successo{" "}
+                    {at.unlockedDescPre}{" "}
                     <span className="text-white font-semibold">"{course.title}"</span>.{" "}
-                    Ora puoi accedere a tutti i contenuti.
+                    {at.unlockedDescPost}
                   </p>
                 )}
                 <Button
                   className="w-full h-12 text-base font-bold uppercase tracking-wider"
                   onClick={() => setLocation(`/my-courses?unlocked=${activatedCourseId ?? courseId}`)}
                 >
-                  Vai al corso <ArrowRight className="ml-2 h-4 w-4" />
+                  {at.goToCourse} <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </motion.div>
             ) : (
@@ -246,14 +248,10 @@ export default function ActivateCourse() {
               <>
                 <div className="text-center mb-8">
                   <h1 className="text-2xl font-display font-bold text-white uppercase tracking-wider mb-2">
-                    {courseLoading
-                      ? "Sblocca il corso"
-                      : course
-                      ? "Sblocca il corso"
-                      : "Attiva con codice"}
+                    {course || courseLoading ? at.unlockTitle : at.activateWithCode}
                   </h1>
                   <p className="text-muted-foreground text-sm">
-                    Inserisci il codice ricevuto per sbloccare l'accesso al corso.
+                    {at.subtitle}
                   </p>
                 </div>
 
@@ -261,7 +259,7 @@ export default function ActivateCourse() {
                   {/* Codice */}
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">
-                      Codice di accesso
+                      {at.codeLabel}
                     </label>
                     <Input
                       {...form.register("code")}
@@ -278,12 +276,12 @@ export default function ActivateCourse() {
                   {/* Email — readonly se loggato */}
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">
-                      Email (account corrente)
+                      {at.emailLabel}
                     </label>
                     <Input
                       {...form.register("email")}
                       type="email"
-                      placeholder="mario@esempio.com"
+                      placeholder={at.emailPlaceholder}
                       className="h-12"
                       readOnly={isLoggedIn}
                     />
@@ -298,7 +296,7 @@ export default function ActivateCourse() {
                   {/* Errore API */}
                   {activateMutation.isError && (
                     <div className="bg-destructive/10 border border-destructive/30 text-destructive text-sm rounded-lg px-4 py-3">
-                      {(activateMutation.error as any)?.message ?? "Attivazione fallita. Controlla il codice e riprova."}
+                      {(activateMutation.error as any)?.message ?? at.activationFailed}
                     </div>
                   )}
 
@@ -308,14 +306,14 @@ export default function ActivateCourse() {
                     disabled={activateMutation.isPending}
                   >
                     <KeyRound className="mr-2 h-5 w-5" />
-                    {activateMutation.isPending ? "Verifica in corso..." : "Sblocca corso"}
+                    {activateMutation.isPending ? at.verifying : at.unlockButton}
                   </Button>
                 </form>
 
                 <p className="text-xs text-muted-foreground/50 text-center mt-6 leading-relaxed">
-                  Hai bisogno di aiuto?{" "}
+                  {at.needHelp}{" "}
                   <Link href="/contact" className="text-primary hover:text-white transition-colors">
-                    Contatta IUSMK
+                    {at.contactIusmk}
                   </Link>
                 </p>
               </>
