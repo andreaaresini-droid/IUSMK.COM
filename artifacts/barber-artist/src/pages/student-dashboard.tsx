@@ -11,8 +11,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Play, CheckCircle, Clock, LogOut, KeyRound, Lock, BookOpen, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { VideoDisclaimerModal } from "@/components/VideoDisclaimerModal";
+import { useLang } from "@/i18n/LanguageContext";
 
 export default function StudentDashboard() {
+  const { t } = useLang();
+  const sd = t.studentDashboard;
   const { data: user, isLoading: authLoading } = useCurrentUser();
   const [, setLocation] = useLocation();
   const search = useSearch();
@@ -187,9 +190,9 @@ export default function StudentDashboard() {
           <div className="container mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <div>
               <h1 className="text-2xl md:text-3xl font-display font-bold text-white uppercase tracking-tighter">
-                Portale Studente
+                {sd.title}
               </h1>
-              <p className="text-muted-foreground text-sm mt-0.5">Bentornato, {user?.name}</p>
+              <p className="text-muted-foreground text-sm mt-0.5">{sd.welcomeBack} {user?.name}</p>
             </div>
             <Button
               variant="outline"
@@ -197,7 +200,7 @@ export default function StudentDashboard() {
               onClick={() => logout()}
               className="text-xs uppercase tracking-widest shrink-0 h-10 px-4"
             >
-              <LogOut className="w-4 h-4 mr-2" /> Esci
+              <LogOut className="w-4 h-4 mr-2" /> {sd.logout}
             </Button>
           </div>
         </div>
@@ -208,16 +211,16 @@ export default function StudentDashboard() {
               <div className="w-20 h-20 bg-primary/10 border border-primary/20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Lock className="w-9 h-9 text-primary/60" />
               </div>
-              <h2 className="text-2xl font-display text-white uppercase mb-3">Nessun Corso Sbloccato</h2>
+              <h2 className="text-2xl font-display text-white uppercase mb-3">{sd.noCoursesTitle}</h2>
               <p className="text-muted-foreground mb-8 leading-relaxed text-sm">
-                Attiva il tuo codice di accesso per sbloccare la tua masterclass e iniziare il percorso.
+                {sd.noCoursesDesc}
               </p>
               <Button
                 size="lg"
                 onClick={() => setLocation("/access")}
                 className="w-full sm:w-auto h-14 text-base font-bold uppercase tracking-wider px-8"
               >
-                <KeyRound className="w-5 h-5 mr-2" /> Attiva Codice
+                <KeyRound className="w-5 h-5 mr-2" /> {sd.activateCode}
               </Button>
             </div>
           ) : (
@@ -272,7 +275,7 @@ export default function StudentDashboard() {
                               <Shield className="w-7 h-7 text-primary/70" />
                             </div>
                             <p className="text-white/70 text-sm max-w-xs">
-                              Leggi e accetta l'avviso per accedere al video
+                              {sd.readNotice}
                             </p>
                           </div>
                         </div>
@@ -290,7 +293,7 @@ export default function StudentDashboard() {
                           )}
                           <div className="relative z-10 flex flex-col items-center gap-3">
                             <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                            <p className="text-white/60 text-sm">Caricamento lezione...</p>
+                            <p className="text-white/60 text-sm">{sd.loadingLesson}</p>
                           </div>
                         </div>
                       ) : resolvedStreamUrl ? (
@@ -315,7 +318,7 @@ export default function StudentDashboard() {
                               const code = vid.error?.code ?? -1;
                               const msg = vid.error?.message ?? "Errore sconosciuto";
                               console.error(`[player] video error code=${code}:`, msg, "src:", vid.currentSrc);
-                              setVideoError(`Video non riproducibile. Verifica che il file sia in formato MP4 (H.264) e che il caricamento sia completo.`);
+                              setVideoError(sd.videoNotPlayable);
                             }}
                           />
 
@@ -330,7 +333,7 @@ export default function StudentDashboard() {
                                   queryClient.invalidateQueries({ queryKey: ["video-token", activeCourseId, activeModuleId] });
                                 }}
                               >
-                                Riprova
+                                {sd.retry}
                               </button>
                             </div>
                           )}
@@ -348,7 +351,7 @@ export default function StudentDashboard() {
                         /* No video URL */
                         <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-center px-4">
                           <Play className="w-10 h-10 text-white/20" />
-                          <p className="text-white/40 text-sm">Video non ancora disponibile</p>
+                          <p className="text-white/40 text-sm">{sd.videoNotYet}</p>
                         </div>
                       )}
                     </div>
@@ -371,7 +374,7 @@ export default function StudentDashboard() {
                         return isCompleted ? (
                           <div className="flex items-center gap-2 text-green-400 text-sm font-medium py-1">
                             <CheckCircle className="w-4 h-4" />
-                            Lezione completata
+                            {sd.lessonCompleted}
                           </div>
                         ) : (
                           <button
@@ -379,7 +382,7 @@ export default function StudentDashboard() {
                             className="w-full flex items-center justify-center gap-2 border border-white/10 hover:border-green-500/40 hover:bg-green-500/5 text-muted-foreground hover:text-green-400 text-sm py-2.5 rounded-lg transition-all"
                           >
                             <CheckCircle className="w-4 h-4" />
-                            Segna come completata
+                            {sd.markCompleted}
                           </button>
                         );
                       })()}
@@ -388,7 +391,7 @@ export default function StudentDashboard() {
                       <div className="flex items-center justify-between flex-wrap gap-2 pt-1 border-t border-white/5">
                         <p className="text-xs text-muted-foreground/50 flex items-center gap-1.5">
                           <Shield className="w-3 h-3 shrink-0" />
-                          Accesso personale protetto
+                          {sd.protectedAccess}
                         </p>
                         {activeModule?.durationMinutes && (
                           <p className="text-xs text-muted-foreground/50 flex items-center gap-1">
@@ -411,7 +414,7 @@ export default function StudentDashboard() {
                           )}
                         </div>
                         <div className="text-right shrink-0">
-                          <div className="text-xs text-muted-foreground uppercase tracking-widest">Progresso</div>
+                          <div className="text-xs text-muted-foreground uppercase tracking-widest">{sd.progress}</div>
                           <div className="text-2xl font-bold text-primary">{Math.round(activeCourse.progress || 0)}%</div>
                         </div>
                       </div>
@@ -429,7 +432,7 @@ export default function StudentDashboard() {
                 <div className="bg-card border border-white/5 rounded-lg overflow-hidden">
                   <div className="px-4 py-3 border-b border-white/5 flex items-center gap-2">
                     <BookOpen className="w-4 h-4 text-primary" />
-                    <h3 className="text-sm font-bold text-white uppercase tracking-widest">Moduli</h3>
+                    <h3 className="text-sm font-bold text-white uppercase tracking-widest">{sd.modules}</h3>
                     {activeCourse?.modules && (
                       <span className="ml-auto text-xs text-muted-foreground">
                         {activeCourse.modules.filter((m: any) => m.completed || manuallyCompleted.has(m.id)).length}/{activeCourse.modules.length}
@@ -439,7 +442,7 @@ export default function StudentDashboard() {
 
                   {(!activeCourse?.modules || activeCourse.modules.length === 0) ? (
                     <div className="flex items-center justify-center py-12 text-muted-foreground text-sm px-4 text-center">
-                      Nessun modulo disponibile al momento
+                      {sd.noModules}
                     </div>
                   ) : (
                     <div className="overflow-y-auto max-h-72 lg:max-h-[500px] p-3 space-y-1.5">
@@ -477,7 +480,7 @@ export default function StudentDashboard() {
                                 </p>
                                 {isCompleted && (
                                   <span className="text-[10px] font-bold uppercase tracking-wider text-green-400/70 bg-green-400/10 px-1.5 py-0.5 rounded shrink-0">
-                                    Completato
+                                    {sd.completedBadge}
                                   </span>
                                 )}
                               </div>
