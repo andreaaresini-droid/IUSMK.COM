@@ -407,6 +407,26 @@ export const translations = {
       needHelp: "Hai bisogno di aiuto?",
       contactIusmk: "Contatta IUSMK",
     },
+    faq: {
+      title: "FAQ",
+      intro: "Risposte alle domande più frequenti su corsi, pagamenti e assistenza.",
+      noAnswer: "Non trovi la risposta che cerchi?",
+      writeTo: "Scrivi a iusmkbarber@gmail.com",
+      items: [
+        { q: "Dove inserisco il coupon?", a: "Il coupon va inserito direttamente al checkout, se il corso o il link di pagamento lo prevede. Cerca il campo \"Codice promozionale\" durante il pagamento e inserisci il codice esatto." },
+        { q: "Posso chiedere il recesso?", a: "Sì, per IUSMK è possibile richiedere il recesso entro 14 giorni dall'acquisto. Scrivi a iusmkbarber@gmail.com indicando nome, email dell'acquisto, corso acquistato e data di acquisto." },
+        { q: "Quando ricevo l'accesso al corso?", a: "Dopo il completamento del pagamento e secondo la procedura prevista dal sito. Riceverai le istruzioni per accedere al corso acquistato." },
+        { q: "Posso usare il coupon più di una volta?", a: "Dipende da come è stato configurato il coupon. Alcuni coupon possono avere un solo utilizzo, altri più utilizzi, oppure limiti specifici. Se un coupon non funziona, potrebbe essere scaduto o aver raggiunto il limite di utilizzi." },
+        { q: "Dove posso contattare IUSMK?", a: "Puoi scrivere a iusmkbarber@gmail.com oppure contattare l'account Instagram ufficiale @_iusmk_." },
+      ],
+    },
+    notFound: {
+      title: "404 Pagina Non Trovata",
+      desc: "La pagina che cerchi non esiste o è stata spostata.",
+    },
+    legal: {
+      lastUpdated: "Ultimo aggiornamento:",
+    },
     chat: {
       title: "Assistente IUSMK",
       online: "Online",
@@ -824,6 +844,26 @@ export const translations = {
       unlockButton: "Unlock course",
       needHelp: "Need help?",
       contactIusmk: "Contact IUSMK",
+    },
+    faq: {
+      title: "FAQ",
+      intro: "Answers to the most frequently asked questions about courses, payments, and support.",
+      noAnswer: "Can't find the answer you're looking for?",
+      writeTo: "Write to iusmkbarber@gmail.com",
+      items: [
+        { q: "Where do I enter the coupon?", a: "The coupon should be entered directly at checkout, if the course or payment link supports it. Look for the \"Promo code\" field during payment and enter the exact code." },
+        { q: "Can I request a refund?", a: "Yes, for IUSMK you can request a withdrawal within 14 days of purchase. Write to iusmkbarber@gmail.com indicating your name, the purchase email, the course purchased, and the purchase date." },
+        { q: "When do I receive course access?", a: "After payment is completed and according to the procedure provided by the site. You'll receive instructions to access the purchased course." },
+        { q: "Can I use the coupon more than once?", a: "It depends on how the coupon was configured. Some coupons can be used only once, others multiple times, or have specific limits. If a coupon doesn't work, it may be expired or have reached its usage limit." },
+        { q: "Where can I contact IUSMK?", a: "You can write to iusmkbarber@gmail.com or contact the official Instagram account @_iusmk_." },
+      ],
+    },
+    notFound: {
+      title: "404 Page Not Found",
+      desc: "The page you're looking for doesn't exist or has been moved.",
+    },
+    legal: {
+      lastUpdated: "Last updated:",
     },
     chat: {
       title: "IUSMK Assistant",

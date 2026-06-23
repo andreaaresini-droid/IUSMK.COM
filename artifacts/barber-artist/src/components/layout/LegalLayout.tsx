@@ -1,6 +1,7 @@
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { ReactNode } from "react";
+import { useLang } from "@/i18n/LanguageContext";
 
 interface LegalLayoutProps {
   title: string;
@@ -9,6 +10,7 @@ interface LegalLayoutProps {
 }
 
 export function LegalLayout({ title, lastUpdated, children }: LegalLayoutProps) {
+  const { t } = useLang();
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
@@ -19,7 +21,7 @@ export function LegalLayout({ title, lastUpdated, children }: LegalLayoutProps) 
               {title}
             </h1>
             {lastUpdated && (
-              <p className="text-sm text-white/30">Ultimo aggiornamento: {lastUpdated}</p>
+              <p className="text-sm text-white/30">{t.legal.lastUpdated} {lastUpdated}</p>
             )}
             <div className="mt-4 h-px bg-gradient-to-r from-primary/40 to-transparent" />
           </div>
