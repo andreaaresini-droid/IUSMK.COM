@@ -6,6 +6,7 @@ import { CheckCircle, Clock, Copy, ArrowRight, BookOpen } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { fetchApi } from "@/lib/api-client";
+import { useLang } from "@/i18n/LanguageContext";
 
 type ConfirmResult = { status: "completed" | "pending"; courseTitle?: string; accessCode?: string | null };
 
@@ -15,6 +16,8 @@ export default function CheckoutSuccess() {
   const ref = new URLSearchParams(search).get("ref");
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { t } = useLang();
+  const tcs = t.checkoutSuccess;
 
   const [status, setStatus] = useState<"verifying" | "completed" | "pending" | "error">("verifying");
   const [result, setResult] = useState<ConfirmResult | null>(null);
@@ -74,7 +77,7 @@ export default function CheckoutSuccess() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center flex-col gap-4">
         <div className="w-12 h-12 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-        <p className="text-muted-foreground text-sm">Verifico il pagamento...</p>
+        <p className="text-muted-foreground text-sm">{tcs.verifying}</p>
       </div>
     );
   }
@@ -88,11 +91,10 @@ export default function CheckoutSuccess() {
             <div>
               <p className="text-red-400 mb-4">{error}</p>
               <p className="text-muted-foreground text-sm mb-6">
-                Se hai completato il pagamento, il corso verrà sbloccato a breve. Controlla
-                la sezione "I miei corsi" tra qualche istante.
+                {tcs.errorHelp}
               </p>
               <button onClick={() => setLocation("/my-courses")} className="text-primary hover:underline text-sm">
-                Vai a I miei corsi
+                {tcs.goMyCourses}
               </button>
             </div>
 
@@ -102,17 +104,17 @@ export default function CheckoutSuccess() {
                 <CheckCircle size={40} className="text-green-400" />
               </div>
               <h1 className="font-display text-3xl font-bold uppercase tracking-widest text-white mb-2">
-                Acquisto Completato!
+                {tcs.completedTitle}
               </h1>
               <p className="text-muted-foreground mb-8">
-                Il tuo accesso al corso{" "}
-                <strong className="text-white">{result?.courseTitle ?? "acquistato"}</strong>{" "}
-                è pronto: lo trovi nella sezione <strong className="text-white">I miei corsi</strong>.
+                {tcs.completedDescPre}{" "}
+                <strong className="text-white">{result?.courseTitle ?? ""}</strong>{" "}
+                {tcs.completedDescPost}
               </p>
 
               {result?.accessCode && (
                 <div className="bg-card border border-primary/20 rounded-2xl p-6 mb-8">
-                  <p className="text-sm text-muted-foreground mb-3 uppercase tracking-widest">Il tuo codice di accesso</p>
+                  <p className="text-sm text-muted-foreground mb-3 uppercase tracking-widest">{tcs.accessCodeLabel}</p>
                   <div className="flex items-center justify-center gap-3">
                     <span className="font-mono text-3xl font-bold text-primary tracking-[0.3em]">
                       {result.accessCode}
@@ -126,7 +128,7 @@ export default function CheckoutSuccess() {
                     </button>
                   </div>
                   <p className="text-xs text-muted-foreground mt-3">
-                    Trovi questo codice anche nella sezione <strong className="text-white">Notifiche</strong> del tuo account.
+                    {tcs.accessCodeNote}
                   </p>
                 </div>
               )}
@@ -136,13 +138,13 @@ export default function CheckoutSuccess() {
                   onClick={() => setLocation("/my-courses")}
                   className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white py-3 rounded-xl font-semibold transition-colors"
                 >
-                  <BookOpen size={18} /> Vai a I miei corsi <ArrowRight size={16} />
+                  <BookOpen size={18} /> {tcs.goMyCourses} <ArrowRight size={16} />
                 </button>
                 <button
                   onClick={() => setLocation("/academy")}
                   className="w-full text-muted-foreground hover:text-white transition-colors text-sm py-2"
                 >
-                  Torna all'Academy
+                  {tcs.backToAcademy}
                 </button>
               </div>
             </>
@@ -153,23 +155,22 @@ export default function CheckoutSuccess() {
                 <Clock size={40} className="text-yellow-400" />
               </div>
               <h1 className="font-display text-2xl font-bold uppercase tracking-widest text-white mb-2">
-                Pagamento in verifica
+                {tcs.pendingTitle}
               </h1>
               <p className="text-muted-foreground mb-6">
-                Stiamo confermando il pagamento. Se l'hai completato, il corso comparirà
-                nella sezione <strong className="text-white">I miei corsi</strong> entro pochi istanti.
+                {tcs.pendingDesc}
               </p>
               <button
                 onClick={() => setLocation("/my-courses")}
                 className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white py-3 rounded-xl font-semibold transition-colors mb-3"
               >
-                <BookOpen size={18} /> Vai a I miei corsi
+                <BookOpen size={18} /> {tcs.goMyCourses}
               </button>
               <button
                 onClick={() => setLocation("/academy")}
                 className="text-muted-foreground hover:text-white transition-colors text-sm"
               >
-                Torna all'Academy
+                {tcs.backToAcademy}
               </button>
             </>
           )}
