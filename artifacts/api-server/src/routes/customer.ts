@@ -37,6 +37,7 @@ import { getVapidPublicKey, saveSubscription, deleteSubscription } from "../lib/
 import { saveNativeToken, deleteNativeToken } from "../lib/fcmPush";
 import { dispatchNotificationToAdmin } from "../lib/notifications";
 import { generateVideoToken, comparePassword, hashPassword } from "../lib/auth";
+import { reconcilePendingPurchases } from "../lib/sumupAccess";
 
 const router = Router();
 
@@ -267,6 +268,11 @@ router.get("/my-courses", requireCustomerAuth, async (req: AuthRequest, res) => 
   try {
     const userId = req.userId!;
     req.log.info({ userId }, "[MY COURSES] fetching active courses only");
+
+    // Riconcilia eventuali pagamenti SumUp ancora "pending": se il pagamento
+    // risulta PAID, sblocca il corso. Garantisce lo sblocco anche se SumUp non
+    // reindirizza l'utente al sito e il webhook non arriva.
+    await reconcilePendingPurchases(userId).catch(() => {});
 
     // Only return courses with an ACTIVE studentCourseAccess record.
     // Courses that are merely assigned (code not yet activated) do NOT appear here —

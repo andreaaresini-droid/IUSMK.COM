@@ -1,106 +1,15 @@
 import { Router, Request, Response } from "express";
 import { db } from "@workspace/db";
 import {
-  studentsTable, coursesTable, accessCodesTable,
-  studentCourseAccessTable, notificationsTable,
+  studentsTable, coursesTable, studentCourseAccessTable, coursePurchasesTable,
 } from "@workspace/db/schema";
 import { eq, and } from "drizzle-orm";
 import crypto from "crypto";
 import { requireCustomerAuth, AuthRequest } from "../middlewares/authMiddleware.js";
 import { createSumUpCheckout, verifySumUpWebhookSignature, getSumUpCheckoutsByReference } from "../lib/sumupClient.js";
-import { generateAccessCode } from "../lib/auth.js";
-import { notifyUser } from "../lib/pushDispatch.js";
+import { grantCourseAccess } from "../lib/sumupAccess.js";
 
 const router = Router();
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Sblocco corso dopo pagamento — logica CONDIVISA tra webhook e conferma-al-ritorno.
-// Idempotente: se l'utente ha già accesso attivo, non duplica nulla.
-// Ritorna il codice di accesso (nuovo o già esistente) per mostrarlo all'utente.
-// ─────────────────────────────────────────────────────────────────────────────
-async function grantCourseAccess(
-  userId: number,
-  courseId: number,
-  paymentRef: string,
-): Promise<{ ok: boolean; alreadyHad: boolean; accessCode: string | null; courseTitle: string }> {
-  const [student, course] = await Promise.all([
-    db.query.studentsTable.findFirst({ where: eq(studentsTable.id, userId) }),
-    db.query.coursesTable.findFirst({ where: eq(coursesTable.id, courseId) }),
-  ]);
-
-  if (!student || !course) {
-    console.error("[SUMUP ACCESS] studente o corso non trovato — userId:", userId, "courseId:", courseId);
-    return { ok: false, alreadyHad: false, accessCode: null, courseTitle: "Corso" };
-  }
-
-  // Idempotenza: accesso già attivo → restituisci l'eventuale codice esistente
-  const alreadyHasAccess = await db.query.studentCourseAccessTable.findFirst({
-    where: and(
-      eq(studentCourseAccessTable.studentId, userId),
-      eq(studentCourseAccessTable.courseId, courseId),
-      eq(studentCourseAccessTable.status, "active"),
-    ),
-  });
-
-  if (alreadyHasAccess) {
-    let existingCode: string | null = null;
-    if (alreadyHasAccess.accessCodeId) {
-      const ac = await db.query.accessCodesTable.findFirst({
-        where: eq(accessCodesTable.id, alreadyHasAccess.accessCodeId),
-      });
-      existingCode = ac?.code ?? null;
-    }
-    return { ok: true, alreadyHad: true, accessCode: existingCode, courseTitle: course.title };
-  }
-
-  // Genera codice accesso + crea accesso attivo
-  const code = generateAccessCode();
-
-  const [accessCode] = await db.insert(accessCodesTable).values({
-    code,
-    courseId,
-    assignedEmail: student.email,
-    isActive: true,
-    maxDevices: 2,
-    boundUserId: userId,
-    notes: `Auto-generato dopo pagamento SumUp — ref: ${paymentRef}`,
-  }).returning();
-
-  await db.insert(studentCourseAccessTable).values({
-    studentId: userId,
-    courseId,
-    accessCodeId: accessCode.id,
-    status: "active",
-  });
-
-  // Promuovi a "student" se era "customer"
-  if (student.role === "customer") {
-    await db.update(studentsTable)
-      .set({ role: "student", updatedAt: new Date() })
-      .where(eq(studentsTable.id, userId));
-  }
-
-  // Notifica in DB
-  await db.insert(notificationsTable).values({
-    userId,
-    courseId,
-    type: "payment_success",
-    title: `Accesso al corso: ${course.title}`,
-    message: `Il tuo pagamento è confermato! Il corso "${course.title}" è ora disponibile nella sezione "I miei corsi". Codice di accesso: **${code}**.`,
-    accessCode: code,
-    isRead: false,
-  });
-
-  // Push (best-effort)
-  notifyUser(userId, {
-    title: "Pagamento confermato — IUSMK",
-    body: `Corso "${course.title}" sbloccato! Codice: ${code}`,
-    url: "/my-courses",
-  }).catch(() => {});
-
-  console.log("[SUMUP ACCESS] corso sbloccato — userId:", userId, "courseId:", courseId, "code:", code);
-  return { ok: true, alreadyHad: false, accessCode: code, courseTitle: course.title };
-}
 
 // ── POST /api/sumup/checkout ─────────────────────────────────────────────────
 router.post("/checkout", requireCustomerAuth as any, async (req: AuthRequest, res: Response) => {
@@ -112,9 +21,10 @@ router.post("/checkout", requireCustomerAuth as any, async (req: AuthRequest, re
   }
 
   try {
-    const course = await db.query.coursesTable.findFirst({
-      where: eq(coursesTable.id, Number(courseId)),
-    });
+    const [course, student] = await Promise.all([
+      db.query.coursesTable.findFirst({ where: eq(coursesTable.id, Number(courseId)) }),
+      db.query.studentsTable.findFirst({ where: eq(studentsTable.id, req.userId!) }),
+    ]);
 
     if (!course || !course.isPublished) {
       res.status(404).json({ error: "Not Found", message: "Corso non trovato" });
@@ -152,6 +62,23 @@ router.post("/checkout", requireCustomerAuth as any, async (req: AuthRequest, re
       description: course.title,
       redirectUrl: `${baseUrl}/checkout/success?ref=${encodeURIComponent(checkoutReference)}`,
     });
+
+    // Registra l'acquisto come "pending": serve a riconciliarlo lato server
+    // (sblocco corso) anche se SumUp non reindirizza l'utente e il webhook non arriva.
+    try {
+      await db.insert(coursePurchasesTable).values({
+        courseId: Number(courseId),
+        userId: req.userId!,
+        customerName: student?.name ?? "Cliente",
+        customerEmail: student?.email ?? req.userEmail ?? "",
+        amountPaid: course.price,
+        currency: "eur",
+        status: "pending",
+        stripeSessionId: checkoutReference, // riusa il campo unique per il ref SumUp
+      });
+    } catch (e: any) {
+      console.error("[SUMUP] impossibile registrare pending purchase:", e?.message);
+    }
 
     res.json({ sessionUrl: checkout.hosted_checkout_url });
   } catch (err: any) {
@@ -211,6 +138,11 @@ router.post("/webhook", async (req: Request, res: Response) => {
       res.status(404).json({ error: "Student or course not found" });
       return;
     }
+    // Segna l'eventuale pending come completato
+    await db.update(coursePurchasesTable)
+      .set({ status: "completed", updatedAt: new Date() })
+      .where(eq(coursePurchasesTable.stripeSessionId, checkoutReference))
+      .catch(() => {});
     console.log("[SUMUP WEBHOOK] sblocco ok — userId:", userId, "courseId:", courseId, "alreadyHad:", result.alreadyHad);
     res.json({ received: true });
   } catch (err: any) {
@@ -254,6 +186,11 @@ router.post("/confirm", requireCustomerAuth as any, async (req: AuthRequest, res
       res.status(404).json({ error: "Not Found", message: "Corso o utente non trovato" });
       return;
     }
+
+    await db.update(coursePurchasesTable)
+      .set({ status: "completed", accessCode: result.accessCode, updatedAt: new Date() })
+      .where(eq(coursePurchasesTable.stripeSessionId, ref))
+      .catch(() => {});
 
     res.json({
       status: "completed",
