@@ -81,7 +81,10 @@ router.post("/checkout", requireCustomerAuth as any, async (req: AuthRequest, re
       logger.error({ ref: checkoutReference, err: e?.message }, "[SUMUP] impossibile registrare pending purchase");
     }
 
-    logger.info({ userId: req.userId, courseId, ref: checkoutReference }, "[SUMUP] checkout creato");
+    logger.info(
+      { userId: req.userId, courseId, ref: checkoutReference, checkoutId: checkout.id, hostedUrl: checkout.hosted_checkout_url },
+      "[SUMUP] checkout creato",
+    );
     res.json({ sessionUrl: checkout.hosted_checkout_url });
   } catch (err: any) {
     logger.error({ err: err?.message }, "[SUMUP] checkout creation error");

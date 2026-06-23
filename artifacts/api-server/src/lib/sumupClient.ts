@@ -42,6 +42,9 @@ export async function createSumUpCheckout(params: SumUpCheckoutParams): Promise<
       pay_to_email: SUMUP_MERCHANT_EMAIL,
       description: params.description,
       redirect_url: params.redirectUrl,
+      // Necessario per ottenere una pagina di pagamento ospitata valida
+      // (hosted_checkout_url). Senza, l'URL restituito può dare 404.
+      hosted_checkout: { enabled: true },
     }),
   }) as unknown as HttpResponse;
 
