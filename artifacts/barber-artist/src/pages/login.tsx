@@ -4,11 +4,14 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { useUniversalLogin, useCurrentUser } from "@/hooks/use-auth";
 import { Loader2, Eye, EyeOff, ShoppingCart } from "lucide-react";
+import { useLang } from "@/i18n/LanguageContext";
 
 export default function Login() {
   const [, setLocation] = useLocation();
   const { data: user } = useCurrentUser();
   const universalLogin = useUniversalLogin();
+  const { t } = useLang();
+  const tl = t.auth.login;
 
   // Se già loggato, reindirizza in base al ruolo
   useEffect(() => {
@@ -52,9 +55,9 @@ export default function Login() {
             <div className="bg-primary/10 border border-primary/30 rounded-xl px-5 py-4 mb-6 flex gap-3">
               <ShoppingCart className="w-5 h-5 text-primary mt-0.5 shrink-0" />
               <div>
-                <p className="text-white text-sm font-semibold mb-1">Accedi per acquistare il corso</p>
+                <p className="text-white text-sm font-semibold mb-1">{t.auth.buyBadge.loginTitle}</p>
                 <p className="text-muted-foreground text-xs leading-relaxed">
-                  Per acquistare un corso devi prima accedere o creare un account. Dopo il pagamento riceverai il codice per sbloccare il corso direttamente sul tuo profilo.
+                  {t.auth.buyBadge.loginDesc}
                 </p>
               </div>
             </div>
@@ -62,21 +65,21 @@ export default function Login() {
 
           <div className="text-center mb-8">
             <h1 className="text-3xl font-display font-bold uppercase tracking-widest text-primary mb-3">
-              Accedi al tuo account
+              {tl.title}
             </h1>
             <p className="text-muted-foreground text-sm">
-              Inserisci le tue credenziali per accedere ai tuoi corsi
+              {tl.subtitle}
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="bg-card border border-white/10 rounded-2xl p-8 space-y-5">
             <div>
-              <label className="text-sm text-muted-foreground mb-1 block">Email o username</label>
+              <label className="text-sm text-muted-foreground mb-1 block">{tl.identifierLabel}</label>
               <input
                 type="text"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
-                placeholder="La tua email o username"
+                placeholder={tl.identifierPlaceholder}
                 className={inputClass}
                 autoComplete="username"
                 required
@@ -84,13 +87,13 @@ export default function Login() {
             </div>
 
             <div>
-              <label className="text-sm text-muted-foreground mb-1 block">Password</label>
+              <label className="text-sm text-muted-foreground mb-1 block">{tl.passwordLabel}</label>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
                   value={form.password}
                   onChange={(e) => setForm({ ...form, password: e.target.value })}
-                  placeholder="La tua password"
+                  placeholder={tl.passwordPlaceholder}
                   className={inputClass + " pr-10"}
                   autoComplete="current-password"
                   required
@@ -107,13 +110,13 @@ export default function Login() {
 
             <div className="flex justify-end">
               <Link href="/forgot-password" className="text-xs text-muted-foreground hover:text-primary transition-colors">
-                Password dimenticata?
+                {tl.forgot}
               </Link>
             </div>
 
             {universalLogin.isError && (
               <div className="bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3 text-red-400 text-sm">
-                {(universalLogin.error as any)?.message || "Credenziali non corrette"}
+                {(universalLogin.error as any)?.message || tl.error}
               </div>
             )}
 
@@ -123,16 +126,16 @@ export default function Login() {
               className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white py-4 rounded-xl font-semibold text-base transition-colors disabled:opacity-60"
             >
               {universalLogin.isPending ? (
-                <><Loader2 size={18} className="animate-spin" /> Accesso in corso...</>
+                <><Loader2 size={18} className="animate-spin" /> {tl.submitting}</>
               ) : (
-                "Accedi"
+                tl.submit
               )}
             </button>
 
             <p className="text-center text-sm text-muted-foreground">
-              Non hai un account?{" "}
+              {tl.noAccount}{" "}
               <Link href="/register" className="text-primary hover:underline font-medium">
-                Registrati ora
+                {tl.registerNow}
               </Link>
             </p>
           </form>
