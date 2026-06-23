@@ -564,20 +564,20 @@ export default function CategoryDetail({ params }: Props) {
                                   Scopri il corso
                                 </Button>
                               </Link>
-                              {course.paymentLinkUrl && (
+                              {(course.price || course.paymentLinkUrl) && (
                                 <Button
                                   size="sm"
                                   variant="outline"
                                   className="rounded-none uppercase tracking-wider font-bold border-white/20 hover:border-white/40"
                                   onClick={() => {
+                                    // Passa SEMPRE dal checkout API (/checkout → /api/sumup/checkout):
+                                    // genera il reference che permette di attribuire il pagamento e
+                                    // sbloccare il corso. Niente più link statico (il corso non si sbloccava).
                                     if (!isLoggedInUser) {
-                                      sessionStorage.setItem("checkout_redirect", `/course/${course.id}`);
+                                      sessionStorage.setItem("checkout_redirect", `/checkout?course=${course.id}`);
                                       setLocation("/login");
                                     } else {
-                                      const url = new URL(course.paymentLinkUrl);
-                                      if (currentUser?.id)    url.searchParams.set("client_reference_id", String(currentUser.id));
-                                      if (currentUser?.email) url.searchParams.set("prefilled_email", currentUser.email);
-                                      window.open(url.toString(), "_blank", "noopener,noreferrer");
+                                      setLocation(`/checkout?course=${course.id}`);
                                     }
                                   }}
                                 >
