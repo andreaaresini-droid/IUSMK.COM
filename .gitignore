@@ -69,6 +69,18 @@ iusmk-eac1e-*.json
 *.p8
 AuthKey_*.p8
 
+# Android signing — SECRET, never commit.
+# (keystore, alias/store passwords, e backup della chiave di upload)
+*.jks
+*.keystore
+key.properties
+keystore.properties
+IUSMK-KEYSTORE-BACKUP/
+
+# Firebase service account in base64 (usato dalle pipeline) — SECRET, never commit.
+*FIREBASE_SERVICE_ACCOUNT*
+*service_account*.json
+
 # Uploads
 uploads/
 .vercel
