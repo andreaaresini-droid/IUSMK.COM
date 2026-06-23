@@ -10,6 +10,7 @@ import {
   Loader2, ArrowRight, ShoppingBag,
 } from "lucide-react";
 import { resolveCoverUrl } from "@/lib/media-utils";
+import { useLang } from "@/i18n/LanguageContext";
 
 interface MyCourse {
   id:              number;
@@ -24,8 +25,8 @@ interface MyCourse {
   createdAt:       string;
 }
 
-function fmt(d: string) {
-  return new Date(d).toLocaleDateString("it-IT", { day: "2-digit", month: "long", year: "numeric" });
+function fmt(d: string, lang: string) {
+  return new Date(d).toLocaleDateString(lang === "it" ? "it-IT" : "en-GB", { day: "2-digit", month: "long", year: "numeric" });
 }
 
 function CourseThumbnail({ course, alt }: { course: any; alt: string }) {
@@ -53,6 +54,8 @@ function CourseThumbnail({ course, alt }: { course: any; alt: string }) {
 export default function MyCourses() {
   const { data: user, isLoading: authLoading } = useCurrentUser();
   const [, setLocation] = useLocation();
+  const { t, lang } = useLang();
+  const tm = t.myCourses;
 
   // Read ?unlocked= param — courseId just activated via code
   const unlockedCourseId = (() => {
@@ -118,11 +121,11 @@ export default function MyCourses() {
             <div className="flex items-center gap-3 mb-1">
               <BookOpen className="text-primary" size={24} />
               <h1 className="text-2xl md:text-3xl font-display font-bold text-white uppercase tracking-tighter">
-                I miei corsi
+                {tm.title}
               </h1>
             </div>
             <p className="text-muted-foreground text-sm mt-1">
-              Corsi sbloccati — {user.name}
+              {tm.subtitle} {user.name}
             </p>
           </div>
         </div>
@@ -134,21 +137,21 @@ export default function MyCourses() {
               <div className="w-20 h-20 bg-primary/10 border border-primary/20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <ShoppingBag className="w-9 h-9 text-primary/60" />
               </div>
-              <h2 className="text-xl font-display text-white uppercase mb-3">Nessun corso sbloccato</h2>
+              <h2 className="text-xl font-display text-white uppercase mb-3">{tm.emptyTitle}</h2>
               <p className="text-muted-foreground mb-8 leading-relaxed text-sm">
-                Non hai ancora sbloccato nessun corso. Hai un codice di accesso? Vai in Academy e inseriscilo per sbloccare il tuo corso.
+                {tm.emptyDesc}
               </p>
               <button
                 onClick={() => setLocation("/academy")}
                 className="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary/80 text-white font-bold uppercase tracking-wider rounded-xl text-sm transition-colors"
               >
-                <BookOpen size={16} /> Vai all'Academy
+                <BookOpen size={16} /> {tm.goAcademy}
               </button>
             </div>
           ) : (
             <div className="max-w-2xl mx-auto space-y-4">
               <p className="text-xs text-white/40 uppercase tracking-widest mb-5">
-                {courses.length} corso{courses.length !== 1 ? "i" : ""} sbloccato{courses.length !== 1 ? "i" : ""}
+                {courses.length} {courses.length !== 1 ? tm.countPlural : tm.countSingular}
               </p>
 
               {courses.map((course) => {
@@ -173,11 +176,11 @@ export default function MyCourses() {
                         <div className="flex items-center gap-1.5 shrink-0">
                           {isNew && (
                             <span className="text-[10px] px-2 py-0.5 rounded-full bg-green-400 text-black font-bold uppercase tracking-wider animate-pulse">
-                              Nuovo!
+                              {tm.badgeNew}
                             </span>
                           )}
                           <span className="flex items-center gap-1 text-[11px] px-2.5 py-1 rounded-full bg-green-500/15 text-green-400 border border-green-500/20 font-semibold">
-                            <CheckCircle size={11} /> Attivo
+                            <CheckCircle size={11} /> {tm.badgeActive}
                           </span>
                         </div>
                       </div>
@@ -185,7 +188,7 @@ export default function MyCourses() {
                         <p className="text-sm text-white/40 line-clamp-2 mb-2">{course.courseDescription}</p>
                       )}
                       <p className="text-xs text-white/25">
-                        Sbloccato il {fmt(course.unlockedAt || course.createdAt)}
+                        {tm.unlockedOn} {fmt(course.unlockedAt || course.createdAt, lang)}
                         {course.amountPaid > 0 ? ` · €${course.amountPaid.toFixed(2)}` : ""}
                       </p>
                     </div>
@@ -203,7 +206,7 @@ export default function MyCourses() {
                       }}
                       className="flex items-center justify-center gap-2 w-full sm:w-auto px-5 py-2.5 bg-primary hover:bg-primary/80 text-white font-bold rounded-xl text-sm transition-colors"
                     >
-                      <ArrowRight size={16} /> Accedi al corso
+                      <ArrowRight size={16} /> {tm.accessCourse}
                     </button>
                   </div>
                 </div>
@@ -213,19 +216,19 @@ export default function MyCourses() {
               {/* Help */}
               <div className="bg-white/3 border border-white/5 rounded-xl p-4 text-center">
                 <p className="text-sm text-white/40">
-                  Hai un altro codice?{" "}
+                  {tm.anotherCode}{" "}
                   <button
                     onClick={() => setLocation("/academy")}
                     className="text-primary hover:underline"
                   >
-                    Vai in Academy per sbloccarlo
+                    {tm.goAcademyUnlock}
                   </button>
-                  {" "}o contatta Giuseppe via{" "}
+                  {" "}{tm.orContact}{" "}
                   <button
                     onClick={() => setLocation("/chat")}
                     className="text-primary hover:underline"
                   >
-                    chat
+                    {tm.chat}
                   </button>
                   .
                 </p>

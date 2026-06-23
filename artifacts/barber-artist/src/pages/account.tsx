@@ -4,6 +4,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Loader2, User, Lock, Trash2, AlertTriangle, X } from "lucide-react";
 import { useCurrentUser } from "@/hooks/use-auth";
+import { useLang } from "@/i18n/LanguageContext";
 import {
   useCustomerProfile,
   useUpdateProfile,
@@ -17,6 +18,8 @@ const inputClass =
 export default function Account() {
   const [, setLocation] = useLocation();
   const { data: user, isLoading: userLoading } = useCurrentUser();
+  const { t } = useLang();
+  const tl = t.account;
   const isCustomer = !!user && (user.role === "customer" || user.role === "student");
 
   // Redirect se non autenticato come cliente
@@ -73,11 +76,11 @@ export default function Account() {
     e.preventDefault();
     setPwError("");
     if (newPassword.length < 6) {
-      setPwError("La nuova password deve essere di almeno 6 caratteri.");
+      setPwError(tl.pwTooShort);
       return;
     }
     if (newPassword !== confirmPassword) {
-      setPwError("Le due password non coincidono.");
+      setPwError(tl.pwMismatch);
       return;
     }
     changePassword.mutate(
@@ -103,10 +106,10 @@ export default function Account() {
         <div className="max-w-xl mx-auto space-y-8">
           <div className="text-center mb-2">
             <h1 className="text-3xl font-display font-bold uppercase tracking-widest text-primary mb-2">
-              Il mio account
+              {tl.title}
             </h1>
             <p className="text-muted-foreground text-sm">
-              Gestisci i tuoi dati personali e la sicurezza del tuo account.
+              {tl.subtitle}
             </p>
           </div>
 
@@ -114,12 +117,12 @@ export default function Account() {
           <section className="bg-card border border-white/10 rounded-2xl p-6 sm:p-8">
             <div className="flex items-center gap-2 mb-5">
               <User size={18} className="text-primary" />
-              <h2 className="text-lg font-semibold">Dati personali</h2>
+              <h2 className="text-lg font-semibold">{tl.personalData}</h2>
             </div>
             <form onSubmit={handleProfileSubmit} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm text-muted-foreground mb-1 block">Nome</label>
+                  <label className="text-sm text-muted-foreground mb-1 block">{tl.firstName}</label>
                   <input
                     className={inputClass}
                     value={firstName}
@@ -129,7 +132,7 @@ export default function Account() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-muted-foreground mb-1 block">Cognome</label>
+                  <label className="text-sm text-muted-foreground mb-1 block">{tl.lastName}</label>
                   <input
                     className={inputClass}
                     value={lastName}
@@ -140,10 +143,10 @@ export default function Account() {
                 </div>
               </div>
               <div>
-                <label className="text-sm text-muted-foreground mb-1 block">E-mail</label>
+                <label className="text-sm text-muted-foreground mb-1 block">{tl.email}</label>
                 <input className={inputClass} value={profile.email} disabled readOnly />
                 <p className="text-xs text-muted-foreground mt-1">
-                  Per cambiare l'indirizzo e-mail contatta l'assistenza.
+                  {tl.emailNote}
                 </p>
               </div>
               <button
@@ -152,9 +155,9 @@ export default function Account() {
                 className="w-full sm:w-auto flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-xl font-semibold text-sm transition-colors disabled:opacity-60"
               >
                 {updateProfile.isPending ? (
-                  <><Loader2 size={16} className="animate-spin" /> Salvataggio...</>
+                  <><Loader2 size={16} className="animate-spin" /> {tl.saving}</>
                 ) : (
-                  "Salva modifiche"
+                  tl.save
                 )}
               </button>
             </form>
@@ -165,11 +168,11 @@ export default function Account() {
             <section className="bg-card border border-white/10 rounded-2xl p-6 sm:p-8">
               <div className="flex items-center gap-2 mb-5">
                 <Lock size={18} className="text-primary" />
-                <h2 className="text-lg font-semibold">Password</h2>
+                <h2 className="text-lg font-semibold">{tl.password}</h2>
               </div>
               <form onSubmit={handlePasswordSubmit} className="space-y-4">
                 <div>
-                  <label className="text-sm text-muted-foreground mb-1 block">Password attuale</label>
+                  <label className="text-sm text-muted-foreground mb-1 block">{tl.currentPassword}</label>
                   <input
                     type="password"
                     className={inputClass}
@@ -181,7 +184,7 @@ export default function Account() {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm text-muted-foreground mb-1 block">Nuova password</label>
+                    <label className="text-sm text-muted-foreground mb-1 block">{tl.newPassword}</label>
                     <input
                       type="password"
                       className={inputClass}
@@ -192,7 +195,7 @@ export default function Account() {
                     />
                   </div>
                   <div>
-                    <label className="text-sm text-muted-foreground mb-1 block">Conferma nuova</label>
+                    <label className="text-sm text-muted-foreground mb-1 block">{tl.confirmNew}</label>
                     <input
                       type="password"
                       className={inputClass}
@@ -214,9 +217,9 @@ export default function Account() {
                   className="w-full sm:w-auto flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-xl font-semibold text-sm transition-colors disabled:opacity-60"
                 >
                   {changePassword.isPending ? (
-                    <><Loader2 size={16} className="animate-spin" /> Aggiornamento...</>
+                    <><Loader2 size={16} className="animate-spin" /> {tl.changingPassword}</>
                   ) : (
-                    "Cambia password"
+                    tl.changePassword
                   )}
                 </button>
               </form>
@@ -227,23 +230,20 @@ export default function Account() {
           <section className="bg-card border border-red-500/30 rounded-2xl p-6 sm:p-8">
             <div className="flex items-center gap-2 mb-3">
               <Trash2 size={18} className="text-red-400" />
-              <h2 className="text-lg font-semibold text-red-400">Elimina account</h2>
+              <h2 className="text-lg font-semibold text-red-400">{tl.deleteTitle}</h2>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed mb-2">
-              L'eliminazione è <strong className="text-white">definitiva</strong> e rimuove il tuo
-              account e i dati associati: profilo, accessi ai corsi, notifiche, messaggi e
-              iscrizioni alle notifiche.
+              {tl.deleteIntro}
             </p>
             <p className="text-xs text-muted-foreground leading-relaxed mb-5">
-              Alcuni dati relativi agli acquisti possono essere conservati in forma limitata solo
-              dove richiesto dalla normativa fiscale, come indicato nell'informativa privacy.
+              {tl.deleteFiscalNote}
             </p>
             <button
               onClick={() => { setShowDeleteModal(true); setDeletePassword(""); }}
               className="w-full sm:w-auto flex items-center justify-center gap-2 border border-red-500/40 text-red-400 hover:bg-red-500/10 px-6 py-3 rounded-xl font-semibold text-sm transition-colors"
             >
               <Trash2 size={16} />
-              Elimina il mio account
+              {tl.deleteButton}
             </button>
           </section>
         </div>
@@ -257,23 +257,22 @@ export default function Account() {
             <button
               onClick={() => setShowDeleteModal(false)}
               className="absolute top-4 right-4 text-muted-foreground hover:text-white transition-colors"
-              aria-label="Chiudi"
+              aria-label={tl.cancel}
             >
               <X size={20} />
             </button>
             <div className="flex items-center gap-2 mb-3">
               <AlertTriangle size={20} className="text-red-400" />
-              <h3 className="text-lg font-semibold text-white">Confermi l'eliminazione?</h3>
+              <h3 className="text-lg font-semibold text-white">{tl.modalTitle}</h3>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed mb-5">
-              Questa azione è irreversibile. Il tuo account verrà eliminato definitivamente e dovrai
-              registrarti di nuovo per usare l'app.
+              {tl.modalDesc}
             </p>
 
             {profile.hasPassword && (
               <div className="mb-5">
                 <label className="text-sm text-muted-foreground mb-1 block">
-                  Inserisci la password per confermare
+                  {tl.modalPasswordLabel}
                 </label>
                 <input
                   type="password"
@@ -281,7 +280,7 @@ export default function Account() {
                   value={deletePassword}
                   onChange={(e) => setDeletePassword(e.target.value)}
                   autoComplete="current-password"
-                  placeholder="La tua password"
+                  placeholder={tl.modalPasswordPlaceholder}
                 />
               </div>
             )}
@@ -291,7 +290,7 @@ export default function Account() {
                 onClick={() => setShowDeleteModal(false)}
                 className="flex-1 border border-white/15 text-white px-4 py-3 rounded-xl font-semibold text-sm hover:bg-white/5 transition-colors"
               >
-                Annulla
+                {tl.cancel}
               </button>
               <button
                 onClick={handleDelete}
@@ -299,9 +298,9 @@ export default function Account() {
                 className="flex-1 flex items-center justify-center gap-2 bg-red-600 hover:bg-red-600/90 text-white px-4 py-3 rounded-xl font-semibold text-sm transition-colors disabled:opacity-50"
               >
                 {deleteAccount.isPending ? (
-                  <><Loader2 size={16} className="animate-spin" /> Eliminazione...</>
+                  <><Loader2 size={16} className="animate-spin" /> {tl.deleting}</>
                 ) : (
-                  "Elimina definitivamente"
+                  tl.deleteConfirm
                 )}
               </button>
             </div>
