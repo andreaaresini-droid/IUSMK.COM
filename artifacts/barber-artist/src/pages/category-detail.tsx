@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useState, useRef, useEffect } from "react";
+import { useLang } from "@/i18n/LanguageContext";
 
 interface Props {
   params: { categoryId: string };
@@ -86,6 +87,7 @@ function normalizeAcademyMedia(item: any): SharedMedia {
 function SafeImg({
   src, alt, className, onClick,
 }: { src: string; alt?: string; className?: string; onClick?: () => void }) {
+  const { lang } = useLang();
   const [retries, setRetries] = useState(0);
   const [broken, setBroken] = useState(false);
   const prevSrc = useRef(src);
@@ -111,7 +113,7 @@ function SafeImg({
         onClick={onClick}
       >
         <ImageIcon className="w-5 h-5 opacity-40" />
-        {broken && <span className="opacity-40">Media non disponibile</span>}
+        {broken && <span className="opacity-40">{lang === "it" ? "Media non disponibile" : "Media unavailable"}</span>}
       </div>
     );
   }
@@ -130,6 +132,7 @@ function SafeImg({
 function SafeVideo({
   src, className, autoLoop, onClick,
 }: { src: string; className?: string; autoLoop?: boolean; onClick?: () => void }) {
+  const { lang } = useLang();
   const [broken, setBroken] = useState(false);
   const prevSrc = useRef(src);
   if (prevSrc.current !== src) {
@@ -143,7 +146,7 @@ function SafeVideo({
         onClick={onClick}
       >
         <Video className="w-5 h-5 opacity-40" />
-        {broken && <span className="opacity-40">Video non disponibile</span>}
+        {broken && <span className="opacity-40">{lang === "it" ? "Video non disponibile" : "Video unavailable"}</span>}
       </div>
     );
   }
@@ -292,6 +295,7 @@ export default function CategoryDetail({ params }: Props) {
   const isLoggedInUser = currentUser?.role === "customer" || currentUser?.role === "student";
   const { data: ownedData } = useOwnedCourseIds(isLoggedInUser);
   const ownedIds = new Set<number>(ownedData?.courseIds ?? []);
+  const { lang } = useLang();
   const [, setLocation] = useLocation();
   const [lightboxItem, setLightboxItem] = useState<MediaItem | null>(null);
   const [showFloatingBtn, setShowFloatingBtn] = useState(true);
@@ -352,10 +356,10 @@ export default function CategoryDetail({ params }: Props) {
         <Navbar />
         <main className="flex-1 pt-32 pb-24 flex items-center justify-center">
           <div className="text-center">
-            <h1 className="text-4xl font-display text-white uppercase mb-4">Categoria non trovata</h1>
+            <h1 className="text-4xl font-display text-white uppercase mb-4">{lang === "it" ? "Categoria non trovata" : "Category not found"}</h1>
             <Link href="/academy">
               <Button variant="outline" className="rounded-none">
-                <ArrowLeft className="w-4 h-4 mr-2" /> Torna all'Academy
+                <ArrowLeft className="w-4 h-4 mr-2" /> {lang === "it" ? "Torna all'Academy" : "Back to the Academy"}
               </Button>
             </Link>
           </div>
@@ -384,7 +388,7 @@ export default function CategoryDetail({ params }: Props) {
           {/* Category badge */}
           <div className="mb-4">
             <span className="text-xs font-bold bg-primary/20 text-primary px-3 py-1 uppercase tracking-wider">
-              Categoria
+              {lang === "it" ? "Categoria" : "Category"}
             </span>
           </div>
 
@@ -433,7 +437,7 @@ export default function CategoryDetail({ params }: Props) {
           {cat.fullDescription && (
             <div className="mb-12">
               <h2 className="text-2xl font-display font-bold text-white uppercase tracking-tight mb-4">
-                Descrizione
+                {lang === "it" ? "Descrizione" : "Description"}
               </h2>
               <div className="text-muted-foreground leading-relaxed whitespace-pre-line text-lg">
                 {cat.fullDescription}
@@ -446,7 +450,7 @@ export default function CategoryDetail({ params }: Props) {
             <div className="mb-12 bg-white/3 border border-white/8 p-6 md:p-8">
               <h2 className="text-xl font-display font-bold text-white uppercase tracking-tight mb-5 flex items-center gap-2">
                 <CheckCircle className="w-5 h-5 text-primary" />
-                Cosa imparerai
+                {lang === "it" ? "Cosa imparerai" : "What you\'ll learn"}
               </h2>
               <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {whatYouWillLearn.map((item: string, i: number) => (
@@ -481,16 +485,16 @@ export default function CategoryDetail({ params }: Props) {
           {/* Video Corsi */}
           <div id="academy-course-videos" ref={coursesRef} className="mt-16 pt-12 border-t border-white/10">
             <h2 className="text-3xl font-display font-bold text-white uppercase tracking-tighter mb-2">
-              Video Corsi
+              {lang === "it" ? "Video Corsi" : "Video Courses"}
             </h2>
             <p className="text-muted-foreground mb-8">
-              Scegli il corso e acquistalo per accedere ai contenuti esclusivi.
+              {lang === "it" ? "Scegli il corso e acquistalo per accedere ai contenuti esclusivi." : "Choose your course and buy it to access exclusive content."}
             </p>
 
             {courses.length === 0 ? (
               <div className="text-center py-16 border border-dashed border-white/10">
                 <BookOpen className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground">Nessun corso disponibile in questa categoria al momento.</p>
+                <p className="text-muted-foreground">{lang === "it" ? "Nessun corso disponibile in questa categoria al momento." : "No courses available in this category at the moment."}</p>
               </div>
             ) : (
               <div className="space-y-6">
@@ -530,7 +534,7 @@ export default function CategoryDetail({ params }: Props) {
                             )}
                             {isOwned && (
                               <span className="text-xs font-bold bg-green-500/10 text-green-400 border border-green-500/20 px-2 py-0.5 uppercase tracking-wider flex items-center gap-1">
-                                <CheckCircle className="w-3 h-3" /> Già acquistato
+                                <CheckCircle className="w-3 h-3" /> {lang === "it" ? "Già acquistato" : "Already purchased"}
                               </span>
                             )}
                             {course.price && !isOwned && (
@@ -554,14 +558,14 @@ export default function CategoryDetail({ params }: Props) {
                             <Button size="sm" className="rounded-none uppercase tracking-wider font-bold"
                               onClick={() => setLocation("/dashboard")}>
                               <BookOpen className="w-4 h-4 mr-2" />
-                              Apri corso
+                              {lang === "it" ? "Apri corso" : "Open course"}
                             </Button>
                           ) : (
                             <>
                               <Link href={`/course/${course.id}`}>
                                 <Button size="sm" className="rounded-none uppercase tracking-wider font-bold">
                                   <PlayCircle className="w-4 h-4 mr-2" />
-                                  Scopri il corso
+                                  {lang === "it" ? "Scopri il corso" : "Discover the course"}
                                 </Button>
                               </Link>
                               {(course.price || course.paymentLinkUrl) && (
@@ -582,7 +586,7 @@ export default function CategoryDetail({ params }: Props) {
                                   }}
                                 >
                                   <ExternalLink className="w-4 h-4 mr-2" />
-                                  Acquista
+                                  {lang === "it" ? "Acquista" : "Buy"}
                                 </Button>
                               )}
                             </>
@@ -616,7 +620,7 @@ export default function CategoryDetail({ params }: Props) {
               border border-primary/30"
             style={{ boxShadow: "0 4px 24px 0 rgba(0,0,0,0.45)" }}
           >
-            Scopri tutti i corsi ↓↓
+            {lang === "it" ? "Scopri tutti i corsi" : "Discover all courses"} ↓↓
           </motion.button>
         )}
       </AnimatePresence>

@@ -27,6 +27,7 @@ function isVideoUrl(url: string): boolean {
 
 // ── Anteprima video 2 s in loop (griglia galleria) ───────────────────────────
 function GalleryVideoPreview({ src }: { src: string }) {
+  const { lang } = useLang();
   const videoRef     = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const playingRef   = useRef(false);
@@ -76,7 +77,7 @@ function GalleryVideoPreview({ src }: { src: string }) {
     return (
       <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/5 text-muted-foreground text-xs text-center p-2 gap-2">
         <Play className="w-6 h-6 opacity-30" />
-        <span>Video non disponibile</span>
+        <span>{lang === "it" ? "Video non disponibile" : "Video unavailable"}</span>
       </div>
     );
   }
@@ -117,6 +118,7 @@ function MediaLightbox({ items, startIndex, onClose }: {
   startIndex: number;
   onClose: () => void;
 }) {
+  const { lang } = useLang();
   const [index, setIndex]       = useState(startIndex);
   const [videoError, setVideoError] = useState(false);
   const videoRef                 = useRef<HTMLVideoElement>(null);
@@ -167,7 +169,7 @@ function MediaLightbox({ items, startIndex, onClose }: {
       <button
         onClick={onClose}
         className="absolute top-4 right-4 z-50 text-white/60 hover:text-white bg-white/10 hover:bg-white/20 rounded-full p-2 transition-colors"
-        aria-label="Chiudi"
+        aria-label={lang === "it" ? "Chiudi" : "Close"}
       >
         <X className="w-6 h-6" />
       </button>
@@ -178,14 +180,14 @@ function MediaLightbox({ items, startIndex, onClose }: {
           <button
             onClick={e => { e.stopPropagation(); prev(); }}
             className="absolute left-3 top-1/2 -translate-y-1/2 z-50 text-white/60 hover:text-white bg-white/10 hover:bg-white/20 rounded-full p-3 transition-colors"
-            aria-label="Precedente"
+            aria-label={lang === "it" ? "Precedente" : "Previous"}
           >
             <ChevronLeft className="w-6 h-6" />
           </button>
           <button
             onClick={e => { e.stopPropagation(); next(); }}
             className="absolute right-3 top-1/2 -translate-y-1/2 z-50 text-white/60 hover:text-white bg-white/10 hover:bg-white/20 rounded-full p-3 transition-colors"
-            aria-label="Successiva"
+            aria-label={lang === "it" ? "Successiva" : "Next"}
           >
             <ChevronRight className="w-6 h-6" />
           </button>
@@ -201,7 +203,7 @@ function MediaLightbox({ items, startIndex, onClose }: {
           videoError ? (
             <div className="flex flex-col items-center justify-center gap-3 text-muted-foreground py-16 px-8">
               <Play className="w-10 h-10 opacity-30" />
-              <p className="text-sm">Video non disponibile</p>
+              <p className="text-sm">{lang === "it" ? "Video non disponibile" : "Video unavailable"}</p>
             </div>
           ) : (
             <video
@@ -335,8 +337,8 @@ export default function CourseDetail() {
       <div className="min-h-screen bg-background flex flex-col">
         <Navbar />
         <main className="flex-1 pt-32 container mx-auto px-4 text-center">
-          <h1 className="text-4xl text-white font-display">Corso Non Trovato</h1>
-          <Link href="/academy"><Button className="mt-6">Torna all'Academy</Button></Link>
+          <h1 className="text-4xl text-white font-display">{lang === "it" ? "Corso Non Trovato" : "Course Not Found"}</h1>
+          <Link href="/academy"><Button className="mt-6">{lang === "it" ? "Torna all'Academy" : "Back to the Academy"}</Button></Link>
         </main>
       </div>
     );
@@ -389,7 +391,7 @@ export default function CourseDetail() {
           }}
           className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 bg-primary text-white px-6 py-3 shadow-2xl font-bold uppercase tracking-widest text-sm hover:bg-primary/80 transition-all"
         >
-          Acquista / Attiva corso <ChevronDown className="w-4 h-4" /><ChevronDown className="w-4 h-4 -ml-3" />
+          {lang === "it" ? "Acquista / Attiva corso" : "Buy / Activate course"} <ChevronDown className="w-4 h-4" /><ChevronDown className="w-4 h-4 -ml-3" />
         </button>
       )}
 
@@ -419,7 +421,7 @@ export default function CourseDetail() {
             href="/academy"
             className="text-primary hover:text-white flex items-center gap-2 mb-8 text-sm uppercase tracking-widest transition-colors w-fit"
           >
-            <ArrowLeft className="w-4 h-4" /> Torna ai corsi
+            <ArrowLeft className="w-4 h-4" /> {lang === "it" ? "Torna ai corsi" : "Back to courses"}
           </Link>
 
           <div className="flex flex-wrap gap-3 mb-6">
@@ -428,12 +430,12 @@ export default function CourseDetail() {
             </span>
             {course.durationHours && (
               <span className="text-xs font-bold bg-white/5 text-white px-3 py-1 rounded-sm uppercase tracking-wider flex items-center gap-1 border border-white/10">
-                <Clock className="w-3 h-3" /> {course.durationHours} Ore di Video
+                <Clock className="w-3 h-3" /> {course.durationHours} {lang === "it" ? "Ore di Video" : "Hours of Video"}
               </span>
             )}
             {isOwned && (
               <span className="text-xs font-bold bg-green-500/10 text-green-400 border border-green-500/20 px-3 py-1 rounded-sm uppercase tracking-wider flex items-center gap-1">
-                <CheckCircle className="w-3 h-3" /> Già acquistato
+                <CheckCircle className="w-3 h-3" /> {lang === "it" ? "Già acquistato" : "Already purchased"}
               </span>
             )}
           </div>
@@ -472,7 +474,7 @@ export default function CourseDetail() {
               <section>
                 <h2 className="text-2xl font-display font-bold text-white uppercase mb-6 flex items-center gap-3">
                   <span className="w-8 h-[2px] bg-primary inline-block" />
-                  Anteprima del corso
+                  {lang === "it" ? "Anteprima del corso" : "Course preview"}
                 </h2>
                 <TrailerPlayer
                   src={course.trailerVideoUrl}
@@ -486,7 +488,7 @@ export default function CourseDetail() {
               <section>
                 <h2 className="text-2xl font-display font-bold text-white uppercase mb-6 flex items-center gap-3">
                   <span className="w-8 h-[2px] bg-primary inline-block" />
-                  Su questo corso
+                  {lang === "it" ? "Su questo corso" : "About this course"}
                 </h2>
                 <div className="prose prose-invert prose-lg text-muted-foreground font-light max-w-none">
                   {(course.fullDescription || course.description).split("\n").map((p: string, i: number) => (
@@ -501,7 +503,7 @@ export default function CourseDetail() {
               <section>
                 <h2 className="text-2xl font-display font-bold text-white uppercase mb-6 flex items-center gap-3">
                   <span className="w-8 h-[2px] bg-primary inline-block" />
-                  Cosa imparerai
+                  {lang === "it" ? "Cosa imparerai" : "What you\'ll learn"}
                 </h2>
                 <BulletList items={whatYouWillLearn} icon={Check} iconClass="text-primary" cols={2} />
               </section>
@@ -512,7 +514,7 @@ export default function CourseDetail() {
               <section>
                 <h2 className="text-2xl font-display font-bold text-white uppercase mb-6 flex items-center gap-3">
                   <span className="w-8 h-[2px] bg-primary inline-block" />
-                  A chi è adatto
+                  {lang === "it" ? "A chi è adatto" : "Who it\'s for"}
                 </h2>
                 <BulletList items={targetAudience} icon={Users} iconClass="text-blue-400" cols={2} />
               </section>
@@ -523,7 +525,7 @@ export default function CourseDetail() {
               <section>
                 <h2 className="text-2xl font-display font-bold text-white uppercase mb-6 flex items-center gap-3">
                   <span className="w-8 h-[2px] bg-primary inline-block" />
-                  Contenuti inclusi
+                  {lang === "it" ? "Contenuti inclusi" : "What\'s included"}
                 </h2>
                 <BulletList items={includedContent} icon={Package} iconClass="text-green-400" cols={1} />
               </section>
@@ -534,7 +536,7 @@ export default function CourseDetail() {
               <section>
                 <h2 className="text-2xl font-display font-bold text-white uppercase mb-6 flex items-center gap-3">
                   <span className="w-8 h-[2px] bg-primary inline-block" />
-                  Programma del corso
+                  {lang === "it" ? "Programma del corso" : "Course program"}
                 </h2>
                 <div className="border border-white/5 bg-card">
                   {course.modules.map((module: any, i: number) => (
@@ -568,7 +570,7 @@ export default function CourseDetail() {
               <section>
                 <h2 className="text-2xl font-display font-bold text-white uppercase mb-6 flex items-center gap-3">
                   <span className="w-8 h-[2px] bg-primary inline-block" />
-                  Galleria
+                  {lang === "it" ? "Galleria" : "Gallery"}
                 </h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {galleryMedia.map((url, i) => {
@@ -631,7 +633,7 @@ export default function CourseDetail() {
             {course.additionalInfo && (
               <section className="border border-white/10 bg-white/3 p-8 space-y-3">
                 <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">
-                  Informazioni aggiuntive
+                  {lang === "it" ? "Informazioni aggiuntive" : "Additional information"}
                 </h2>
                 <div className="text-white/80 text-sm leading-relaxed space-y-2">
                   {course.additionalInfo.split("\n").map((line: string, i: number) => (
@@ -655,12 +657,12 @@ export default function CourseDetail() {
                     <CheckCircle className="w-5 h-5 text-green-400" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-display font-bold text-white uppercase">Già acquistato</h3>
-                    <p className="text-xs text-green-400/70">Corso attivo nel tuo account</p>
+                    <h3 className="text-lg font-display font-bold text-white uppercase">{lang === "it" ? "Già acquistato" : "Already purchased"}</h3>
+                    <p className="text-xs text-green-400/70">{lang === "it" ? "Corso attivo nel tuo account" : "Course active in your account"}</p>
                   </div>
                 </div>
                 <p className="text-muted-foreground text-sm mb-8 leading-relaxed">
-                  Questo corso è già presente nel tuo account ed è attivo. Puoi accedere ai contenuti dal tuo portale studente.
+                  {lang === "it" ? "Questo corso è già presente nel tuo account ed è attivo. Puoi accedere ai contenuti dal tuo portale studente." : "This course is already in your account and active. You can access the content from your student portal."}
                 </p>
                 <Button
                   size="lg"
@@ -668,7 +670,7 @@ export default function CourseDetail() {
                   onClick={() => setLocation("/dashboard")}
                 >
                   <BookOpen className="w-4 h-4 mr-2" />
-                  Vai al corso
+                  {lang === "it" ? "Vai al corso" : "Go to the course"}
                 </Button>
               </div>
             ) : (
@@ -711,13 +713,13 @@ export default function CourseDetail() {
                       className="w-full uppercase tracking-wider font-bold rounded-none border-white/20 hover:border-primary hover:text-primary transition-all"
                     >
                       <KeyRound className="w-4 h-4 mr-2" />
-                      Attiva con codice
+                      {lang === "it" ? "Attiva con codice" : "Activate with code"}
                     </Button>
                   </Link>
                 </div>
 
                 <p className="text-xs text-muted-foreground/60 text-center leading-relaxed">
-                  Accesso esclusivo tramite link di prenotazione ufficiale o codice privato.
+                  {lang === "it" ? "Accesso esclusivo tramite link di prenotazione ufficiale o codice privato." : "Exclusive access via official booking link or private code."}
                 </p>
               </div>
             )}
