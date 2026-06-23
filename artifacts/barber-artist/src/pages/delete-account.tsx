@@ -12,18 +12,22 @@ export default function DeleteAccount() {
         gestiti da Giuseppe Musto.
       </p>
 
-      <LegalSection title="1. Come richiedere l'eliminazione">
+      <LegalSection title="1. Come eliminare l'account">
         <p>
-          Per richiedere l'eliminazione del tuo account e dei dati associati, invia una email a{" "}
+          Puoi eliminare il tuo account <strong className="text-white">direttamente dall'app o dal
+          sito</strong>, in autonomia e in qualsiasi momento: accedi al tuo account, apri la sezione{" "}
+          <a href="/account" className="text-primary hover:underline">Account</a> dal menu in alto e
+          premi <strong className="text-white">"Elimina il mio account"</strong>. Dopo la conferma,
+          l'account e i dati associati vengono eliminati immediatamente.
+        </p>
+        <p>
+          In alternativa, puoi richiedere l'eliminazione inviando una email a{" "}
           <a href="mailto:iusmkbarber@gmail.com?subject=Richiesta%20eliminazione%20account%20IUSMK"
              className="text-primary hover:underline">iusmkbarber@gmail.com</a>{" "}
           dall'indirizzo email che hai usato per registrarti, indicando nell'oggetto
-          "Richiesta eliminazione account IUSMK".
-        </p>
-        <p>
-          Per verificare la tua identità potremmo chiederti di confermare la richiesta dall'indirizzo
-          email registrato. Una volta verificata, l'account e i dati associati vengono eliminati di
-          norma entro <strong className="text-white">30 giorni</strong>. Riceverai una conferma via email.
+          "Richiesta eliminazione account IUSMK". In questo caso, una volta verificata la tua identità,
+          l'account e i dati associati vengono eliminati di norma entro{" "}
+          <strong className="text-white">30 giorni</strong>.
         </p>
       </LegalSection>
 

@@ -54,6 +54,7 @@ const Login = lazy(() => import("@/pages/login"));
 const CustomerNotifications = lazy(() => import("@/pages/customer-notifications"));
 const NotificationDetail = lazy(() => import("@/pages/notification-detail"));
 const MyCourses = lazy(() => import("@/pages/my-courses"));
+const Account = lazy(() => import("@/pages/account"));
 const CustomerChat = lazy(() => import("@/pages/chat"));
 const Checkout = lazy(() => import("@/pages/checkout"));
 const CheckoutSuccess = lazy(() => import("@/pages/checkout-success"));
@@ -141,6 +142,7 @@ function Router() {
         <Route path="/admin/payment-links" component={AdminPaymentLinks} />
         <Route path="/admin/academy" component={AdminAcademyCategories} />
         <Route path="/my-courses" component={MyCourses} />
+        <Route path="/account" component={Account} />
         <Route path="/chat" component={CustomerChat} />
         <Route path="/checkout" component={Checkout} />
         <Route path="/checkout/success" component={CheckoutSuccess} />

@@ -4,6 +4,8 @@ import {
   notificationsTable, coursePurchasesTable, coursesTable,
   accessCodesTable, studentCourseAccessTable, studentsTable,
   chatConversationsTable, chatMessagesTable, courseModulesTable,
+  deviceSessionsTable, videoProgressTable, nativePushTokensTable,
+  pushSubscriptionsTable, passwordResetTokensTable, videoDisclaimerAcksTable,
 } from "@workspace/db/schema";
 import { isNotNull } from "drizzle-orm";
 import { eq, and, desc, or, asc, gte } from "drizzle-orm";
@@ -34,7 +36,7 @@ async function requireStudentChatAccess(req: AuthRequest, res: Response, next: N
 import { getVapidPublicKey, saveSubscription, deleteSubscription } from "../lib/webPush";
 import { saveNativeToken, deleteNativeToken } from "../lib/fcmPush";
 import { dispatchNotificationToAdmin } from "../lib/notifications";
-import { generateVideoToken } from "../lib/auth";
+import { generateVideoToken, comparePassword, hashPassword } from "../lib/auth";
 
 const router = Router();
 
@@ -595,6 +597,142 @@ router.put("/chat/close", requireCustomerAuth, requireStudentChatAccess, async (
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: "Errore" });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════
+// ACCOUNT — profilo, password, eliminazione self-service
+// (richiesto da Apple App Store guideline 5.1.1(v))
+// ═══════════════════════════════════════════════════════════
+
+// Un account ha una password "propria" solo se è gestito localmente.
+// Gli account creati via Supabase salvano "supabase-managed" come placeholder.
+function hasOwnPassword(passwordHash: string | null | undefined): boolean {
+  return !!passwordHash && passwordHash !== "supabase-managed";
+}
+
+// GET /api/customer/profile — dati profilo del cliente autenticato
+router.get("/profile", requireCustomerAuth, async (req: AuthRequest, res) => {
+  try {
+    const student = await db.query.studentsTable.findFirst({ where: eq(studentsTable.id, req.userId!) });
+    if (!student) { res.status(404).json({ error: "Not Found", message: "Account non trovato" }); return; }
+    res.json({
+      firstName: student.firstName ?? "",
+      lastName:  student.lastName ?? "",
+      email:     student.email,
+      hasPassword: hasOwnPassword(student.passwordHash),
+    });
+  } catch (err) {
+    req.log.error({ err }, "Get customer profile error");
+    res.status(500).json({ error: "Internal Server Error", message: "Errore nel recupero del profilo" });
+  }
+});
+
+// PUT /api/customer/profile — aggiorna nome e cognome
+router.put("/profile", requireCustomerAuth, async (req: AuthRequest, res) => {
+  const firstName = String(req.body?.firstName ?? "").trim();
+  const lastName  = String(req.body?.lastName ?? "").trim();
+  if (!firstName || !lastName) {
+    res.status(400).json({ error: "Bad Request", message: "Nome e cognome sono obbligatori" });
+    return;
+  }
+  try {
+    const fullName = `${firstName} ${lastName}`;
+    await db.update(studentsTable)
+      .set({ firstName, lastName, name: fullName, updatedAt: new Date() })
+      .where(eq(studentsTable.id, req.userId!));
+    res.json({ success: true, firstName, lastName, name: fullName });
+  } catch (err) {
+    req.log.error({ err }, "Update customer profile error");
+    res.status(500).json({ error: "Internal Server Error", message: "Aggiornamento del profilo fallito" });
+  }
+});
+
+// PUT /api/customer/password — cambio password (richiede la password attuale)
+router.put("/password", requireCustomerAuth, async (req: AuthRequest, res) => {
+  const currentPassword = String(req.body?.currentPassword ?? "");
+  const newPassword     = String(req.body?.newPassword ?? "");
+  if (!currentPassword || !newPassword) {
+    res.status(400).json({ error: "Bad Request", message: "Password attuale e nuova password sono obbligatorie" });
+    return;
+  }
+  if (newPassword.length < 6) {
+    res.status(400).json({ error: "Bad Request", message: "La nuova password deve essere di almeno 6 caratteri" });
+    return;
+  }
+  try {
+    const student = await db.query.studentsTable.findFirst({ where: eq(studentsTable.id, req.userId!) });
+    if (!student) { res.status(404).json({ error: "Not Found", message: "Account non trovato" }); return; }
+    if (!hasOwnPassword(student.passwordHash)) {
+      res.status(400).json({
+        error: "Bad Request",
+        message: "Questo account accede tramite Google. La password va gestita dal tuo account Google.",
+      });
+      return;
+    }
+    const valid = await comparePassword(currentPassword, student.passwordHash!);
+    if (!valid) {
+      res.status(401).json({ error: "Unauthorized", message: "La password attuale non è corretta" });
+      return;
+    }
+    const newHash = await hashPassword(newPassword);
+    await db.update(studentsTable)
+      .set({ passwordHash: newHash, updatedAt: new Date() })
+      .where(eq(studentsTable.id, req.userId!));
+    res.json({ success: true, message: "Password aggiornata correttamente" });
+  } catch (err) {
+    req.log.error({ err }, "Change customer password error");
+    res.status(500).json({ error: "Internal Server Error", message: "Cambio password fallito" });
+  }
+});
+
+// DELETE /api/customer/account — eliminazione self-service dell'account e dei dati associati
+router.delete("/account", requireCustomerAuth, async (req: AuthRequest, res) => {
+  const userId = req.userId!;
+  try {
+    const student = await db.query.studentsTable.findFirst({ where: eq(studentsTable.id, userId) });
+    if (!student) { res.status(404).json({ error: "Not Found", message: "Account non trovato" }); return; }
+
+    // Se l'account ha una password propria, va riconfermata prima dell'eliminazione.
+    if (hasOwnPassword(student.passwordHash)) {
+      const password = String(req.body?.password ?? "");
+      if (!password) {
+        res.status(400).json({ error: "Bad Request", message: "Inserisci la password per confermare l'eliminazione" });
+        return;
+      }
+      const valid = await comparePassword(password, student.passwordHash!);
+      if (!valid) {
+        res.status(401).json({ error: "Unauthorized", message: "Password non corretta" });
+        return;
+      }
+    }
+
+    // Eliminazione in transazione: ordine rispettoso dei vincoli FK verso students.
+    await db.transaction(async (tx) => {
+      // 1) Righe del cliente da eliminare
+      await tx.delete(chatConversationsTable).where(eq(chatConversationsTable.userId, userId)); // chat_messages cascade
+      await tx.delete(deviceSessionsTable).where(eq(deviceSessionsTable.userId, userId));
+      await tx.delete(studentCourseAccessTable).where(eq(studentCourseAccessTable.studentId, userId));
+      await tx.delete(videoProgressTable).where(eq(videoProgressTable.studentId, userId));
+      await tx.delete(notificationsTable).where(eq(notificationsTable.userId, userId));
+      await tx.delete(nativePushTokensTable).where(eq(nativePushTokensTable.userId, userId));
+      await tx.delete(pushSubscriptionsTable).where(eq(pushSubscriptionsTable.userId, userId));
+      await tx.delete(passwordResetTokensTable).where(eq(passwordResetTokensTable.userId, userId)); // anche cascade
+      await tx.delete(videoDisclaimerAcksTable).where(eq(videoDisclaimerAcksTable.studentId, userId)); // anche cascade
+
+      // 2) Dati conservati per obblighi di legge/fiscali: scollegati dall'account
+      await tx.update(coursePurchasesTable).set({ userId: null }).where(eq(coursePurchasesTable.userId, userId));
+      await tx.update(accessCodesTable).set({ boundUserId: null }).where(eq(accessCodesTable.boundUserId, userId));
+
+      // 3) Infine l'account
+      await tx.delete(studentsTable).where(eq(studentsTable.id, userId));
+    });
+
+    req.log.info({ userId }, "[ACCOUNT] cliente eliminato definitivamente su richiesta dell'utente");
+    res.json({ success: true, message: "Account eliminato definitivamente" });
+  } catch (err) {
+    req.log.error({ err, userId }, "Delete customer account error");
+    res.status(500).json({ error: "Internal Server Error", message: "Eliminazione dell'account fallita. Riprova più tardi." });
   }
 });
 

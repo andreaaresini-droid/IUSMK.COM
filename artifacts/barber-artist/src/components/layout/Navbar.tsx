@@ -1,6 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Bell, BookOpen, LogOut, ChevronDown, MessageSquare } from "lucide-react";
+import { Menu, X, Bell, BookOpen, LogOut, ChevronDown, MessageSquare, Settings } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { useCurrentUser, useLogout } from "@/hooks/use-auth";
@@ -131,6 +131,14 @@ function CustomerMenu() {
               )}
             </Link>
           )}
+          <Link
+            href="/account"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-3 px-4 py-3 text-sm text-white hover:bg-white/5 transition-colors"
+          >
+            <Settings size={16} className="text-muted-foreground" />
+            Account
+          </Link>
           <div className="border-t border-white/5" />
           <button
             onClick={() => { setOpen(false); logout.mutate(); }}
@@ -335,6 +343,14 @@ export function Navbar() {
                     </div>
                   </Link>
                 )}
+
+                {/* Account */}
+                <Link href="/account" onClick={() => setIsOpen(false)} className="w-full max-w-xs">
+                  <div className="flex items-center justify-center gap-2 w-full border border-white/15 rounded-xl px-4 py-3 text-sm text-white hover:bg-white/5 transition-colors">
+                    <Settings size={16} className="text-white/50" />
+                    <span className="font-semibold">Account</span>
+                  </div>
+                </Link>
 
                 {/* Logout */}
                 <button
