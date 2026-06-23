@@ -9,19 +9,20 @@ import { motion } from "framer-motion";
 import { KeyRound, LogIn } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useLocation, Link } from "wouter";
-
-const activateSchema = z.object({
-  code: z.string().min(1, "Il codice di accesso è obbligatorio"),
-  email: z.string().email("Indirizzo email non valido"),
-  name: z.string().min(2, "Il nome è obbligatorio"),
-});
-
-const loginSchema = z.object({
-  email: z.string().email("Indirizzo email non valido"),
-  code: z.string().min(1, "Il codice di accesso è obbligatorio"),
-});
+import { useLang } from "@/i18n/LanguageContext";
 
 export default function Access() {
+  const { t } = useLang();
+  const ta = t.access;
+  const activateSchema = z.object({
+    code: z.string().min(1, ta.errCode),
+    email: z.string().email(ta.errEmail),
+    name: z.string().min(2, ta.errName),
+  });
+  const loginSchema = z.object({
+    email: z.string().email(ta.errEmail),
+    code: z.string().min(1, ta.errCode),
+  });
   const [mode, setMode] = useState<'activate' | 'login'>('activate');
   const activateMutation = useActivateCode();
   const loginMutation = useStudentLogin();
@@ -67,19 +68,17 @@ export default function Access() {
             
             <div className="text-center mb-10">
               <h1 className="text-3xl font-display font-bold text-white uppercase tracking-wider mb-2">
-                {mode === 'activate' ? 'Inserisci il Codice' : 'Accesso con Codice'}
+                {mode === 'activate' ? ta.titleActivate : ta.titleLogin}
               </h1>
               <p className="text-muted-foreground text-sm">
-                {mode === 'activate' 
-                  ? 'Hai ricevuto un codice di accesso? Inseriscilo qui per sbloccare il tuo corso.' 
-                  : 'Bentornato. Inserisci la tua email e il codice per accedere ai tuoi corsi.'}
+                {mode === 'activate' ? ta.subtitleActivate : ta.subtitleLogin}
               </p>
             </div>
 
             {mode === 'activate' ? (
               <form onSubmit={activateForm.handleSubmit(onActivate)} className="space-y-6">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Codice di Accesso</label>
+                  <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">{ta.codeLabel}</label>
                   <Input 
                     {...activateForm.register("code")} 
                     placeholder="123456" 
@@ -92,15 +91,15 @@ export default function Access() {
                   )}
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Nome Completo</label>
-                  <Input {...activateForm.register("name")} placeholder="Mario Rossi" />
+                  <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">{ta.nameLabel}</label>
+                  <Input {...activateForm.register("name")} placeholder={ta.namePlaceholder} />
                   {activateForm.formState.errors.name && (
                     <p className="text-destructive text-xs mt-1">{activateForm.formState.errors.name.message}</p>
                   )}
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Indirizzo Email</label>
-                  <Input {...activateForm.register("email")} type="email" placeholder="mario@esempio.com" />
+                  <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">{ta.emailLabel}</label>
+                  <Input {...activateForm.register("email")} type="email" placeholder={ta.emailPlaceholder} />
                   {activateForm.formState.errors.email && (
                     <p className="text-destructive text-xs mt-1">{activateForm.formState.errors.email.message}</p>
                   )}
@@ -112,7 +111,7 @@ export default function Access() {
                   disabled={activateMutation.isPending}
                 >
                   <KeyRound className="mr-2 h-5 w-5" />
-                  {activateMutation.isPending ? "Verifica in corso..." : "Sblocca il Corso"}
+                  {activateMutation.isPending ? ta.verifying : ta.unlockCourse}
                 </Button>
                 
                 <div className="text-center mt-6 space-y-3">
@@ -121,7 +120,7 @@ export default function Access() {
                       href="/register"
                       className="text-sm text-primary hover:text-white transition-colors uppercase tracking-widest font-bold"
                     >
-                      Ancora non sei registrato? Registrati ora
+                      {ta.notRegistered}
                     </Link>
                   </div>
                   <div>
@@ -130,7 +129,7 @@ export default function Access() {
                       onClick={() => setMode('login')} 
                       className="text-xs text-muted-foreground hover:text-white transition-colors"
                     >
-                      Già attivato in precedenza? Accedi con codice
+                      {ta.alreadyActivated}
                     </button>
                   </div>
                 </div>
@@ -138,14 +137,14 @@ export default function Access() {
             ) : (
               <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-6">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Indirizzo Email</label>
-                  <Input {...loginForm.register("email")} type="email" placeholder="mario@esempio.com" className="h-14" />
+                  <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">{ta.emailLabel}</label>
+                  <Input {...loginForm.register("email")} type="email" placeholder={ta.emailPlaceholder} className="h-14" />
                   {loginForm.formState.errors.email && (
                     <p className="text-destructive text-xs mt-1">{loginForm.formState.errors.email.message}</p>
                   )}
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Codice di Accesso</label>
+                  <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">{ta.codeLabel}</label>
                   <Input 
                     {...loginForm.register("code")} 
                     placeholder="123456"
@@ -164,7 +163,7 @@ export default function Access() {
                   disabled={loginMutation.isPending}
                 >
                   <LogIn className="mr-2 h-5 w-5" />
-                  {loginMutation.isPending ? "Autenticazione in corso..." : "Vai alla Dashboard"}
+                  {loginMutation.isPending ? ta.authenticating : ta.goDashboard}
                 </Button>
 
                 <div className="text-center mt-6 space-y-3">
@@ -174,12 +173,12 @@ export default function Access() {
                       onClick={() => setMode('activate')} 
                       className="text-sm text-primary hover:text-white transition-colors uppercase tracking-widest font-bold"
                     >
-                      Hai un nuovo codice? Attivalo.
+                      {ta.newCode}
                     </button>
                   </div>
                   <div>
                     <Link href="/register" className="text-xs text-muted-foreground hover:text-white transition-colors">
-                      Ancora non sei registrato? Registrati ora
+                      {ta.notRegistered}
                     </Link>
                   </div>
                 </div>
