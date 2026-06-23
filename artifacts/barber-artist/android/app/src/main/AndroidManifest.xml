@@ -32,4 +32,6 @@
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Notifiche push (Android 13+): senza, il popup del permesso non appare e le push non arrivano -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 </manifest>

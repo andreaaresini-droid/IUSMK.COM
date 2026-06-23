@@ -8,6 +8,7 @@ import { LanguageProvider } from "@/i18n/LanguageContext";
 import { IntroOverlay } from "@/components/IntroOverlay";
 import { AiChatWidget } from "@/components/AiChatWidget";
 import { InstallPromptModal } from "@/components/InstallPromptModal";
+import { PushAutoRegister } from "@/components/PushAutoRegister";
 
 class AppErrorBoundary extends Component<
   { children: ReactNode },
@@ -200,6 +201,7 @@ function App() {
             <Router />
             <ConditionalAiWidget />
             <InstallPromptModal />
+            <PushAutoRegister />
           </WouterRouter>
           <Toaster />
           {showIntro && <IntroOverlay onComplete={handleIntroComplete} />}
