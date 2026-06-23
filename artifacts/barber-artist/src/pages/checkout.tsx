@@ -27,8 +27,10 @@ export default function Checkout() {
 
   useEffect(() => {
     if (!courseId) { setLocation("/academy"); return; }
-    fetch(`/api/courses/${courseId}`)
-      .then((r) => r.json())
+    // Usa fetchApi: il backend è su un dominio separato (VITE_API_URL). Una fetch
+    // relativa "/api/..." colpirebbe il frontend (che restituisce index.html) e farebbe
+    // fallire la pagina con un rimbalzo su /academy.
+    fetchApi<any>(`/courses/${courseId}`)
       .then((data) => { setCourse(data); setLoading(false); })
       .catch(() => { setLoading(false); setLocation("/academy"); });
   }, [courseId]);
@@ -56,24 +58,14 @@ export default function Checkout() {
     setError("");
     setSubmitting(true);
     try {
-      const token = localStorage.getItem("barber_artist_token");
-      const res = await fetch("/api/sumup/checkout", {
+      // fetchApi aggiunge VITE_API_URL + il token Bearer e lancia se la risposta non è ok
+      const data = await fetchApi<{ sessionUrl: string }>("/sumup/checkout", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { "Authorization": `Bearer ${token}` } : {}),
-        },
         body: JSON.stringify({ courseId: course.id }),
       });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || "Errore durante il pagamento");
-        setSubmitting(false);
-        return;
-      }
       window.location.href = data.sessionUrl;
-    } catch {
-      setError("Errore di connessione. Riprova.");
+    } catch (err: any) {
+      setError(err?.message || "Errore durante il pagamento");
       setSubmitting(false);
     }
   };
