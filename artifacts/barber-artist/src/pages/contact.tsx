@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { Mail, Instagram, Send } from "lucide-react";
 import { useLang } from "@/i18n/LanguageContext";
+import { fetchApi } from "@/lib/api-client";
 
 export default function Contact() {
   const [form, setForm] = useState({ name: "", email: "", phone: "", subject: "course_info", message: "" });
@@ -15,17 +16,14 @@ export default function Contact() {
     e.preventDefault();
     setStatus("loading");
     try {
-      const res = await fetch("/api/contact", {
+      // fetchApi usa VITE_API_URL: il backend è su un dominio separato, una fetch
+      // relativa "/api/contact" colpirebbe il frontend e fallirebbe sempre.
+      await fetchApi("/contact", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
-      if (res.ok) {
-        setStatus("success");
-        setForm({ name: "", email: "", phone: "", subject: "course_info", message: "" });
-      } else {
-        setStatus("error");
-      }
+      setStatus("success");
+      setForm({ name: "", email: "", phone: "", subject: "course_info", message: "" });
     } catch {
       setStatus("error");
     }
