@@ -9,7 +9,9 @@
 #    `app_store_connect:` qui sotto -> "IUSMK ASC Key".
 # 3. App record com.iusmk.app gia' creato su App Store Connect.
 # 4. Gruppo variabili "iusmk_vite" con (cifrate): VITE_API_URL, VITE_SUPABASE_URL,
-#    VITE_SUPABASE_ANON_KEY.
+#    VITE_SUPABASE_ANON_KEY, e CERTIFICATE_PRIVATE_KEY (chiave privata RSA persistente
+#    per la firma: generata una tantum con `openssl genrsa 2048`, incollata cifrata).
+#    Con una chiave stabile il certificato di distribuzione si crea una sola volta.
 
 workflows:
   ios-testflight:
@@ -56,14 +58,14 @@ workflows:
           agvtool new-version -all "$BUILD_NUMBER"
       - name: Genera certificati e profili di firma
         script: |
-          # Genera una chiave privata RSA al volo (Codemagic creera' un nuovo
-          # certificato di distribuzione associato a questa chiave con --create).
-          # Cosi' non dipendiamo dalla variabile CERTIFICATE_PRIVATE_KEY.
+          # Usa una chiave privata PERSISTENTE (env CERTIFICATE_PRIVATE_KEY) invece di
+          # generarne una nuova ad ogni build: con una chiave stabile, --create crea il
+          # certificato di distribuzione UNA SOLA VOLTA e poi lo riusa, evitando di
+          # riempire il limite di certificati Apple (causa del fallimento precedente).
           keychain initialize
-          openssl genrsa -out /tmp/cert_key.pem 2048
           app-store-connect fetch-signing-files "com.iusmk.app" \
             --type IOS_APP_STORE \
-            --certificate-key @file:/tmp/cert_key.pem \
+            --certificate-key @env:CERTIFICATE_PRIVATE_KEY \
             --create
           keychain add-certificates
       - name: Applica profili di firma
