@@ -12,17 +12,18 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { usePushNotifications } from "@/hooks/use-push-notifications";
+import { useLang } from "@/i18n/LanguageContext";
 
-function formatDate(dateStr: string) {
+function formatDate(dateStr: string, t: any, lang: string) {
   const d = new Date(dateStr);
   const now = new Date();
   const diffMs = now.getTime() - d.getTime();
   const diffMin = Math.floor(diffMs / 60000);
-  if (diffMin < 1) return "Adesso";
-  if (diffMin < 60) return `${diffMin} min fa`;
+  if (diffMin < 1) return t.notifications.time.now;
+  if (diffMin < 60) return `${diffMin} ${t.notifications.time.minAgo}`;
   const diffH = Math.floor(diffMin / 60);
-  if (diffH < 24) return `${diffH} ore fa`;
-  return d.toLocaleDateString("it-IT", { day: "2-digit", month: "short", year: "numeric" });
+  if (diffH < 24) return `${diffH} ${t.notifications.time.hoursAgo}`;
+  return d.toLocaleDateString(lang === "it" ? "it-IT" : "en-GB", { day: "2-digit", month: "short", year: "numeric" });
 }
 
 type NotifType = string;
@@ -58,22 +59,23 @@ function notifIconColor(type: NotifType, isRead: boolean) {
   }
 }
 
-function notifTypeLabel(type: NotifType): string {
+function notifTypeLabel(type: NotifType, t: any): string {
+  const ty = t.notifications.types;
   switch (type) {
-    case "chat_message":        return "Messaggio";
-    case "course_code_assigned":return "Codice corso";
-    case "code_resent":         return "Codice reinviato";
-    case "course_update":       return "Aggiornamento corso";
+    case "chat_message":        return ty.message;
+    case "course_code_assigned":return ty.courseCode;
+    case "code_resent":         return ty.codeResent;
+    case "course_update":       return ty.courseUpdate;
     case "order_update":
-    case "purchase":            return "Ordine";
-    case "account_update":      return "Account";
-    case "promo_notification":  return "Promozione";
+    case "purchase":            return ty.order;
+    case "account_update":      return ty.account;
+    case "promo_notification":  return ty.promo;
     case "admin_notification":
-    case "private_message":     return "Comunicazione admin";
-    case "broadcast":           return "Comunicazione";
-    case "reminder":            return "Promemoria";
-    case "system_notification": return "Sistema";
-    default:                    return "Notifica";
+    case "private_message":     return ty.adminComm;
+    case "broadcast":           return ty.broadcast;
+    case "reminder":            return ty.reminder;
+    case "system_notification": return ty.system;
+    default:                    return ty.default;
   }
 }
 
@@ -82,20 +84,21 @@ function notifTypeLabel(type: NotifType): string {
 function ConfirmDeleteAllModal({ onConfirm, onCancel, isPending }: {
   onConfirm: () => void; onCancel: () => void; isPending: boolean;
 }) {
+  const { t } = useLang();
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" onClick={onCancel}>
       <div className="bg-card border border-white/10 rounded-2xl w-full max-w-sm shadow-2xl p-6" onClick={(e) => e.stopPropagation()}>
-        <p className="text-white font-semibold text-sm mb-1">Vuoi eliminare tutte le notifiche?</p>
-        <p className="text-white/40 text-xs mb-5">Questa azione non può essere annullata.</p>
+        <p className="text-white font-semibold text-sm mb-1">{t.notifications.confirmDeleteTitle}</p>
+        <p className="text-white/40 text-xs mb-5">{t.notifications.confirmDeleteDesc}</p>
         <div className="flex gap-2">
-          <button onClick={onCancel} className="flex-1 py-2.5 border border-white/10 rounded-xl text-sm text-white/60 hover:text-white transition-colors">Annulla</button>
+          <button onClick={onCancel} className="flex-1 py-2.5 border border-white/10 rounded-xl text-sm text-white/60 hover:text-white transition-colors">{t.notifications.cancel}</button>
           <button
             onClick={onConfirm}
             disabled={isPending}
             className="flex-1 py-2.5 bg-red-600 hover:bg-red-500 text-white font-semibold rounded-xl text-sm transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
           >
             {isPending ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
-            Conferma
+            {t.notifications.confirm}
           </button>
         </div>
       </div>
@@ -114,6 +117,7 @@ function NotifListCard({
   onClick: (id: number, type: string) => void;
   onDelete: (e: React.MouseEvent, id: number) => void;
 }) {
+  const { t, lang } = useLang();
   const hasImage = !!notif.imageUrl;
   const hasVideo = !!notif.videoUrl;
   const isChat   = notif.type === "chat_message";
@@ -142,11 +146,11 @@ function NotifListCard({
       <div className="flex-1 min-w-0 pr-2">
         <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
           <span className={cn("text-xs font-semibold", notif.isRead ? "text-white/30" : "text-white/50")}>
-            {notifTypeLabel(notif.type)}
+            {notifTypeLabel(notif.type, t)}
           </span>
           {hasImage && <span className="text-[10px] text-white/25">· 📷</span>}
-          {hasVideo && <span className="text-[10px] text-white/25 flex items-center gap-0.5"><Video size={9} /> video</span>}
-          <span className="text-[10px] text-white/25 ml-auto">{formatDate(notif.createdAt)}</span>
+          {hasVideo && <span className="text-[10px] text-white/25 flex items-center gap-0.5"><Video size={9} /> {t.notifications.video}</span>}
+          <span className="text-[10px] text-white/25 ml-auto">{formatDate(notif.createdAt, t, lang)}</span>
         </div>
 
         <p className={cn("font-semibold text-sm leading-snug", notif.isRead ? "text-white/60" : "text-white")}>
@@ -164,7 +168,7 @@ function NotifListCard({
               alt=""
               className="w-16 h-10 object-cover rounded-lg opacity-70 group-hover:opacity-90 transition-opacity"
             />
-            <span className="text-xs text-white/30">Tocca per visualizzare l'immagine</span>
+            <span className="text-xs text-white/30">{t.notifications.tapToViewImage}</span>
           </div>
         )}
         {hasVideo && !hasImage && (
@@ -172,7 +176,7 @@ function NotifListCard({
             <div className="w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">
               <Play size={14} className="text-white/40" />
             </div>
-            <span className="text-xs text-white/30">Video allegato</span>
+            <span className="text-xs text-white/30">{t.notifications.videoAttached}</span>
           </div>
         )}
 
@@ -192,7 +196,7 @@ function NotifListCard({
       <button
         onClick={(e) => onDelete(e, notif.id)}
         className="absolute bottom-3 right-3 w-7 h-7 rounded-lg flex items-center justify-center text-white/25 hover:text-red-400 hover:bg-red-500/10 transition-colors md:opacity-0 md:group-hover:opacity-100"
-        title="Elimina notifica"
+        title={t.notifications.deleteNotif}
       >
         <Trash2 size={13} />
       </button>
@@ -216,6 +220,7 @@ const FILTER_DEFS: { key: FilterKey; label: string; match: (n: any) => boolean }
 
 export default function CustomerNotifications() {
   const [, setLocation] = useLocation();
+  const { t, lang } = useLang();
   const { data: user, isLoading: userLoading } = useCurrentUser();
   const queryClient = useQueryClient();
   const [confirmDeleteAll, setConfirmDeleteAll] = useState(false);
@@ -286,9 +291,9 @@ export default function CustomerNotifications() {
           {/* Header */}
           <div className="flex items-start justify-between gap-3 mb-6 flex-wrap">
             <div>
-              <h1 className="text-3xl font-display font-bold uppercase tracking-widest text-primary">Notifiche</h1>
+              <h1 className="text-3xl font-display font-bold uppercase tracking-widest text-primary">{t.notifications.title}</h1>
               <p className="text-muted-foreground text-sm mt-1">
-                {unreadCount > 0 ? `${unreadCount} non lette` : "Tutte le notifiche lette"}
+                {unreadCount > 0 ? `${unreadCount} ${t.notifications.unread}` : t.notifications.allRead}
               </p>
             </div>
 
@@ -296,14 +301,14 @@ export default function CustomerNotifications() {
               {/* Push toggle */}
               {pushStatus === "subscribed" ? (
                 <button onClick={pushUnsubscribe} className="flex items-center gap-1.5 text-xs text-green-400 border border-green-500/20 bg-green-500/8 hover:bg-green-500/15 px-3 py-1.5 rounded-lg transition-colors">
-                  <BellRing size={12} /> Push attive
+                  <BellRing size={12} /> {t.notifications.pushActive}
                 </button>
               ) : pushStatus === "unsubscribed" ? (
                 <button onClick={pushSubscribe} className="flex items-center gap-1.5 text-xs text-white/50 hover:text-white border border-white/10 hover:border-white/20 px-3 py-1.5 rounded-lg transition-colors">
-                  <Bell size={12} /> Attiva push
+                  <Bell size={12} /> {t.notifications.pushEnable}
                 </button>
               ) : pushStatus === "denied" ? (
-                <span className="text-xs text-red-400/70 border border-red-500/15 px-3 py-1.5 rounded-lg">Push bloccate</span>
+                <span className="text-xs text-red-400/70 border border-red-500/15 px-3 py-1.5 rounded-lg">{t.notifications.pushBlocked}</span>
               ) : null}
 
               {unreadCount > 0 && (
@@ -312,7 +317,7 @@ export default function CustomerNotifications() {
                   disabled={markAllRead.isPending}
                   className="flex items-center gap-2 text-sm text-muted-foreground hover:text-white transition-colors border border-white/10 hover:border-white/20 rounded-lg px-3 py-1.5"
                 >
-                  <CheckCheck size={15} /> Segna tutte lette
+                  <CheckCheck size={15} /> {t.notifications.markAllRead}
                 </button>
               )}
 
@@ -321,7 +326,7 @@ export default function CustomerNotifications() {
                   onClick={() => setConfirmDeleteAll(true)}
                   className="flex items-center gap-1.5 text-xs text-white/30 hover:text-red-400 border border-transparent hover:border-red-500/20 px-3 py-1.5 rounded-lg transition-colors"
                 >
-                  <Trash2 size={12} /> Elimina tutte
+                  <Trash2 size={12} /> {t.notifications.deleteAll}
                 </button>
               )}
             </div>
@@ -330,7 +335,7 @@ export default function CustomerNotifications() {
           {/* Push denied */}
           {pushStatus === "denied" && (
             <div className="mb-5 bg-red-500/8 border border-red-500/20 rounded-xl px-4 py-3 text-red-300 text-xs leading-relaxed">
-              Le notifiche push sono bloccate dal browser. Vai nelle impostazioni e consenti le notifiche per questo sito.
+              {t.notifications.pushDeniedNote}
             </div>
           )}
           {pushError && <p className="mb-4 text-red-400 text-xs">{pushError}</p>}
@@ -348,7 +353,7 @@ export default function CustomerNotifications() {
                     : "bg-white/5 text-white/50 hover:text-white border border-transparent"
                 )}
               >
-                {f.label}
+                {(t.notifications.filters as any)[f.key]}
                 <span className={cn("px-1.5 py-0.5 rounded-full text-[10px] font-bold", filter === f.key ? "bg-primary/20 text-primary" : "bg-white/10 text-white/40")}>
                   {f.count}
                 </span>
@@ -365,11 +370,11 @@ export default function CustomerNotifications() {
             <div className="text-center py-20">
               <BellOff size={40} className="text-muted-foreground mx-auto mb-4" />
               <p className="text-muted-foreground font-semibold">
-                {filter === "all" ? "Nessuna notifica ancora" : "Nessuna notifica in questa categoria"}
+                {filter === "all" ? t.notifications.emptyAll : t.notifications.emptyCategory}
               </p>
               {filter === "all" && (
                 <p className="text-sm text-muted-foreground/60 mt-1">
-                  Dopo un acquisto o un messaggio ricevuto, le notifiche appariranno qui.
+                  {t.notifications.emptyDesc}
                 </p>
               )}
             </div>
@@ -388,9 +393,9 @@ export default function CustomerNotifications() {
 
           {allNotifs.length > 0 && (
             <p className="text-center text-xs text-muted-foreground mt-8">
-              Usa il codice per accedere al corso dalla pagina{" "}
+              {t.notifications.useCodePre}{" "}
               <button onClick={() => setLocation("/access")} className="text-primary hover:underline">
-                Accedi ai Corsi
+                {t.notifications.accessCoursesPage}
               </button>
             </p>
           )}
