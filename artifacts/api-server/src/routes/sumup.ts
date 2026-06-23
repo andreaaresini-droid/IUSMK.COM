@@ -8,6 +8,7 @@ import crypto from "crypto";
 import { requireCustomerAuth, AuthRequest } from "../middlewares/authMiddleware.js";
 import { createSumUpCheckout, verifySumUpWebhookSignature, getSumUpCheckoutsByReference } from "../lib/sumupClient.js";
 import { grantCourseAccess } from "../lib/sumupAccess.js";
+import { logger } from "../lib/logger.js";
 
 const router = Router();
 
@@ -77,12 +78,13 @@ router.post("/checkout", requireCustomerAuth as any, async (req: AuthRequest, re
         stripeSessionId: checkoutReference, // riusa il campo unique per il ref SumUp
       });
     } catch (e: any) {
-      console.error("[SUMUP] impossibile registrare pending purchase:", e?.message);
+      logger.error({ ref: checkoutReference, err: e?.message }, "[SUMUP] impossibile registrare pending purchase");
     }
 
+    logger.info({ userId: req.userId, courseId, ref: checkoutReference }, "[SUMUP] checkout creato");
     res.json({ sessionUrl: checkout.hosted_checkout_url });
   } catch (err: any) {
-    console.error("[SUMUP] checkout creation error:", err.message);
+    logger.error({ err: err?.message }, "[SUMUP] checkout creation error");
     res.status(500).json({ error: "Internal Server Error", message: "Impossibile creare il pagamento" });
   }
 });
@@ -92,8 +94,10 @@ router.post("/checkout", requireCustomerAuth as any, async (req: AuthRequest, re
 router.post("/webhook", async (req: Request, res: Response) => {
   const signature = req.headers["x-webhook-signature"] as string | undefined;
 
+  logger.info({ hasSignature: !!signature }, "[SUMUP WEBHOOK] ricevuto");
+
   if (!signature || !verifySumUpWebhookSignature(req.body as Buffer, signature)) {
-    console.warn("[SUMUP WEBHOOK] firma non valida");
+    logger.warn("[SUMUP WEBHOOK] firma non valida");
     res.status(400).json({ error: "Invalid signature" });
     return;
   }
@@ -106,7 +110,7 @@ router.post("/webhook", async (req: Request, res: Response) => {
     return;
   }
 
-  console.log("[SUMUP WEBHOOK] evento:", event.event_type, event.payload?.status);
+  logger.info({ eventType: event.event_type, status: event.payload?.status }, "[SUMUP WEBHOOK] evento");
 
   // Processa solo pagamenti completati
   if (event.event_type !== "CHECKOUT_STATUS_CHANGED" || event.payload?.status !== "PAID") {
@@ -118,7 +122,7 @@ router.post("/webhook", async (req: Request, res: Response) => {
   const parts = checkoutReference.split(":");
 
   if (parts.length < 3) {
-    console.error("[SUMUP WEBHOOK] checkout_reference malformato:", checkoutReference);
+    logger.error({ checkoutReference }, "[SUMUP WEBHOOK] checkout_reference malformato");
     res.status(400).json({ error: "Invalid checkout_reference" });
     return;
   }
@@ -127,7 +131,7 @@ router.post("/webhook", async (req: Request, res: Response) => {
   const courseId = parseInt(parts[1]);
 
   if (isNaN(userId) || isNaN(courseId)) {
-    console.error("[SUMUP WEBHOOK] userId o courseId non numerici:", parts);
+    logger.error({ parts }, "[SUMUP WEBHOOK] userId o courseId non numerici");
     res.status(400).json({ error: "Invalid reference parts" });
     return;
   }
@@ -143,10 +147,10 @@ router.post("/webhook", async (req: Request, res: Response) => {
       .set({ status: "completed", updatedAt: new Date() })
       .where(eq(coursePurchasesTable.stripeSessionId, checkoutReference))
       .catch(() => {});
-    console.log("[SUMUP WEBHOOK] sblocco ok — userId:", userId, "courseId:", courseId, "alreadyHad:", result.alreadyHad);
+    logger.info({ userId, courseId, alreadyHad: result.alreadyHad }, "[SUMUP WEBHOOK] sblocco ok");
     res.json({ received: true });
   } catch (err: any) {
-    console.error("[SUMUP WEBHOOK] errore:", err.message);
+    logger.error({ err: err?.message }, "[SUMUP WEBHOOK] errore");
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
@@ -198,7 +202,7 @@ router.post("/confirm", requireCustomerAuth as any, async (req: AuthRequest, res
       accessCode: result.accessCode,
     });
   } catch (err: any) {
-    console.error("[SUMUP CONFIRM] errore:", err.message);
+    logger.error({ err: err?.message }, "[SUMUP CONFIRM] errore");
     res.status(500).json({ error: "Internal Server Error", message: "Verifica del pagamento fallita" });
   }
 });

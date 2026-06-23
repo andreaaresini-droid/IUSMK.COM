@@ -7,6 +7,7 @@ import { eq, and, isNotNull } from "drizzle-orm";
 import { generateAccessCode } from "./auth.js";
 import { notifyUser } from "./pushDispatch.js";
 import { getSumUpCheckoutsByReference } from "./sumupClient.js";
+import { logger } from "./logger.js";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Sblocco corso dopo pagamento — logica CONDIVISA tra webhook, conferma-al-ritorno
@@ -24,7 +25,7 @@ export async function grantCourseAccess(
   ]);
 
   if (!student || !course) {
-    console.error("[SUMUP ACCESS] studente o corso non trovato — userId:", userId, "courseId:", courseId);
+    logger.error({ userId, courseId }, "[SUMUP ACCESS] studente o corso non trovato");
     return { ok: false, alreadyHad: false, accessCode: null, courseTitle: "Corso" };
   }
 
@@ -93,7 +94,7 @@ export async function grantCourseAccess(
     url: "/my-courses",
   }).catch(() => {});
 
-  console.log("[SUMUP ACCESS] corso sbloccato — userId:", userId, "courseId:", courseId, "code:", code);
+  logger.info({ userId, courseId, code }, "[SUMUP ACCESS] corso sbloccato");
   return { ok: true, alreadyHad: false, accessCode: code, courseTitle: course.title };
 }
 
@@ -114,9 +115,12 @@ export async function reconcilePendingPurchases(userId: number): Promise<void> {
         isNotNull(coursePurchasesTable.stripeSessionId),
       ),
     });
-  } catch {
+  } catch (e: any) {
+    logger.error({ userId, err: e?.message }, "[SUMUP RECONCILE] errore lettura pending");
     return;
   }
+
+  logger.info({ userId, pendingCount: pendings.length }, "[SUMUP RECONCILE] verifica pagamenti pending");
   if (!pendings.length) return;
 
   for (const p of pendings) {
@@ -127,6 +131,8 @@ export async function reconcilePendingPurchases(userId: number): Promise<void> {
 
     try {
       const checkouts = await getSumUpCheckoutsByReference(ref);
+      const statuses = checkouts.map((c) => c.status);
+      logger.info({ userId, courseId: p.courseId, ref, statuses }, "[SUMUP RECONCILE] stato checkout da SumUp");
       if (!checkouts.length) continue;
 
       const paid = checkouts.find((c) => c.status === "PAID");
@@ -135,14 +141,14 @@ export async function reconcilePendingPurchases(userId: number): Promise<void> {
         await db.update(coursePurchasesTable)
           .set({ status: "completed", accessCode: r.accessCode, updatedAt: new Date() })
           .where(eq(coursePurchasesTable.id, p.id));
-        console.log("[SUMUP RECONCILE] sbloccato pending — userId:", userId, "courseId:", p.courseId);
+        logger.info({ userId, courseId: p.courseId }, "[SUMUP RECONCILE] sbloccato pending");
       } else if (checkouts.every((c) => c.status === "FAILED" || c.status === "EXPIRED")) {
         await db.update(coursePurchasesTable)
           .set({ status: "failed", updatedAt: new Date() })
           .where(eq(coursePurchasesTable.id, p.id));
       }
     } catch (err: any) {
-      console.error("[SUMUP RECONCILE] errore su ref", ref, err?.message);
+      logger.error({ userId, ref, err: err?.message }, "[SUMUP RECONCILE] errore verifica checkout");
     }
   }
 }
