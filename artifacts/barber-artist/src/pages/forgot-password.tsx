@@ -3,8 +3,11 @@ import { Link } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Loader2, ArrowLeft, CheckCircle } from "lucide-react";
+import { useLang } from "@/i18n/LanguageContext";
 
 export default function ForgotPassword() {
+  const { t } = useLang();
+  const tf = t.pwReset.forgot;
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -24,12 +27,12 @@ export default function ForgotPassword() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setError(data.message || "Errore durante l'invio. Riprova.");
+        setError(data.message || tf.sendError);
         return;
       }
       setSubmitted(true);
     } catch {
-      setError("Errore di connessione. Riprova.");
+      setError(tf.connectionError);
     } finally {
       setLoading(false);
     }
@@ -42,10 +45,10 @@ export default function ForgotPassword() {
         <div className="max-w-md mx-auto">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-display font-bold uppercase tracking-widest text-primary mb-3">
-              Recupera la password
+              {tf.title}
             </h1>
             <p className="text-muted-foreground text-sm">
-              Inserisci la tua e-mail per ricevere il link di reimpostazione della password.
+              {tf.subtitle}
             </p>
           </div>
 
@@ -55,26 +58,26 @@ export default function ForgotPassword() {
                 <div className="flex justify-center">
                   <CheckCircle size={48} className="text-primary" />
                 </div>
-                <p className="text-white font-medium text-lg">Email inviata!</p>
+                <p className="text-white font-medium text-lg">{tf.sentTitle}</p>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  Se l'indirizzo e-mail è registrato, riceverai un link per reimpostare la password.
+                  {tf.sentDesc}
                 </p>
                 <p className="text-muted-foreground text-xs">
-                  Controlla anche la cartella spam se non lo vedi nella posta in arrivo.
+                  {tf.sentSpam}
                 </p>
                 <Link href="/login" className="inline-block text-sm text-primary hover:underline mt-4">
-                  ← Torna al login
+                  ← {tf.backToLogin}
                 </Link>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
-                  <label className="text-sm text-muted-foreground mb-1 block">E-mail</label>
+                  <label className="text-sm text-muted-foreground mb-1 block">{tf.emailLabel}</label>
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="email@esempio.com"
+                    placeholder={tf.emailPlaceholder}
                     className="w-full bg-background border border-white/10 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
                     autoComplete="email"
                     required
@@ -93,16 +96,16 @@ export default function ForgotPassword() {
                   className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white py-4 rounded-xl font-semibold text-base transition-colors disabled:opacity-60"
                 >
                   {loading ? (
-                    <><Loader2 size={18} className="animate-spin" /> Invio in corso...</>
+                    <><Loader2 size={18} className="animate-spin" /> {tf.sending}</>
                   ) : (
-                    "Invia link di recupero"
+                    tf.sendButton
                   )}
                 </button>
 
                 <div className="text-center">
                   <Link href="/login" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-white transition-colors">
                     <ArrowLeft size={14} />
-                    Torna al login
+                    {tf.backToLogin}
                   </Link>
                 </div>
               </form>

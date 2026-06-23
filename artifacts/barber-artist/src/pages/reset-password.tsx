@@ -3,9 +3,12 @@ import { Link, useLocation } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Loader2, Eye, EyeOff, CheckCircle, XCircle } from "lucide-react";
+import { useLang } from "@/i18n/LanguageContext";
 
 export default function ResetPassword() {
   const [, setLocation] = useLocation();
+  const { t } = useLang();
+  const tr = t.pwReset.reset;
   const [mode, setMode] = useState<"loading" | "form" | "no-token">("loading");
   const [token, setToken] = useState("");
   const [form, setForm] = useState({ password: "", confirmPassword: "" });
@@ -45,9 +48,9 @@ export default function ResetPassword() {
 
   const validate = () => {
     const e: Record<string, string> = {};
-    if (!form.password) e.password = "La password è obbligatoria";
-    else if (form.password.length < 6) e.password = "La password deve essere di almeno 6 caratteri";
-    if (form.password !== form.confirmPassword) e.confirmPassword = "Le password non coincidono";
+    if (!form.password) e.password = tr.errRequired;
+    else if (form.password.length < 6) e.password = tr.errShort;
+    if (form.password !== form.confirmPassword) e.confirmPassword = tr.errMismatch;
     setFieldErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -66,13 +69,13 @@ export default function ResetPassword() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setSubmitError(data.message || "Impossibile aggiornare la password. Il link potrebbe essere scaduto.");
+        setSubmitError(data.message || tr.updateFailed);
         return;
       }
       setSuccess(true);
       setTimeout(() => setLocation("/login"), 4000);
     } catch {
-      setSubmitError("Errore di connessione. Riprova.");
+      setSubmitError(tr.connectionError);
     } finally {
       setSubmitting(false);
     }
@@ -88,10 +91,10 @@ export default function ResetPassword() {
         <div className="max-w-md mx-auto">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-display font-bold uppercase tracking-widest text-primary mb-3">
-              Imposta una nuova password
+              {tr.title}
             </h1>
             <p className="text-muted-foreground text-sm">
-              Scegli una nuova password per il tuo account IUSMK Academy.
+              {tr.subtitle}
             </p>
           </div>
 
@@ -100,20 +103,20 @@ export default function ResetPassword() {
             {mode === "loading" && (
               <div className="text-center py-8">
                 <Loader2 size={32} className="animate-spin text-primary mx-auto" />
-                <p className="text-muted-foreground text-sm mt-4">Verifica in corso...</p>
+                <p className="text-muted-foreground text-sm mt-4">{tr.verifying}</p>
               </div>
             )}
 
             {success && (
               <div className="text-center space-y-4">
                 <CheckCircle size={48} className="text-primary mx-auto" />
-                <p className="text-white font-medium text-lg">Password aggiornata!</p>
+                <p className="text-white font-medium text-lg">{tr.updatedTitle}</p>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  La password è stata aggiornata. Ora puoi accedere al tuo account.
+                  {tr.updatedDesc}
                 </p>
-                <p className="text-muted-foreground text-xs">Reindirizzamento al login in corso...</p>
+                <p className="text-muted-foreground text-xs">{tr.redirecting}</p>
                 <Link href="/login" className="inline-block text-sm text-primary hover:underline mt-2">
-                  Vai al login ora →
+                  {tr.goLogin}
                 </Link>
               </div>
             )}
@@ -122,14 +125,14 @@ export default function ResetPassword() {
               <div className="text-center space-y-4">
                 <XCircle size={48} className="text-red-400 mx-auto" />
                 <p className="text-red-400 font-medium">
-                  Il link non è valido o è scaduto.
+                  {tr.invalidLink}
                 </p>
                 <p className="text-muted-foreground text-sm">
-                  Il link di reset è valido per 1 ora. Se è passato troppo tempo, richiedi un nuovo link.
+                  {tr.invalidLinkDesc}
                 </p>
                 <Link href="/forgot-password" className="inline-block mt-2">
                   <button className="bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-xl font-semibold text-sm transition-colors">
-                    Richiedi nuovo link
+                    {tr.requestNewLink}
                   </button>
                 </Link>
               </div>
@@ -138,13 +141,13 @@ export default function ResetPassword() {
             {!success && mode === "form" && (
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
-                  <label className="text-sm text-muted-foreground mb-1 block">Nuova password</label>
+                  <label className="text-sm text-muted-foreground mb-1 block">{tr.newPasswordLabel}</label>
                   <div className="relative">
                     <input
                       type={showPassword ? "text" : "password"}
                       value={form.password}
                       onChange={(e) => setForm({ ...form, password: e.target.value })}
-                      placeholder="Minimo 6 caratteri"
+                      placeholder={tr.minChars}
                       className={inputClass("password") + " pr-10"}
                       autoComplete="new-password"
                       required
@@ -161,12 +164,12 @@ export default function ResetPassword() {
                 </div>
 
                 <div>
-                  <label className="text-sm text-muted-foreground mb-1 block">Conferma nuova password</label>
+                  <label className="text-sm text-muted-foreground mb-1 block">{tr.confirmNewLabel}</label>
                   <input
                     type="password"
                     value={form.confirmPassword}
                     onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
-                    placeholder="Ripeti la password"
+                    placeholder={tr.repeatPlaceholder}
                     className={inputClass("confirmPassword")}
                     autoComplete="new-password"
                     required
@@ -178,7 +181,7 @@ export default function ResetPassword() {
                   <div className="bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3 text-red-400 text-sm space-y-2">
                     <p>{submitError}</p>
                     <Link href="/forgot-password" className="text-primary hover:underline text-xs">
-                      Richiedi un nuovo link di recupero →
+                      {tr.requestNewLinkArrow}
                     </Link>
                   </div>
                 )}
@@ -189,9 +192,9 @@ export default function ResetPassword() {
                   className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white py-4 rounded-xl font-semibold text-base transition-colors disabled:opacity-60"
                 >
                   {submitting ? (
-                    <><Loader2 size={18} className="animate-spin" /> Salvataggio...</>
+                    <><Loader2 size={18} className="animate-spin" /> {tr.saving}</>
                   ) : (
-                    "Salva nuova password"
+                    tr.saveNew
                   )}
                 </button>
               </form>
