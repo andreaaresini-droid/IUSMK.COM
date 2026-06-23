@@ -1,59 +1,76 @@
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useLocation, useSearch } from "wouter";
-import { CheckCircle, Clock, Copy, ArrowRight, Bell } from "lucide-react";
+import { CheckCircle, Clock, Copy, ArrowRight, BookOpen } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useCurrentUser } from "@/hooks/use-auth";
+import { useQueryClient } from "@tanstack/react-query";
+import { fetchApi } from "@/lib/api-client";
+
+type ConfirmResult = { status: "completed" | "pending"; courseTitle?: string; accessCode?: string | null };
 
 export default function CheckoutSuccess() {
   const [, setLocation] = useLocation();
   const search = useSearch();
-  const params = new URLSearchParams(search);
-  const sessionId = params.get("session_id");
+  const ref = new URLSearchParams(search).get("ref");
   const { toast } = useToast();
-  const { data: user } = useCurrentUser();
+  const queryClient = useQueryClient();
 
-  const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [status, setStatus] = useState<"verifying" | "completed" | "pending" | "error">("verifying");
+  const [result, setResult] = useState<ConfirmResult | null>(null);
   const [error, setError] = useState("");
-  const [pollCount, setPollCount] = useState(0);
+  const pollRef = useRef(0);
 
   useEffect(() => {
-    if (!sessionId) { setLocation("/academy"); return; }
-    fetchStatus();
-  }, [sessionId]);
+    if (!ref) { setLocation("/academy"); return; }
+    let cancelled = false;
 
-  // Poll every 3s for up to ~30s while pending (waiting for webhook)
-  useEffect(() => {
-    if (data?.status === "pending" && pollCount < 10) {
-      const t = setTimeout(() => {
-        fetchStatus();
-        setPollCount((c) => c + 1);
-      }, 3000);
-      return () => clearTimeout(t);
+    async function confirm() {
+      try {
+        const data = await fetchApi<ConfirmResult>("/sumup/confirm", {
+          method: "POST",
+          body: JSON.stringify({ ref }),
+        });
+        if (cancelled) return;
+
+        if (data.status === "completed") {
+          setResult(data);
+          setStatus("completed");
+          // Aggiorna le cache così il corso appare subito sbloccato
+          queryClient.invalidateQueries({ queryKey: ["customer", "my-courses"] });
+          queryClient.invalidateQueries({ queryKey: ["owned-course-ids"] });
+          queryClient.invalidateQueries({ queryKey: ["current-user"] });
+          return;
+        }
+
+        // Ancora pending → riprova fino a ~30s (il pagamento può impiegare qualche secondo)
+        if (pollRef.current < 10) {
+          pollRef.current += 1;
+          setStatus("pending");
+          setTimeout(() => { if (!cancelled) confirm(); }, 3000);
+        } else {
+          setStatus("pending");
+        }
+      } catch (e: any) {
+        if (cancelled) return;
+        setError(e?.message || "Errore nella verifica del pagamento");
+        setStatus("error");
+      }
     }
-  }, [data, pollCount]);
 
-  function fetchStatus() {
-    fetch(`/api/stripe/checkout/status?session_id=${sessionId}`)
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.error) setError(d.error);
-        else setData(d);
-        setLoading(false);
-      })
-      .catch(() => { setError("Errore nel recupero dell'ordine"); setLoading(false); });
-  }
+    confirm();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ref]);
 
   const copyCode = () => {
-    if (data?.accessCode) {
-      navigator.clipboard.writeText(data.accessCode);
+    if (result?.accessCode) {
+      navigator.clipboard.writeText(result.accessCode);
       toast({ title: "Codice copiato!" });
     }
   };
 
-  if (loading) {
+  if (status === "verifying") {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center flex-col gap-4">
         <div className="w-12 h-12 rounded-full border-2 border-primary border-t-transparent animate-spin" />
@@ -67,15 +84,19 @@ export default function CheckoutSuccess() {
       <Navbar />
       <main className="pt-24 pb-20 px-4">
         <div className="max-w-md mx-auto text-center">
-          {error ? (
+          {status === "error" ? (
             <div>
               <p className="text-red-400 mb-4">{error}</p>
-              <button onClick={() => setLocation("/academy")} className="text-primary hover:underline text-sm">
-                Torna all'Academy
+              <p className="text-muted-foreground text-sm mb-6">
+                Se hai completato il pagamento, il corso verrà sbloccato a breve. Controlla
+                la sezione "I miei corsi" tra qualche istante.
+              </p>
+              <button onClick={() => setLocation("/my-courses")} className="text-primary hover:underline text-sm">
+                Vai a I miei corsi
               </button>
             </div>
 
-          ) : data?.status === "completed" ? (
+          ) : status === "completed" ? (
             <>
               <div className="w-20 h-20 bg-green-500/10 border border-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <CheckCircle size={40} className="text-green-400" />
@@ -84,16 +105,17 @@ export default function CheckoutSuccess() {
                 Acquisto Completato!
               </h1>
               <p className="text-muted-foreground mb-8">
-                Grazie <strong className="text-white">{data.customerName}</strong>!
-                Il tuo accesso al corso <strong className="text-white">{data.courseTitle}</strong> è pronto.
+                Il tuo accesso al corso{" "}
+                <strong className="text-white">{result?.courseTitle ?? "acquistato"}</strong>{" "}
+                è pronto: lo trovi nella sezione <strong className="text-white">I miei corsi</strong>.
               </p>
 
-              {data.accessCode ? (
+              {result?.accessCode && (
                 <div className="bg-card border border-primary/20 rounded-2xl p-6 mb-8">
                   <p className="text-sm text-muted-foreground mb-3 uppercase tracking-widest">Il tuo codice di accesso</p>
                   <div className="flex items-center justify-center gap-3">
                     <span className="font-mono text-3xl font-bold text-primary tracking-[0.3em]">
-                      {data.accessCode}
+                      {result.accessCode}
                     </span>
                     <button
                       onClick={copyCode}
@@ -104,33 +126,17 @@ export default function CheckoutSuccess() {
                     </button>
                   </div>
                   <p className="text-xs text-muted-foreground mt-3">
-                    Trovi sempre questo codice anche nella sezione <strong className="text-white">Notifiche</strong> del tuo account.
-                  </p>
-                </div>
-              ) : (
-                <div className="bg-card border border-white/10 rounded-2xl p-6 mb-8">
-                  <Bell size={24} className="text-primary mx-auto mb-3" />
-                  <p className="text-sm text-white font-medium mb-1">Codice in arrivo nelle Notifiche</p>
-                  <p className="text-xs text-muted-foreground">
-                    Riceverai il codice di accesso nella sezione <strong className="text-white">Notifiche</strong> del tuo account entro pochi istanti.
+                    Trovi questo codice anche nella sezione <strong className="text-white">Notifiche</strong> del tuo account.
                   </p>
                 </div>
               )}
 
               <div className="space-y-3">
-                {user?.role === "customer" && (
-                  <button
-                    onClick={() => setLocation("/notifications")}
-                    className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white py-3 rounded-xl font-semibold transition-colors"
-                  >
-                    <Bell size={18} /> Vai alle Notifiche
-                  </button>
-                )}
                 <button
-                  onClick={() => setLocation("/access")}
-                  className="w-full flex items-center justify-center gap-2 border border-white/15 hover:border-primary/50 text-white py-3 rounded-xl font-semibold transition-colors text-sm"
+                  onClick={() => setLocation("/my-courses")}
+                  className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white py-3 rounded-xl font-semibold transition-colors"
                 >
-                  Inserisci codice e accedi al corso <ArrowRight size={16} />
+                  <BookOpen size={18} /> Vai a I miei corsi <ArrowRight size={16} />
                 </button>
                 <button
                   onClick={() => setLocation("/academy")}
@@ -150,18 +156,15 @@ export default function CheckoutSuccess() {
                 Pagamento in verifica
               </h1>
               <p className="text-muted-foreground mb-6">
-                Il tuo pagamento è stato ricevuto e stiamo elaborando l'acquisto.
-                Il codice di accesso arriverà nella sezione <strong className="text-white">Notifiche</strong> del tuo account entro pochi secondi.
+                Stiamo confermando il pagamento. Se l'hai completato, il corso comparirà
+                nella sezione <strong className="text-white">I miei corsi</strong> entro pochi istanti.
               </p>
-
-              {user?.role === "customer" && (
-                <button
-                  onClick={() => setLocation("/notifications")}
-                  className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white py-3 rounded-xl font-semibold transition-colors mb-3"
-                >
-                  <Bell size={18} /> Vai alle Notifiche
-                </button>
-              )}
+              <button
+                onClick={() => setLocation("/my-courses")}
+                className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white py-3 rounded-xl font-semibold transition-colors mb-3"
+              >
+                <BookOpen size={18} /> Vai a I miei corsi
+              </button>
               <button
                 onClick={() => setLocation("/academy")}
                 className="text-muted-foreground hover:text-white transition-colors text-sm"

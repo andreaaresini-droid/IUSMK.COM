@@ -53,6 +53,33 @@ export async function createSumUpCheckout(params: SumUpCheckoutParams): Promise<
   return res.json() as Promise<SumUpCheckout>;
 }
 
+export interface SumUpCheckoutStatus {
+  id: string;
+  checkout_reference: string;
+  status: string;            // PENDING | PAID | FAILED | EXPIRED
+  amount?: number;
+  currency?: string;
+}
+
+// Recupera i checkout SumUp che hanno un dato checkout_reference.
+// Usato per CONFERMARE il pagamento al ritorno dell'utente, senza dipendere
+// dalla consegna asincrona del webhook.
+export async function getSumUpCheckoutsByReference(reference: string): Promise<SumUpCheckoutStatus[]> {
+  const res = await fetch(
+    `${SUMUP_API_BASE}/v0.1/checkouts?checkout_reference=${encodeURIComponent(reference)}`,
+    { headers: { "Authorization": `Bearer ${SUMUP_API_KEY}` } },
+  ) as unknown as HttpResponse;
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`SumUp get checkout failed: ${res.status} — ${err}`);
+  }
+
+  const data = await res.json();
+  if (Array.isArray(data)) return data as SumUpCheckoutStatus[];
+  return data ? [data as SumUpCheckoutStatus] : [];
+}
+
 export function verifySumUpWebhookSignature(
   rawBody: Buffer,
   signatureHeader: string,

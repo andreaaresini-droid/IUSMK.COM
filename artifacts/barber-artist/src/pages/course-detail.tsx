@@ -352,14 +352,11 @@ export default function CourseDetail() {
       requireLoginToBuy(`/course/${course.id}`);
       return;
     }
-    if (course.paymentLinkUrl) {
-      const url = new URL(course.paymentLinkUrl);
-      if (currentUser?.id)    url.searchParams.set("client_reference_id", String(currentUser.id));
-      if (currentUser?.email) url.searchParams.set("prefilled_email", currentUser.email);
-      window.location.href = url.toString();
-    } else {
-      setLocation(`/checkout?course=${course.id}`);
-    }
+    // Tutti gli acquisti passano dal checkout API (/api/sumup/checkout): genera un
+    // checkout con reference userId:courseId:nonce, indispensabile per attribuire il
+    // pagamento e sbloccare il corso al ritorno. I link statici SumUp NON vengono più
+    // usati perché non portano questo reference (il corso non si sbloccava).
+    setLocation(`/checkout?course=${course.id}`);
   };
 
   const whatYouWillLearn: string[] = Array.isArray(course.whatYouWillLearn) && course.whatYouWillLearn.length > 0

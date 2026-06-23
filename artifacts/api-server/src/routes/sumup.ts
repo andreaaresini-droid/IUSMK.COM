@@ -7,11 +7,100 @@ import {
 import { eq, and } from "drizzle-orm";
 import crypto from "crypto";
 import { requireCustomerAuth, AuthRequest } from "../middlewares/authMiddleware.js";
-import { createSumUpCheckout, verifySumUpWebhookSignature } from "../lib/sumupClient.js";
+import { createSumUpCheckout, verifySumUpWebhookSignature, getSumUpCheckoutsByReference } from "../lib/sumupClient.js";
 import { generateAccessCode } from "../lib/auth.js";
 import { notifyUser } from "../lib/pushDispatch.js";
 
 const router = Router();
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Sblocco corso dopo pagamento — logica CONDIVISA tra webhook e conferma-al-ritorno.
+// Idempotente: se l'utente ha già accesso attivo, non duplica nulla.
+// Ritorna il codice di accesso (nuovo o già esistente) per mostrarlo all'utente.
+// ─────────────────────────────────────────────────────────────────────────────
+async function grantCourseAccess(
+  userId: number,
+  courseId: number,
+  paymentRef: string,
+): Promise<{ ok: boolean; alreadyHad: boolean; accessCode: string | null; courseTitle: string }> {
+  const [student, course] = await Promise.all([
+    db.query.studentsTable.findFirst({ where: eq(studentsTable.id, userId) }),
+    db.query.coursesTable.findFirst({ where: eq(coursesTable.id, courseId) }),
+  ]);
+
+  if (!student || !course) {
+    console.error("[SUMUP ACCESS] studente o corso non trovato — userId:", userId, "courseId:", courseId);
+    return { ok: false, alreadyHad: false, accessCode: null, courseTitle: "Corso" };
+  }
+
+  // Idempotenza: accesso già attivo → restituisci l'eventuale codice esistente
+  const alreadyHasAccess = await db.query.studentCourseAccessTable.findFirst({
+    where: and(
+      eq(studentCourseAccessTable.studentId, userId),
+      eq(studentCourseAccessTable.courseId, courseId),
+      eq(studentCourseAccessTable.status, "active"),
+    ),
+  });
+
+  if (alreadyHasAccess) {
+    let existingCode: string | null = null;
+    if (alreadyHasAccess.accessCodeId) {
+      const ac = await db.query.accessCodesTable.findFirst({
+        where: eq(accessCodesTable.id, alreadyHasAccess.accessCodeId),
+      });
+      existingCode = ac?.code ?? null;
+    }
+    return { ok: true, alreadyHad: true, accessCode: existingCode, courseTitle: course.title };
+  }
+
+  // Genera codice accesso + crea accesso attivo
+  const code = generateAccessCode();
+
+  const [accessCode] = await db.insert(accessCodesTable).values({
+    code,
+    courseId,
+    assignedEmail: student.email,
+    isActive: true,
+    maxDevices: 2,
+    boundUserId: userId,
+    notes: `Auto-generato dopo pagamento SumUp — ref: ${paymentRef}`,
+  }).returning();
+
+  await db.insert(studentCourseAccessTable).values({
+    studentId: userId,
+    courseId,
+    accessCodeId: accessCode.id,
+    status: "active",
+  });
+
+  // Promuovi a "student" se era "customer"
+  if (student.role === "customer") {
+    await db.update(studentsTable)
+      .set({ role: "student", updatedAt: new Date() })
+      .where(eq(studentsTable.id, userId));
+  }
+
+  // Notifica in DB
+  await db.insert(notificationsTable).values({
+    userId,
+    courseId,
+    type: "payment_success",
+    title: `Accesso al corso: ${course.title}`,
+    message: `Il tuo pagamento è confermato! Il corso "${course.title}" è ora disponibile nella sezione "I miei corsi". Codice di accesso: **${code}**.`,
+    accessCode: code,
+    isRead: false,
+  });
+
+  // Push (best-effort)
+  notifyUser(userId, {
+    title: "Pagamento confermato — IUSMK",
+    body: `Corso "${course.title}" sbloccato! Codice: ${code}`,
+    url: "/my-courses",
+  }).catch(() => {});
+
+  console.log("[SUMUP ACCESS] corso sbloccato — userId:", userId, "courseId:", courseId, "code:", code);
+  return { ok: true, alreadyHad: false, accessCode: code, courseTitle: course.title };
+}
 
 // ── POST /api/sumup/checkout ─────────────────────────────────────────────────
 router.post("/checkout", requireCustomerAuth as any, async (req: AuthRequest, res: Response) => {
@@ -61,7 +150,7 @@ router.post("/checkout", requireCustomerAuth as any, async (req: AuthRequest, re
       amount: course.price,
       currency: "EUR",
       description: course.title,
-      redirectUrl: `${baseUrl}/checkout/success`,
+      redirectUrl: `${baseUrl}/checkout/success?ref=${encodeURIComponent(checkoutReference)}`,
     });
 
     res.json({ sessionUrl: checkout.hosted_checkout_url });
@@ -117,83 +206,63 @@ router.post("/webhook", async (req: Request, res: Response) => {
   }
 
   try {
-    const [student, course] = await Promise.all([
-      db.query.studentsTable.findFirst({ where: eq(studentsTable.id, userId) }),
-      db.query.coursesTable.findFirst({ where: eq(coursesTable.id, courseId) }),
-    ]);
-
-    if (!student || !course) {
-      console.error("[SUMUP WEBHOOK] studente o corso non trovato — userId:", userId, "courseId:", courseId);
+    const result = await grantCourseAccess(userId, courseId, checkoutReference);
+    if (!result.ok) {
       res.status(404).json({ error: "Student or course not found" });
       return;
     }
-
-    // Idempotenza: se ha già accesso, skip
-    const alreadyHasAccess = await db.query.studentCourseAccessTable.findFirst({
-      where: and(
-        eq(studentCourseAccessTable.studentId, userId),
-        eq(studentCourseAccessTable.courseId, courseId),
-        eq(studentCourseAccessTable.status, "active"),
-      ),
-    });
-
-    if (alreadyHasAccess) {
-      console.log("[SUMUP WEBHOOK] accesso già presente — idempotente, skip");
-      res.json({ received: true });
-      return;
-    }
-
-    // Genera codice accesso
-    const code = generateAccessCode();
-
-    const [accessCode] = await db.insert(accessCodesTable).values({
-      code,
-      courseId,
-      assignedEmail: student.email,
-      isActive: true,
-      maxDevices: 2,
-      boundUserId: userId,
-      notes: `Auto-generato dopo pagamento SumUp — ref: ${checkoutReference}`,
-    }).returning();
-
-    // Crea accesso al corso
-    await db.insert(studentCourseAccessTable).values({
-      studentId: userId,
-      courseId,
-      accessCodeId: accessCode.id,
-      status: "active",
-    });
-
-    // Aggiorna ruolo a "student" se era "customer"
-    if (student.role === "customer") {
-      await db.update(studentsTable)
-        .set({ role: "student", updatedAt: new Date() })
-        .where(eq(studentsTable.id, userId));
-    }
-
-    // Crea notifica in DB
-    await db.insert(notificationsTable).values({
-      userId,
-      courseId,
-      type: "payment_success",
-      title: `Accesso al corso: ${course.title}`,
-      message: `Il tuo pagamento è confermato! Usa il codice **${code}** per attivare l'accesso al corso "${course.title}". Vai su /access per attivarlo.`,
-      accessCode: code,
-      isRead: false,
-    });
-
-    // Invia push notification (ignora errori push — non bloccare il webhook)
-    notifyUser(userId, {
-      title: "Pagamento confermato — IUSMK",
-      body: `Corso "${course.title}" acquistato! Il tuo codice di accesso è: ${code}`,
-      url: "/notifications",
-    }).catch(() => {});
-
-    console.log("[SUMUP WEBHOOK] codice generato:", code, "userId:", userId, "courseId:", courseId);
+    console.log("[SUMUP WEBHOOK] sblocco ok — userId:", userId, "courseId:", courseId, "alreadyHad:", result.alreadyHad);
     res.json({ received: true });
   } catch (err: any) {
     console.error("[SUMUP WEBHOOK] errore:", err.message);
     res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// ── POST /api/sumup/confirm ──────────────────────────────────────────────────
+// Conferma DETERMINISTICA al ritorno dal pagamento: il client chiama questo
+// endpoint con il reference del checkout; interroghiamo SumUp e, se PAID,
+// sblocchiamo il corso subito — senza dipendere dal webhook asincrono.
+router.post("/confirm", requireCustomerAuth as any, async (req: AuthRequest, res: Response) => {
+  const ref = String(req.body?.ref ?? "");
+  const parts = ref.split(":");
+
+  // Il reference è "userId:courseId:nonce" e deve appartenere all'utente loggato
+  if (parts.length < 3 || parseInt(parts[0]) !== req.userId) {
+    res.status(400).json({ error: "Bad Request", message: "Riferimento pagamento non valido" });
+    return;
+  }
+
+  const courseId = parseInt(parts[1]);
+  if (isNaN(courseId)) {
+    res.status(400).json({ error: "Bad Request", message: "Corso non valido" });
+    return;
+  }
+
+  try {
+    const checkouts = await getSumUpCheckoutsByReference(ref);
+    const paid = checkouts.find((c) => c.status === "PAID");
+
+    if (!paid) {
+      // Pagamento non ancora risultato PAID lato SumUp
+      res.json({ status: "pending" });
+      return;
+    }
+
+    const result = await grantCourseAccess(req.userId!, courseId, ref);
+    if (!result.ok) {
+      res.status(404).json({ error: "Not Found", message: "Corso o utente non trovato" });
+      return;
+    }
+
+    res.json({
+      status: "completed",
+      courseTitle: result.courseTitle,
+      accessCode: result.accessCode,
+    });
+  } catch (err: any) {
+    console.error("[SUMUP CONFIRM] errore:", err.message);
+    res.status(500).json({ error: "Internal Server Error", message: "Verifica del pagamento fallita" });
   }
 });
 
