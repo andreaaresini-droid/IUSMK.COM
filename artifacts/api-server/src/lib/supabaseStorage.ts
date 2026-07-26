@@ -8,6 +8,12 @@ const supabase = createClient(
 
 const BUCKET = "iusmk-media";
 
+/* I video dei corsi sono contenuto a pagamento e stanno in un bucket PRIVATO:
+   si raggiungono solo con un URL firmato a scadenza, generato dopo aver
+   verificato il token dello studente. Il bucket pubblico BUCKET resta per le
+   immagini del sito, che devono essere servite dalla CDN senza firma. */
+const VIDEO_BUCKET = "iusmk-videos";
+
 export async function uploadImage(
   buffer: Buffer,
   mimeType: string,
@@ -71,20 +77,27 @@ export async function createVideoUploadSession(
   const filename = `videos/${crypto.randomUUID()}.${ext}`;
 
   const { data, error } = await supabase.storage
-    .from(BUCKET)
+    .from(VIDEO_BUCKET)
     .createSignedUploadUrl(filename);
 
   if (error || !data) throw new Error(error?.message || "Errore creazione upload session");
 
   return {
     resumableUri: data.signedUrl, // PUT directly to this URL — no server proxy needed
-    finalUrl: getPublicUrl(filename),
+    // Si salva il PATH nel bucket privato, non un URL pubblico permanente:
+    // l'URL viene firmato di volta in volta da /api/video/stream.
+    finalUrl: filename,
   };
+}
+
+/** Riconosce i path che vivono nel bucket video privato (es. "videos/<uuid>.mp4"). */
+export function isPrivateVideoPath(p: string): boolean {
+  return p.startsWith("videos/");
 }
 
 export async function getSignedVideoUrl(filename: string, expiresInSeconds = 14400): Promise<string> {
   const { data, error } = await supabase.storage
-    .from(BUCKET)
+    .from(VIDEO_BUCKET)
     .createSignedUrl(filename, expiresInSeconds);
 
   if (error) throw new Error(error.message);

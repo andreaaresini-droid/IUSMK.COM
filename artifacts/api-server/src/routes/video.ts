@@ -2,6 +2,7 @@ import { Router } from "express";
 import path from "path";
 import fs from "fs";
 import { verifyVideoToken } from "../lib/auth.js";
+import { getSignedVideoUrl, isPrivateVideoPath } from "../lib/supabaseStorage.js";
 
 const UPLOADS_DIR = path.resolve(__dirname, "../../uploads");
 
@@ -30,7 +31,22 @@ router.get("/stream", async (req, res) => {
     return;
   }
 
-  // URL remoto: Supabase Storage o Cloudinary legacy → 302 redirect diretto
+  // Bucket video privato → si firma un URL che scade con il token dello studente.
+  // Senza questo passaggio il redirect esporrebbe un URL pubblico permanente:
+  // basterebbe copiarlo dalla scheda Network per ridistribuire il corso.
+  if (isPrivateVideoPath(videoPath)) {
+    try {
+      const signedUrl = await getSignedVideoUrl(videoPath);
+      res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, private");
+      res.redirect(302, signedUrl);
+    } catch (err) {
+      console.error("[video] Signed URL error:", err);
+      res.status(404).json({ error: "Not Found", message: "Video non disponibile" });
+    }
+    return;
+  }
+
+  // Legacy: URL remoto gia' assoluto (Cloudinary o vecchi video pubblici)
   if (videoPath.startsWith("https://") || videoPath.startsWith("http://")) {
     res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, private");
     res.redirect(302, videoPath);
