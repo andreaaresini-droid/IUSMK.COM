@@ -4,7 +4,7 @@ import { adminsTable, studentsTable, accessCodesTable, deviceSessionsTable, stud
 import { eq, and, isNotNull, sql, lt } from "drizzle-orm";
 import { comparePassword, hashPassword, generateToken, verifyToken, generateSessionToken, simpleHash, generateSecureResetToken, hashResetToken, supabaseAdmin } from "../lib/auth";
 import { requireAuth, requireAdmin, AuthRequest } from "../middlewares/authMiddleware";
-import { sendEmail, sendPasswordResetEmail } from "../lib/email";
+import { sendPasswordResetEmail } from "../lib/email";
 import { notifyAdmin } from "../lib/pushDispatch";
 
 const router: IRouter = Router();
@@ -343,35 +343,6 @@ router.post("/customer/forgot-password", async (req, res) => {
     req.log.error({ err }, "Forgot password error");
     console.error("[RESET_TOKEN_CREATE] errore interno:", (err as any)?.message);
     res.status(500).json({ error: "Internal Server Error", message: "Errore interno. Riprova più tardi." });
-  }
-});
-
-// ─── EMAIL TEST ENDPOINT ──────────────────────────────────────────────────────
-router.post("/test-email", async (req, res) => {
-  const { to } = req.body;
-  if (!to) {
-    res.status(400).json({ error: "Bad Request", message: "Campo 'to' obbligatorio" });
-    return;
-  }
-
-  console.log("[EMAIL_TEST] invio email di prova a:", to);
-
-  const { ok, result, error } = await sendEmail(
-    String(to),
-    "Test Email — IUSMK Academy",
-    `<div style="font-family:Arial,sans-serif;background:#0a0a0a;color:#fff;padding:32px;border-radius:12px;">
-      <h2 style="color:#D41414;">IUSMK Academy — Email di test</h2>
-      <p>Questa è una email di prova inviata tramite Resend.<br>Se la ricevi, il sistema funziona correttamente.</p>
-      <p style="color:#666;font-size:12px;">Data: ${new Date().toISOString()}</p>
-    </div>`,
-  );
-
-  if (ok) {
-    console.log("[EMAIL_TEST] successo:", result);
-    res.json({ success: true, message: "Email di prova inviata con successo", result });
-  } else {
-    console.error("[EMAIL_TEST] errore:", error);
-    res.status(500).json({ success: false, message: "Invio fallito", error: String(error) });
   }
 });
 
