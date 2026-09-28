@@ -438,10 +438,15 @@ export function AiChatWidget() {
                   </p>
                 </div>
               </div>
-              <button onClick={() => setOpen(false)} className="text-white/40 hover:text-white transition-colors p-1">
+              <button onClick={() => setOpen(false)} aria-label={c.closeLabel} className="text-white/40 hover:text-white transition-colors p-1">
                 <ChevronDown className="w-5 h-5" />
               </button>
             </div>
+
+            {/* Avviso IA (AI Act): chi scrive deve sapere che risponde un'intelligenza artificiale */}
+            <p className="px-4 py-2 text-[11px] leading-snug text-white/70 bg-[#FFD600]/10 border-b border-[#FFD600]/20">
+              {c.aiDisclaimer}
+            </p>
 
             {/* Messages */}
             <div className="flex-1 overflow-y-auto p-4 space-y-3 scrollbar-thin">

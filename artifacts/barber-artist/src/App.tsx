@@ -24,11 +24,24 @@ class AppErrorBoundary extends Component<
   }
   render() {
     if (this.state.error) {
+      // Pagina di errore generico in italiano (sta fuori da LanguageProvider:
+      // niente traduzioni qui). Il dettaglio tecnico resta in console.
       return (
-        <div style={{ padding: 32, color: "#fff", background: "#111", fontFamily: "monospace", minHeight: "100vh" }}>
-          <h2 style={{ color: "#FFD600", marginBottom: 16 }}>Errore di rendering</h2>
-          <pre style={{ whiteSpace: "pre-wrap", fontSize: 13 }}>{this.state.error.message}</pre>
-          <pre style={{ whiteSpace: "pre-wrap", fontSize: 11, opacity: 0.6, marginTop: 16 }}>{this.state.error.stack}</pre>
+        <div style={{ padding: "96px 24px", color: "#fff", background: "#0A0A0A", fontFamily: "Inter, system-ui, sans-serif", minHeight: "100vh", textAlign: "center" }}>
+          <p style={{ color: "#FFD600", fontWeight: 700, letterSpacing: "0.3em", textTransform: "uppercase", fontSize: 13, marginBottom: 16 }}>Errore</p>
+          <h1 style={{ fontSize: 32, fontWeight: 700, textTransform: "uppercase", marginBottom: 16 }}>Qualcosa è andato storto</h1>
+          <p style={{ color: "#B3B3B3", maxWidth: 480, margin: "0 auto 32px", lineHeight: 1.6 }}>
+            Si è verificato un errore imprevisto. Ricarica la pagina o torna alla home; se il problema continua scrivi a{" "}
+            <a href="mailto:iusmkbarber@gmail.com" style={{ color: "#FFD600" }}>iusmkbarber@gmail.com</a>.
+          </p>
+          <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+            <button onClick={() => window.location.reload()} style={{ background: "#FFD600", color: "#0A0A0A", border: 0, borderRadius: 12, padding: "14px 28px", fontWeight: 700, textTransform: "uppercase", cursor: "pointer" }}>
+              Ricarica la pagina
+            </button>
+            <a href="/" style={{ border: "1px solid rgba(255,255,255,0.2)", color: "#fff", borderRadius: 12, padding: "14px 28px", fontWeight: 600, textTransform: "uppercase", textDecoration: "none" }}>
+              Torna alla home
+            </a>
+          </div>
         </div>
       );
     }
@@ -69,6 +82,7 @@ const CookiePolicy = lazy(() => import("@/pages/cookie-policy"));
 const Returns = lazy(() => import("@/pages/returns"));
 const Legal = lazy(() => import("@/pages/legal"));
 const Faq = lazy(() => import("@/pages/faq"));
+const Recesso = lazy(() => import("@/pages/recesso"));
 
 // Lazy — admin pages (never visited by regular users)
 const AdminLogin = lazy(() => import("@/pages/admin/login"));
@@ -158,6 +172,7 @@ function Router() {
         <Route path="/returns" component={Returns} />
         <Route path="/legal" component={Legal} />
         <Route path="/faq" component={Faq} />
+        <Route path="/recesso" component={Recesso} />
         <Route component={NotFound} />
       </Switch>
     </Suspense>

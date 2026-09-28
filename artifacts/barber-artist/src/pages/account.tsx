@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { Loader2, User, Lock, Trash2, AlertTriangle, X } from "lucide-react";
+import { Loader2, User, Lock, Trash2, AlertTriangle, X, FileX } from "lucide-react";
 import { useCurrentUser } from "@/hooks/use-auth";
 import { useLang } from "@/i18n/LanguageContext";
 import {
@@ -225,6 +225,24 @@ export default function Account() {
               </form>
             </section>
           )}
+
+          {/* ── RECESSO DAL CONTRATTO (dir. 2023/2673) ── */}
+          <section className="bg-card border border-white/10 rounded-2xl p-6 sm:p-8">
+            <div className="flex items-center gap-2 mb-3">
+              <FileX size={18} className="text-primary" />
+              <h2 className="text-lg font-semibold">{t.accountRecesso.title}</h2>
+            </div>
+            <p className="text-sm text-muted-foreground leading-relaxed mb-5">
+              {t.accountRecesso.intro}
+            </p>
+            <Link
+              href="/recesso"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 border border-primary/50 text-primary hover:bg-primary/10 px-6 py-3 rounded-xl font-semibold text-sm transition-colors"
+            >
+              <FileX size={16} />
+              {t.accountRecesso.button}
+            </Link>
+          </section>
 
           {/* ── ELIMINA ACCOUNT ── */}
           <section className="bg-card border border-red-500/30 rounded-2xl p-6 sm:p-8">

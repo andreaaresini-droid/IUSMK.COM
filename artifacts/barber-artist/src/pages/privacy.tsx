@@ -1,3 +1,4 @@
+import { Link } from "wouter";
 import { LegalLayout, LegalSection, LegalList } from "@/components/layout/LegalLayout";
 import { useLang } from "@/i18n/LanguageContext";
 
@@ -9,44 +10,24 @@ export default function Privacy() {
 
       <p>{p.intro}</p>
 
-      <LegalSection title={p.s1Title}>
-        <p>{p.s1Controller}</p>
-        <p>{p.s1EmailLabel} <a href="mailto:iusmkbarber@gmail.com" className="text-primary hover:underline">iusmkbarber@gmail.com</a></p>
+      <LegalSection title={p.controllerTitle}>
+        <p>{p.controller}</p>
+        <p>{p.emailLabel} <a href="mailto:iusmkbarber@gmail.com" className="text-primary hover:underline">iusmkbarber@gmail.com</a></p>
       </LegalSection>
 
-      <LegalSection title={p.s2Title}>
-        <p>{p.s2Body}</p>
-        <LegalList items={[...p.s2Items]} />
+      {p.sections.map((s) => (
+        <LegalSection key={s.title} title={s.title}>
+          {s.p.map((testo) => <p key={testo}>{testo}</p>)}
+          {s.items.length > 0 && <LegalList items={[...s.items]} />}
+        </LegalSection>
+      ))}
+
+      <LegalSection title={p.cookieTitle}>
+        <p>{p.cookiePre}<Link href="/cookie-policy" className="text-primary hover:underline">{p.cookieLink}</Link>{p.cookiePost}</p>
       </LegalSection>
 
-      <LegalSection title={p.s3Title}>
-        <p>{p.s3Body}</p>
-        <LegalList items={[...p.s3Items]} />
-      </LegalSection>
-
-      <LegalSection title={p.s4Title}>
-        <p>{p.s4Body}</p>
-        <LegalList items={[...p.s4Items]} />
-      </LegalSection>
-
-      <LegalSection title={p.s5Title}>
-        <p>{p.s5Body}</p>
-      </LegalSection>
-
-      <LegalSection title={p.s6Title}>
-        <p>{p.s6Body}</p>
-      </LegalSection>
-
-      <LegalSection title={p.s7Title}>
-        <p>{p.s7Body}</p>
-      </LegalSection>
-
-      <LegalSection title={p.s8Title}>
-        <p>{p.s8Body}</p>
-      </LegalSection>
-
-      <LegalSection title={p.s9Title}>
-        <p>{p.s9Pre}<a href="/cookie-policy" className="text-primary hover:underline">{p.s9Link}</a>{p.s9Post}</p>
+      <LegalSection title={p.updatesTitle}>
+        <p>{p.updatesBody}</p>
       </LegalSection>
 
     </LegalLayout>

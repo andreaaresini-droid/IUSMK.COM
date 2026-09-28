@@ -3,6 +3,7 @@ import { Footer } from "@/components/layout/Footer";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { Mail, Instagram, Send } from "lucide-react";
+import { Link } from "wouter";
 import { useLang } from "@/i18n/LanguageContext";
 import { fetchApi } from "@/lib/api-client";
 
@@ -114,11 +115,17 @@ export default function Contact() {
                   <button
                     type="submit"
                     disabled={status === "loading"}
-                    className="w-full bg-primary text-white py-4 font-semibold uppercase tracking-widest text-sm hover:bg-primary/80 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                    className="w-full bg-primary text-primary-foreground py-4 font-semibold uppercase tracking-widest text-sm hover:bg-primary/80 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
                   >
                     <Send className="w-4 h-4" />
                     {status === "loading" ? f.sending : f.send}
                   </button>
+
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    {t.informativaBreve.contactPre}
+                    <Link href="/privacy" className="text-primary hover:underline">{t.informativaBreve.privacyLink}</Link>
+                    {t.informativaBreve.post}
+                  </p>
                 </form>
               </div>
 

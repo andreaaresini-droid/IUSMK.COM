@@ -1,10 +1,13 @@
 import { Resend } from "resend";
+import { componiEmail, urlSito, IUSMK_EMAIL_CONTATTO } from "./emailModello";
 
 // ─── Resend (transactional email for Vercel serverless) ───────────────────────
 // Required env vars:
 //   RESEND_API_KEY  — from resend.com dashboard
 //   RESEND_FROM     — verified sender, e.g. "IUSMK Academy <noreply@iusmk.com>"
 //   APP_URL         — public frontend URL, e.g. https://iusmk.vercel.app
+//
+// Tutte le email passano dal modello unico in ./emailModello.ts (stile del sito).
 
 function getResendClient(): Resend | null {
   const key = process.env.RESEND_API_KEY;
@@ -16,6 +19,7 @@ export async function sendEmail(
   to: string,
   subject: string,
   html: string,
+  text?: string,
 ): Promise<{ ok: boolean; result?: any; error?: any }> {
   const resend = getResendClient();
   const from = process.env.RESEND_FROM || "IUSMK Academy <noreply@iusmk.com>";
@@ -30,7 +34,7 @@ export async function sendEmail(
   }
 
   try {
-    const { data, error } = await resend.emails.send({ from, to, subject, html });
+    const { data, error } = await resend.emails.send({ from, to, subject, html, ...(text ? { text } : {}) });
     if (error) {
       console.error("[EMAIL_FAIL] Resend error:", error);
       return { ok: false, error };
@@ -44,7 +48,48 @@ export async function sendEmail(
   }
 }
 
+function dataOraItaliana(d: Date): string {
+  return d.toLocaleString("it-IT", {
+    day: "2-digit", month: "long", year: "numeric",
+    hour: "2-digit", minute: "2-digit", timeZone: "Europe/Rome",
+  });
+}
+
 // ─── Purchase confirmation email ─────────────────────────────────────────────
+
+export function buildPurchaseConfirmationEmail(opts: {
+  customerName: string;
+  courseTitle: string;
+  amountPaid: number;
+  purchaseDate: Date;
+  accessCode: string;
+}) {
+  const { customerName, courseTitle, amountPaid, purchaseDate, accessCode } = opts;
+  const appUrl = urlSito();
+  const subject = "Conferma acquisto corso — IUSMK Academy";
+  const email = componiEmail({
+    anteprima: `Il corso «${courseTitle}» è sbloccato: ecco il riepilogo e il codice di accesso.`,
+    titolo: "Pagamento confermato",
+    saluto: `Ciao ${customerName},`,
+    paragrafi: [
+      "il tuo acquisto è andato a buon fine. Qui sotto trovi il riepilogo dell'ordine e il codice per accedere al corso.",
+    ],
+    codice: { etichetta: "Il tuo codice di accesso", valore: accessCode },
+    riepilogo: [
+      { etichetta: "Corso", valore: courseTitle },
+      { etichetta: "Importo pagato", valore: `€ ${amountPaid.toFixed(2).replace(".", ",")}` },
+      { etichetta: "Data acquisto", valore: dataOraItaliana(purchaseDate) },
+      { etichetta: "Stato", valore: "Completato" },
+    ],
+    pulsante: { testo: "Vai ai miei corsi", url: `${appUrl}/my-courses` },
+    note: [
+      "Come accedere: entra su iusmk.com con il tuo account e apri «I miei corsi»: il corso è già nel tuo profilo. In alternativa usa il codice qui sopra nella sezione «Accedi al corso».",
+      `Serve aiuto? Scrivici a ${IUSMK_EMAIL_CONTATTO} o dalla pagina ${appUrl}/contact.`,
+    ],
+    motivo: "Ricevi questa email perché hai acquistato un corso su IUSMK Academy.",
+  });
+  return { subject, ...email };
+}
 
 export async function sendPurchaseConfirmationEmail(opts: {
   toEmail: string;
@@ -54,125 +99,44 @@ export async function sendPurchaseConfirmationEmail(opts: {
   purchaseDate: Date;
   accessCode: string;
 }): Promise<{ ok: boolean; error?: any }> {
-  const { toEmail, customerName, courseTitle, amountPaid, purchaseDate, accessCode } = opts;
-
-  const appUrl = (process.env.APP_URL || "https://iusmk.com").replace(/\/+$/, "");
-
-  const dateFormatted = purchaseDate.toLocaleDateString("it-IT", {
-    day: "2-digit", month: "long", year: "numeric",
-    hour: "2-digit", minute: "2-digit", timeZone: "Europe/Rome",
-  });
-
-  const amountFormatted = `€${amountPaid.toFixed(2)}`;
-
-  const subject = "Conferma acquisto corso — IUSMK Academy";
-
-  const html = `<!DOCTYPE html>
-<html lang="it">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body{margin:0;padding:0;background:#0a0a0a;font-family:Arial,Helvetica,sans-serif;}
-    .wrap{max-width:580px;margin:40px auto;padding:0 20px;}
-    .card{background:#141414;border:1px solid #222;border-radius:12px;padding:40px 36px;}
-    .logo{font-size:24px;font-weight:900;letter-spacing:5px;color:#D41414;text-transform:uppercase;margin-bottom:32px;}
-    h1{color:#fff;font-size:22px;font-weight:700;margin:0 0 12px;}
-    p{color:#aaa;font-size:15px;line-height:1.7;margin:0 0 16px;}
-    .highlight{color:#fff;}
-    .divider{border:none;border-top:1px solid #222;margin:28px 0;}
-    .recap{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;padding:20px 24px;margin:24px 0;}
-    .recap-row{display:flex;justify-content:space-between;align-items:baseline;padding:7px 0;border-bottom:1px solid #222;}
-    .recap-row:last-child{border-bottom:none;}
-    .recap-label{color:#666;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;}
-    .recap-value{color:#fff;font-size:15px;font-weight:600;text-align:right;}
-    .code-box{background:#1e0a0a;border:2px solid #D41414;border-radius:10px;padding:20px 24px;margin:24px 0;text-align:center;}
-    .code-label{color:#888;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;}
-    .code-value{font-family:monospace;font-size:32px;font-weight:900;letter-spacing:6px;color:#D41414;}
-    .cta{display:inline-block;background:#D41414;color:#fff!important;text-decoration:none;padding:14px 36px;border-radius:8px;font-weight:700;font-size:15px;margin:8px 0 4px;}
-    .info-list{padding-left:20px;margin:8px 0 0;}
-    .info-list li{color:#888;font-size:14px;line-height:1.8;}
-    .info-list li strong{color:#bbb;}
-    .footer{margin-top:32px;padding-top:24px;border-top:1px solid #1e1e1e;color:#444;font-size:12px;text-align:center;line-height:1.6;}
-  </style>
-</head>
-<body>
-  <div class="wrap">
-    <div class="card">
-
-      <div class="logo">IUSMK</div>
-
-      <h1>Pagamento confermato ✓</h1>
-      <p>Ciao <span class="highlight">${customerName}</span>,</p>
-      <p>il tuo acquisto è stato completato con successo. Di seguito trovi il riepilogo del tuo ordine e il codice per accedere al corso.</p>
-
-      <hr class="divider">
-
-      <div class="recap">
-        <div class="recap-row">
-          <span class="recap-label">Corso</span>
-          <span class="recap-value">${courseTitle}</span>
-        </div>
-        <div class="recap-row">
-          <span class="recap-label">Importo pagato</span>
-          <span class="recap-value">${amountFormatted}</span>
-        </div>
-        <div class="recap-row">
-          <span class="recap-label">Data acquisto</span>
-          <span class="recap-value">${dateFormatted}</span>
-        </div>
-        <div class="recap-row">
-          <span class="recap-label">Stato pagamento</span>
-          <span class="recap-value" style="color:#22c55e;">Completato</span>
-        </div>
-      </div>
-
-      <div class="code-box">
-        <div class="code-label">Il tuo codice di accesso</div>
-        <div class="code-value">${accessCode}</div>
-      </div>
-
-      <p style="margin-bottom:8px;"><span class="highlight">Come accedere al corso:</span></p>
-      <ol class="info-list">
-        <li>Accedi al sito <strong>iusmk.com</strong> con il tuo account</li>
-        <li>Vai nella sezione <strong>"I miei corsi"</strong> oppure <strong>"Notifiche"</strong></li>
-        <li>Trovi già il corso disponibile nel tuo profilo</li>
-        <li>In alternativa, usa il codice sopra nella sezione <strong>"Accedi al corso"</strong></li>
-      </ol>
-
-      <hr class="divider">
-
-      <p style="text-align:center;margin-bottom:20px;">Puoi accedere subito al tuo corso da qui:</p>
-      <div style="text-align:center;">
-        <a href="${appUrl}/my-courses" class="cta">Vai ai miei corsi</a>
-      </div>
-
-      <div class="footer">
-        Hai ricevuto questa email perché hai effettuato un acquisto su IUSMK Academy.<br>
-        Per assistenza contattaci attraverso il sito: <a href="${appUrl}/contatto" style="color:#D41414;">${appUrl}/contatto</a>
-      </div>
-
-    </div>
-  </div>
-</body>
-</html>`;
+  const { toEmail, courseTitle, amountPaid, accessCode } = opts;
+  const { subject, html, text } = buildPurchaseConfirmationEmail(opts);
 
   console.log("[EMAIL] preparing customer confirmation");
   console.log("[EMAIL] recipient resolved:", toEmail);
-  console.log("[EMAIL] course:", courseTitle, "| amount:", amountFormatted, "| code:", accessCode);
+  console.log("[EMAIL] course:", courseTitle, "| amount:", amountPaid, "| code:", accessCode);
 
-  const result = await sendEmail(toEmail, subject, html);
+  const result = await sendEmail(toEmail, subject, html, text);
 
   if (result.ok) {
     console.log("[EMAIL] sent successfully →", toEmail);
   } else {
     console.error("[EMAIL ERROR] send failed — recipient:", toEmail, "| error:", result.error);
-    console.error("[EMAIL ERROR] reason: SMTP not configured or credentials wrong. Set SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM in Replit Secrets");
   }
   return result;
 }
 
 // ─── Password reset email ─────────────────────────────────────────────────────
+
+export function buildPasswordResetEmail(firstName: string, resetUrl: string) {
+  const subject = "Recupero password IUSMK";
+  const email = componiEmail({
+    anteprima: "Reimposta la password del tuo account IUSMK. Il link vale 1 ora.",
+    titolo: "Recupero password",
+    saluto: `Ciao ${firstName},`,
+    paragrafi: [
+      "hai chiesto di reimpostare la password del tuo account IUSMK Academy.",
+      "Premi il pulsante qui sotto per sceglierne una nuova. Il link vale 1 ora.",
+    ],
+    pulsante: { testo: "Reimposta la password", url: resetUrl },
+    note: [
+      "Se non sei stato tu, ignora questa email: il tuo account è al sicuro e la password non cambia.",
+      `Se il pulsante non funziona, copia questo indirizzo nel browser: ${resetUrl}`,
+    ],
+    motivo: "Ricevi questa email perché è stato chiesto il recupero della password del tuo account IUSMK.",
+  });
+  return { subject, ...email };
+}
 
 export async function sendPasswordResetEmail(
   toEmail: string,
@@ -195,54 +159,101 @@ export async function sendPasswordResetEmail(
   const resetUrl = `${baseUrl}/reset-password?token=${resetToken}`;
 
   console.log("[RESET_LINK] APP_URL usato:", baseUrl);
-  console.log("[RESET_LINK] final URL:", resetUrl);
-  console.log("[FORGOT_PASSWORD] tentativo invio email Gmail SMTP a:", toEmail);
+  console.log("[FORGOT_PASSWORD] tentativo invio email a:", toEmail);
 
-  const subject = "Recupero Password IUSMK";
-
-  const html = `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body{margin:0;padding:0;background:#0a0a0a;font-family:Arial,sans-serif;}
-    .w{max-width:560px;margin:40px auto;padding:0 20px;}
-    .c{background:#141414;border:1px solid #222;border-radius:12px;padding:40px 36px;}
-    .logo{font-size:26px;font-weight:900;letter-spacing:4px;color:#D41414;text-transform:uppercase;margin-bottom:32px;}
-    h1{color:#fff;font-size:22px;font-weight:700;margin:0 0 16px;}
-    p{color:#888;font-size:15px;line-height:1.6;margin:0 0 20px;}
-    .btn{display:inline-block;background:#D41414;color:#fff!important;text-decoration:none;padding:14px 32px;border-radius:8px;font-weight:700;font-size:15px;margin:8px 0 24px;}
-    .note{color:#555;font-size:13px;margin-top:24px;padding-top:20px;border-top:1px solid #222;}
-    .url{word-break:break-all;color:#D41414;font-size:12px;margin-top:8px;}
-  </style>
-</head>
-<body>
-  <div class="w"><div class="c">
-    <div class="logo">IUSMK</div>
-    <h1>Recupero Password</h1>
-    <p>Ciao ${firstName},</p>
-    <p>hai richiesto il reset della password del tuo account IUSMK Academy.<br>Clicca qui per reimpostarla:</p>
-    <a href="${resetUrl}" class="btn">Reimposta Password</a>
-    <p>Il link è valido per <strong>1 ora</strong>.</p>
-    <div class="note">
-      Se non sei stato tu, ignora questa email. Il tuo account è al sicuro.
-      <div class="url">${resetUrl}</div>
-    </div>
-  </div></div>
-</body>
-</html>`;
+  const { subject, html, text } = buildPasswordResetEmail(firstName, resetUrl);
 
   try {
-    const { ok, error } = await sendEmail(toEmail, subject, html);
+    const { ok, error } = await sendEmail(toEmail, subject, html, text);
     if (ok) {
       console.log("[FORGOT_PASSWORD] email inviata con successo a:", toEmail);
     } else {
       console.error("[FORGOT_PASSWORD] invio fallito:", error);
-      console.log("[FORGOT_PASSWORD] reset link (fallback log):", resetUrl);
     }
   } catch (err: any) {
     console.error("[FORGOT_PASSWORD] eccezione non gestita:", err?.message || err);
-    console.log("[FORGOT_PASSWORD] reset link (emergency fallback):", resetUrl);
   }
+}
+
+// ─── Recesso dal contratto ───────────────────────────────────────────────────
+
+export interface DatiRecesso {
+  riferimento: string;
+  ricevutoIl: Date;
+  nome: string;
+  email: string;
+  contratto: string;
+  dataAcquisto?: string | null;
+  note?: string | null;
+}
+
+function righeRecesso(d: DatiRecesso) {
+  const righe = [
+    { etichetta: "Numero pratica", valore: d.riferimento },
+    { etichetta: "Ricevuta il", valore: dataOraItaliana(d.ricevutoIl) },
+    { etichetta: "Nome", valore: d.nome },
+    { etichetta: "Email", valore: d.email },
+    { etichetta: "Contratto / corso", valore: d.contratto },
+  ];
+  if (d.dataAcquisto) righe.push({ etichetta: "Data acquisto", valore: d.dataAcquisto });
+  return righe;
+}
+
+/** Conferma di ricevimento al consumatore */
+export function buildWithdrawalConfirmationEmail(d: DatiRecesso) {
+  const appUrl = urlSito();
+  const subject = `Abbiamo ricevuto il tuo recesso — pratica ${d.riferimento}`;
+  const email = componiEmail({
+    anteprima: `Recesso ricevuto il ${dataOraItaliana(d.ricevutoIl)}. Numero pratica ${d.riferimento}.`,
+    titolo: "Recesso ricevuto",
+    saluto: `Ciao ${d.nome},`,
+    paragrafi: [
+      "confermiamo di aver ricevuto la tua dichiarazione di recesso dal contratto. Conserva questa email: è la tua ricevuta.",
+      "Ti rimborseremo entro 14 giorni da oggi, con lo stesso metodo di pagamento che hai usato, senza costi per te. Da ora l'accesso al corso può essere disattivato.",
+    ],
+    riepilogo: righeRecesso(d),
+    note: [
+      "Unica eccezione: se al pagamento avevi chiesto di accedere subito al corso e l'accesso è già iniziato, il diritto di recesso non si applica (art. 59 del Codice del Consumo). In quel caso ti scriviamo noi.",
+      `Per qualsiasi domanda scrivi a ${IUSMK_EMAIL_CONTATTO} indicando il numero di pratica.`,
+      `Le condizioni del recesso sono spiegate qui: ${appUrl}/returns`,
+    ],
+    motivo: "Ricevi questa email perché hai inviato una dichiarazione di recesso dal sito IUSMK.",
+  });
+  return { subject, ...email };
+}
+
+/** Avviso al titolare/amministratore */
+export function buildWithdrawalAdminEmail(d: DatiRecesso) {
+  const appUrl = urlSito();
+  const subject = `Nuovo recesso da ${d.nome} — pratica ${d.riferimento}`;
+  const riepilogo = righeRecesso(d);
+  if (d.note) riepilogo.push({ etichetta: "Note del cliente", valore: d.note });
+  const email = componiEmail({
+    anteprima: `${d.nome} ha esercitato il recesso per «${d.contratto}». Rimborso entro 14 giorni.`,
+    titolo: "Nuova richiesta di recesso",
+    paragrafi: [
+      `${d.nome} ha usato il pulsante «Recedi dal contratto» sul sito. La richiesta è salvata nei messaggi del pannello admin.`,
+      "Cosa fare: verifica l'acquisto, esegui il rimborso da SumUp entro 14 giorni dal ricevimento e disattiva l'accesso al corso.",
+    ],
+    riepilogo,
+    pulsante: { testo: "Apri il pannello", url: `${appUrl}/admin/contacts` },
+    motivo: "Avviso automatico del sito IUSMK per il titolare.",
+  });
+  return { subject, ...email };
+}
+
+export async function sendWithdrawalEmails(
+  d: DatiRecesso,
+  opts: { toCustomer: boolean; adminEmail: string | null },
+): Promise<{ customer: boolean; admin: boolean }> {
+  const esito = { customer: false, admin: false };
+  if (opts.toCustomer) {
+    const m = buildWithdrawalConfirmationEmail(d);
+    esito.customer = (await sendEmail(d.email, m.subject, m.html, m.text)).ok;
+  }
+  if (opts.adminEmail) {
+    const m = buildWithdrawalAdminEmail(d);
+    esito.admin = (await sendEmail(opts.adminEmail, m.subject, m.html, m.text)).ok;
+  }
+  return esito;
 }

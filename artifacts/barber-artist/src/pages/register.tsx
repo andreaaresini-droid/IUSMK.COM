@@ -189,7 +189,7 @@ export default function Register() {
               <button
                 type="submit"
                 disabled={registerPending}
-                className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white py-4 rounded-xl font-semibold text-base transition-colors disabled:opacity-60"
+                className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground py-4 rounded-xl font-bold text-base transition-colors disabled:opacity-60"
               >
                 {registerPending ? (
                   <><Loader2 size={18} className="animate-spin" /> {tr.submitting}</>
@@ -197,6 +197,14 @@ export default function Register() {
                   tr.submit
                 )}
               </button>
+
+              <p className="text-xs text-center text-muted-foreground leading-relaxed">
+                {t.informativaBreve.registerPre}
+                <Link href="/terms" className="text-primary hover:underline">{t.informativaBreve.registerTermsLink}</Link>
+                {t.informativaBreve.registerMid}
+                <Link href="/privacy" className="text-primary hover:underline">{t.informativaBreve.privacyLink}</Link>
+                {t.informativaBreve.post}
+              </p>
 
               <p className="text-center text-sm text-muted-foreground">
                 {tr.haveAccount}{" "}

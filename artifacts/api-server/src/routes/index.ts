@@ -15,6 +15,7 @@ import customerRouter from "./customer.js";
 import sumupRouter from "./sumup.js";
 import aiRouter from "./ai.js";
 import adminAiRouter from "./admin-ai.js";
+import withdrawalRouter from "./withdrawal.js";
 
 const router = Router();
 
@@ -34,5 +35,6 @@ router.use("/video", videoRouter);
 router.use("/sumup", sumupRouter);
 router.use("/ai", aiRouter);
 router.use("/admin/ai", adminAiRouter);
+router.use("/withdrawal", withdrawalRouter);
 
 export default router;

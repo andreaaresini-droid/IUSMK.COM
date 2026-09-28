@@ -71,8 +71,10 @@ export function Footer() {
               <li><Link href="/terms" className="text-muted-foreground hover:text-primary transition-colors text-sm">Termini e Condizioni</Link></li>
               <li><Link href="/privacy" className="text-muted-foreground hover:text-primary transition-colors text-sm">Informativa Privacy</Link></li>
               <li><Link href="/cookie-policy" className="text-muted-foreground hover:text-primary transition-colors text-sm">Cookie Policy</Link></li>
-              <li><Link href="/returns" className="text-muted-foreground hover:text-primary transition-colors text-sm">Resi e Recesso</Link></li>
+              <li><Link href="/returns" className="text-muted-foreground hover:text-primary transition-colors text-sm">Recesso e rimborsi</Link></li>
               <li><Link href="/legal" className="text-muted-foreground hover:text-primary transition-colors text-sm">Contatti legali</Link></li>
+              {/* Funzione di recesso online (dir. 2023/2673): sempre raggiungibile */}
+              <li><Link href="/recesso" className="text-primary font-semibold hover:underline text-sm">{f.withdraw}</Link></li>
             </ul>
           </div>
 
@@ -88,6 +90,7 @@ export function Footer() {
             <Link href="/cookie-policy" className="hover:text-primary transition-colors">Cookie</Link>
             <Link href="/returns" className="hover:text-primary transition-colors">Recesso</Link>
             <Link href="/faq" className="hover:text-primary transition-colors">FAQ</Link>
+            <Link href="/recesso" className="text-primary hover:underline">{f.withdraw}</Link>
           </div>
 
           {/* Copyright */}

@@ -1,3 +1,4 @@
+import { Link } from "wouter";
 import { LegalLayout } from "@/components/layout/LegalLayout";
 import { Mail, Instagram } from "lucide-react";
 import { useLang } from "@/i18n/LanguageContext";
@@ -46,6 +47,11 @@ export default function Legal() {
         <h2 className="text-xs font-bold uppercase tracking-widest text-white/40 mb-4">{l.sectionTitle}</h2>
 
         <div className="flex items-start gap-3">
+          <span className="text-white/30 text-xs uppercase tracking-widest w-28 shrink-0 pt-0.5">{l.titolare}</span>
+          <span className="text-white font-semibold">{l.titolareValue}</span>
+        </div>
+
+        <div className="flex items-start gap-3">
           <span className="text-white/30 text-xs uppercase tracking-widest w-28 shrink-0 pt-0.5">{l.referente}</span>
           <span className="text-white font-semibold">Giuseppe Musto</span>
         </div>
@@ -55,14 +61,11 @@ export default function Legal() {
           <a href="mailto:iusmkbarber@gmail.com" className="text-primary hover:underline">iusmkbarber@gmail.com</a>
         </div>
 
-        <div className="flex items-start gap-3">
-          <span className="text-white/30 text-xs uppercase tracking-widest w-28 shrink-0 pt-0.5">{l.sede}</span>
-          <span className="text-white/40 italic">{l.notAvailable}</span>
-        </div>
+        {/* Sede e Partita IVA: da aggiungere quando Giuseppe li fornisce (mai inventarli) */}
 
         <div className="flex items-start gap-3">
-          <span className="text-white/30 text-xs uppercase tracking-widest w-28 shrink-0 pt-0.5">{l.partitaIva}</span>
-          <span className="text-white/40 italic">{l.notAvailable}</span>
+          <span className="text-white/30 text-xs uppercase tracking-widest w-28 shrink-0 pt-0.5">{l.withdrawLabel}</span>
+          <Link href="/recesso" className="text-primary hover:underline">{l.withdrawLink}</Link>
         </div>
       </div>
 

@@ -4,7 +4,15 @@
   "outputDirectory": "dist/public",
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/:pagina(about|gallery|academy|course|access|dashboard|contact|register|login|notifications|admin|my-courses|account|chat|checkout|forgot-password|reset-password|terms|privacy|delete-account|elimina-account|cookie-policy|returns|legal|faq|recesso)",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/:pagina(about|gallery|academy|course|access|dashboard|contact|register|login|notifications|admin|my-courses|account|chat|checkout|forgot-password|reset-password|terms|privacy|delete-account|elimina-account|cookie-policy|returns|legal|faq|recesso)/:resto*",
       "destination": "/index.html"
     }
   ],

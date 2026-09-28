@@ -14,6 +14,7 @@ const SUBJECT_LABELS: Record<string, string> = {
   course_info: "Info Corso",
   collaboration: "Collaborazione",
   other: "Altro",
+  withdrawal: "RECESSO",
 };
 
 function showBrowserNotification(name: string, subject: string) {

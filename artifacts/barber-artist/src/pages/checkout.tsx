@@ -1,7 +1,7 @@
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { useState, useEffect } from "react";
-import { useLocation, useSearch } from "wouter";
+import { Link, useLocation, useSearch } from "wouter";
 import { useCurrentUser } from "@/hooks/use-auth";
 import { useOwnedCourseIds } from "@/hooks/use-courses";
 import { CreditCard, Loader2, ChevronLeft, User, BookOpen, CheckCircle } from "lucide-react";
@@ -27,6 +27,8 @@ export default function Checkout() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  // Consenso espresso a iniziare subito (art. 59 lett. o Cod. Consumo): mai pre-spuntato
+  const [rinunciaRecesso, setRinunciaRecesso] = useState(false);
 
   useEffect(() => {
     if (!courseId) { setLocation("/academy"); return; }
@@ -56,6 +58,10 @@ export default function Checkout() {
     if (!user) {
       sessionStorage.setItem("checkout_redirect", `/checkout?course=${courseId}`);
       setLocation("/login");
+      return;
+    }
+    if (!rinunciaRecesso) {
+      setError(t.checkoutRecesso.waiverRequired);
       return;
     }
     setError("");
@@ -192,8 +198,27 @@ export default function Checkout() {
               </div>
             </div>
 
+            <div className="bg-card border border-white/10 rounded-2xl p-5 space-y-2">
+              <label htmlFor="rinuncia-recesso" className="flex items-start gap-3 cursor-pointer">
+                <input
+                  id="rinuncia-recesso"
+                  type="checkbox"
+                  required
+                  checked={rinunciaRecesso}
+                  onChange={(e) => { setRinunciaRecesso(e.target.checked); if (e.target.checked) setError(""); }}
+                  className="mt-1 h-5 w-5 shrink-0 accent-[#FFD600] cursor-pointer"
+                />
+                <span className="text-sm text-white leading-relaxed">{t.checkoutRecesso.waiver}</span>
+              </label>
+              <p className="text-xs text-muted-foreground pl-8">
+                {t.checkoutRecesso.rulesPre}
+                <Link href="/returns" className="text-primary hover:underline">{t.checkoutRecesso.rulesLink}</Link>
+                {t.checkoutRecesso.rulesPost}
+              </p>
+            </div>
+
             {error && (
-              <div className="bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3 text-red-400 text-sm">
+              <div role="alert" className="bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3 text-red-400 text-sm">
                 {error}
               </div>
             )}
@@ -201,7 +226,7 @@ export default function Checkout() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full flex items-center justify-center gap-3 bg-primary hover:bg-primary/90 text-white py-4 rounded-xl font-semibold text-base transition-colors disabled:opacity-60"
+              className="w-full flex items-center justify-center gap-3 bg-primary hover:bg-primary/90 text-primary-foreground py-4 rounded-xl font-bold text-base transition-colors disabled:opacity-60"
             >
               {submitting ? (
                 <><Loader2 size={18} className="animate-spin" /> {tc.redirecting}</>
@@ -211,7 +236,7 @@ export default function Checkout() {
             </button>
 
             <p className="text-center text-xs text-muted-foreground">
-              {tc.securityNote}
+              {tc.securityNote} {t.checkoutRecesso.payNote}
             </p>
           </form>
         </div>
