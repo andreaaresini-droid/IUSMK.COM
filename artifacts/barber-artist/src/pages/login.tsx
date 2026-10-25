@@ -74,8 +74,9 @@ export default function Login() {
 
           <form onSubmit={handleSubmit} className="bg-card border border-white/10 rounded-2xl p-8 space-y-5">
             <div>
-              <label className="text-sm text-muted-foreground mb-1 block">{tl.identifierLabel}</label>
+              <label htmlFor="login-utente" className="text-sm text-muted-foreground mb-1 block">{tl.identifierLabel}</label>
               <input
+                id="login-utente"
                 type="text"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
@@ -87,21 +88,23 @@ export default function Login() {
             </div>
 
             <div>
-              <label className="text-sm text-muted-foreground mb-1 block">{tl.passwordLabel}</label>
+              <label htmlFor="login-password" className="text-sm text-muted-foreground mb-1 block">{tl.passwordLabel}</label>
               <div className="relative">
                 <input
+                  id="login-password"
                   type={showPassword ? "text" : "password"}
                   value={form.password}
                   onChange={(e) => setForm({ ...form, password: e.target.value })}
                   placeholder={tl.passwordPlaceholder}
-                  className={inputClass + " pr-10"}
+                  className={inputClass + " pr-12"}
                   autoComplete="current-password"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-white transition-colors"
+                  aria-label={showPassword ? "Nascondi password" : "Mostra password"}
+                  className="absolute right-1 top-1/2 p-3 -translate-y-1/2 text-muted-foreground hover:text-white transition-colors"
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>

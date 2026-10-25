@@ -215,7 +215,7 @@ export function Navbar() {
       )}
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center relative z-50">
-        <Link href="/" className="flex items-center shrink-0" style={{ overflow: "visible" }}>
+        <Link href="/" aria-label="IUSMK, pagina iniziale" className="flex items-center shrink-0" style={{ overflow: "visible" }}>
           <Logo3D
             variant="header"
             fallback={
@@ -268,6 +268,8 @@ export function Navbar() {
           )}
           <button
             className="relative text-white p-2"
+            aria-label={isOpen ? "Chiudi menu" : "Apri menu"}
+            aria-expanded={isOpen}
             onClick={() => setIsOpen(!isOpen)}
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}

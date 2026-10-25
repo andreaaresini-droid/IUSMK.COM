@@ -45,10 +45,10 @@ export default function Contact() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
               <div>
                 <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-2">{f.name}</label>
-                      <input
+                      <label htmlFor="c-nome" className="block text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-2">{f.name}</label>
+                      <input id="c-nome" autoComplete="name"
                         value={form.name}
                         onChange={e => setForm({...form, name: e.target.value})}
                         required
@@ -57,8 +57,8 @@ export default function Contact() {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-2">{f.email}</label>
-                      <input
+                      <label htmlFor="c-email" className="block text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-2">{f.email}</label>
+                      <input id="c-email" autoComplete="email"
                         type="email"
                         value={form.email}
                         onChange={e => setForm({...form, email: e.target.value})}
@@ -70,8 +70,8 @@ export default function Contact() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-2">{f.phone}</label>
-                    <input
+                    <label htmlFor="c-tel" className="block text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-2">{f.phone}</label>
+                    <input id="c-tel" type="tel" autoComplete="tel"
                       value={form.phone}
                       onChange={e => setForm({...form, phone: e.target.value})}
                       className="w-full bg-card/50 border border-white/10 text-white px-4 py-3 focus:outline-none focus:border-primary placeholder-muted-foreground/50"
@@ -80,8 +80,8 @@ export default function Contact() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-2">{f.subject}</label>
-                    <select
+                    <label htmlFor="c-oggetto" className="block text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-2">{f.subject}</label>
+                    <select id="c-oggetto"
                       value={form.subject}
                       onChange={e => setForm({...form, subject: e.target.value})}
                       className="w-full bg-card/50 border border-white/10 text-white px-4 py-3 focus:outline-none focus:border-primary"
@@ -93,8 +93,8 @@ export default function Contact() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-2">{f.message}</label>
-                    <textarea
+                    <label htmlFor="c-msg" className="block text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-2">{f.message}</label>
+                    <textarea id="c-msg"
                       value={form.message}
                       onChange={e => setForm({...form, message: e.target.value})}
                       required

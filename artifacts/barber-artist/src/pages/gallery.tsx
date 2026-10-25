@@ -364,7 +364,7 @@ export default function Gallery() {
               >
                 {t.gallery.all}
               </Button>
-              {categories?.map((cat: any) => (
+              {(Array.isArray(categories) ? categories : []).map((cat: any) => (
                 <Button
                   key={cat.id}
                   variant={activeCategory === cat.slug ? "default" : "outline"}

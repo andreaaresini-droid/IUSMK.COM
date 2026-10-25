@@ -203,3 +203,8 @@
     object-position: 58% center; /* desktop: aggiustamento lieve */
   }
 }
+
+/* collaudo 25/10: il menu fisso non copre i campi, i titoli grandi vanno a capo con lo zoom */
+html { scroll-padding-top: 7rem; }
+input, select, textarea { scroll-margin-top: 7rem; }
+h1, h2, h3 { overflow-wrap: break-word; }

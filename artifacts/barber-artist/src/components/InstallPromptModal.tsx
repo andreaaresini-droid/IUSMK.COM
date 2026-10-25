@@ -33,6 +33,7 @@ export function InstallPromptModal() {
 
   useEffect(() => {
     if (isStandalone()) return;
+    if (!isIOS() && !isAndroid()) return; // sul computer l'app non serve
     if (localStorage.getItem(HIDE_KEY) === "true") return;
 
     let timer: ReturnType<typeof setTimeout>;
@@ -48,10 +49,9 @@ export function InstallPromptModal() {
         clearTimeout(timer);
         clearTimeout(fallback);
       };
-    } else {
-      timer = setTimeout(() => setVisible(true), 1500);
-      return () => clearTimeout(timer);
     }
+    // sulle altre pagine non si apre: copriva il modulo contatti e il checkout
+    return undefined;
   }, []);
 
   const closeSession = () => {
