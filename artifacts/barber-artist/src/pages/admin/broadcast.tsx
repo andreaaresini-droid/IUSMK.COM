@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { avviaCaricamento, caricaSulServer } from "@/lib/caricamenti";
 
 type Mode = "all" | "with_courses" | "specific_course" | "manual";
 
@@ -52,6 +53,11 @@ function UserCheckbox({ user, checked, onChange }: { user: UserItem; checked: bo
 
 // ─── Media Upload Component ───────────────────────────────────────────────────
 
+// L'allegato caricato (o in caricamento) resta qui anche se si cambia sezione.
+type Allegato = { tipo: "image" | "video"; url: string };
+let allegato: Allegato | null = null;
+let allegatoInCorso: Promise<Allegato> | null = null;
+
 function MediaUpload({
   onImageUploaded,
   onVideoUploaded,
@@ -65,7 +71,7 @@ function MediaUpload({
   imageUrl: string;
   videoUrl: string;
 }) {
-  const [uploading, setUploading] = useState(false);
+  const [uploading, setUploading] = useState(() => allegatoInCorso !== null);
   const [error, setError] = useState("");
   const imgRef = useRef<HTMLInputElement>(null);
   const vidRef = useRef<HTMLInputElement>(null);
@@ -73,28 +79,38 @@ function MediaUpload({
 
   const hasMedia = !!imageUrl || !!videoUrl;
 
+  // Tornando nella pagina con un allegato ancora in caricamento: lo si aspetta.
+  useEffect(() => {
+    if (allegatoInCorso) attendi(allegatoInCorso);
+  }, []);
+
+  async function attendi(lavoro: Promise<Allegato>) {
+    try {
+      const a = await lavoro;
+      if (a.tipo === "image") onImageUploaded(a.url);
+      else onVideoUploaded(a.url);
+      return true;
+    } catch (err: any) {
+      setError(err.message || "Errore upload");
+      return false;
+    } finally {
+      setUploading(false);
+    }
+  }
+
   async function handleFile(file: File, type: "image" | "video") {
     setError("");
     setUploading(true);
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-      const token = localStorage.getItem("barber_artist_token");
-      const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
-      const res = await fetch(`${BASE}/api/upload/${type}`, {
-        method: "POST",
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-        body: formData,
-      });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error || "Upload fallito");
-      if (type === "image") onImageUploaded(json.url);
-      else onVideoUploaded(json.url);
+    // 26/10: il caricamento vive fuori dalla pagina (lib/caricamenti.ts) e
+    // passa da VITE_API_URL (prima «/api/upload» relativo: 405 sul sito).
+    const lavoro = avviaCaricamento(type === "image" ? "Immagine per la notifica" : "Video per la notifica", async (c) => {
+      const json = await caricaSulServer(file, type, c.avanzamento);
+      allegato = { tipo: type, url: json.url };
+      return allegato;
+    }).finally(() => { allegatoInCorso = null; });
+    allegatoInCorso = lavoro;
+    if (await attendi(lavoro)) {
       toast({ title: type === "image" ? "Immagine caricata" : "Video caricato", description: "Allegato pronto per la notifica." });
-    } catch (err: any) {
-      setError(err.message || "Errore upload");
-    } finally {
-      setUploading(false);
     }
   }
 
@@ -198,8 +214,8 @@ export default function AdminBroadcast() {
   const [title,       setTitle]       = useState("");
   const [message,     setMessage]     = useState("");
   const [url,         setUrl]         = useState("");
-  const [imageUrl,    setImageUrl]    = useState("");
-  const [videoUrl,    setVideoUrl]    = useState("");
+  const [imageUrl,    setImageUrl]    = useState(() => allegato?.tipo === "image" ? allegato.url : "");
+  const [videoUrl,    setVideoUrl]    = useState(() => allegato?.tipo === "video" ? allegato.url : "");
   const [searchQ,     setSearchQ]     = useState("");
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [excludeIds,  setExcludeIds]  = useState<Set<number>>(new Set());
@@ -229,6 +245,7 @@ export default function AdminBroadcast() {
       setUrl("");
       setImageUrl("");
       setVideoUrl("");
+      allegato = null;
       setSelectedIds(new Set());
       setExcludeIds(new Set());
       toast({ title: "Notifica inviata!", description: `${data.matched} destinatari, ${data.sent} push consegnati.` });
@@ -456,7 +473,7 @@ export default function AdminBroadcast() {
                 videoUrl={videoUrl}
                 onImageUploaded={(u) => { setImageUrl(u); setVideoUrl(""); }}
                 onVideoUploaded={(u) => { setVideoUrl(u); setImageUrl(""); }}
-                onClear={() => { setImageUrl(""); setVideoUrl(""); }}
+                onClear={() => { setImageUrl(""); setVideoUrl(""); allegato = null; }}
               />
             </div>
 

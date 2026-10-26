@@ -14,6 +14,7 @@ import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { fetchApi } from "@/lib/api-client";
 import { compressImageFile } from "@/lib/compress-image";
+import { avviaCaricamento, caricaImmagine, caricaVideo } from "@/lib/caricamenti";
 
 const EMPTY_FORM = {
   title: "",
@@ -353,87 +354,11 @@ function emptyModule(): ModuleItem {
   };
 }
 
-// XHR image upload with real progress (goes through server, 50 MB max)
-async function uploadImageFile(
-  file: File,
-  onProgress: (pct: number) => void,
-): Promise<string> {
-  const token = localStorage.getItem("barber_artist_token") || "";
-  return new Promise((resolve, reject) => {
-    const fd = new FormData();
-    fd.append("file", file);
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", `${(import.meta.env.VITE_API_URL as string | undefined) ?? ""}/api/upload/image`);
-    xhr.setRequestHeader("Authorization", `Bearer ${token}`);
-    xhr.upload.onprogress = (e) => {
-      if (e.lengthComputable) onProgress(Math.round((e.loaded / e.total) * 100));
-    };
-    xhr.onload = () => {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        try { resolve(JSON.parse(xhr.responseText).url); }
-        catch { reject(new Error("Risposta non valida dal server.")); }
-      } else {
-        try { reject(new Error(JSON.parse(xhr.responseText).error || `Errore ${xhr.status}.`)); }
-        catch { reject(new Error(`Errore ${xhr.status} durante il caricamento immagine.`)); }
-      }
-    };
-    xhr.onerror = () => reject(new Error("Errore di rete. Controlla la connessione e riprova."));
-    xhr.send(fd);
-  });
-}
-
-// ── Video upload: browser → Supabase Storage (signed URL, no server proxy) ──────
-// Backend creates a signed upload URL; browser PUTs the file directly to Supabase.
-// No file data passes through the Vercel serverless function → no 4.5 MB limit.
-// Requires Supabase Storage file-size limit ≥ video size (increase in Supabase
-// dashboard → Storage → Settings → "File size limit", default 50 MB → set 5 GB+).
-async function uploadVideoFile(
-  file: File,
-  onProgress: (pct: number) => void,
-): Promise<string> {
-  const authToken = localStorage.getItem("barber_artist_token") || "";
-
-  // Step 1 — ask backend for a Supabase signed upload URL
-  onProgress(1);
-  const initRes = await fetch(
-    `${(import.meta.env.VITE_API_URL as string | undefined) ?? ""}/api/upload/video/resumable`,
-    {
-      method: "POST",
-      headers: { Authorization: `Bearer ${authToken}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ contentType: file.type }),
-    },
-  );
-  if (!initRes.ok) {
-    const errBody = await initRes.json().catch(() => ({}));
-    throw new Error(errBody.error || "Errore nell'avvio dell'upload video.");
-  }
-  const { resumableUri, finalUrl } = await initRes.json();
-
-  // Step 2 — PUT file directly to Supabase signed URL (browser → Supabase CDN)
-  await new Promise<void>((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    xhr.open("PUT", resumableUri);
-    xhr.setRequestHeader("Content-Type", file.type);
-
-    xhr.upload.onprogress = (e) => {
-      if (e.lengthComputable) {
-        onProgress(1 + Math.round((e.loaded / e.total) * 98));
-      }
-    };
-    xhr.onload = () => {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        resolve();
-      } else {
-        reject(new Error(`Errore upload ${xhr.status}: ${xhr.responseText}`));
-      }
-    };
-    xhr.onerror = () => reject(new Error("Errore di rete durante l'upload. Controlla la connessione."));
-    xhr.send(file);
-  });
-
-  onProgress(100);
-  return finalUrl;
-}
+// Caricamenti di immagini e video: in lib/caricamenti.ts (riprovano da soli se
+// la rete cade in sottofondo). Video: browser → Supabase con URL firmato, niente
+// limite di 4,5 MB di Vercel.
+const uploadImageFile = caricaImmagine;
+const uploadVideoFile = caricaVideo;
 
 function FileUploadField({
   label, accept, maxSizeMB, allowedTypes, currentUrl, onFileSelect,
@@ -827,139 +752,148 @@ function CourseModal({ course, onClose }: { course: any | null; onClose: () => v
     setIsWorking(true);
     setUploadProgress(0);
 
+    // 26/10: il lavoro vive fuori dalla finestra (lib/caricamenti.ts): se si
+    // cambia sezione i caricamenti continuano e il corso si salva comunque.
+    const passoPagina = setUploadStep;
+    const progressoPagina = setUploadProgress;
+    const nomeCorso = form.title.trim() || "corso";
+
     try {
-      // 1. Copertina + sfondo: comprimi e carica in parallelo (se entrambi presenti)
-      let thumbnailUrl: string | undefined = course?.thumbnailUrl;
-      let backgroundImageUrl: string | null = course?.backgroundImageUrl || null;
+      await avviaCaricamento(course ? `Corso «${nomeCorso}»` : `Nuovo corso «${nomeCorso}»`, async (c) => {
+        const setUploadStep = (t: string) => { passoPagina(t); c.passo(t); };
+        const setUploadProgress = (p: number) => { progressoPagina(p); c.avanzamento(p); };
 
-      if (imageFile || bgImageFile) {
-        const hasTwo = imageFile && bgImageFile;
-        setUploadStep(
-          hasTwo ? "Compressione e caricamento copertina e sfondo..." : "Compressione e caricamento copertina..."
-        );
-        setUploadProgress(0);
+        // 1. Copertina + sfondo: comprimi e carica in parallelo (se entrambi presenti)
+        let thumbnailUrl: string | undefined = course?.thumbnailUrl;
+        let backgroundImageUrl: string | null = course?.backgroundImageUrl || null;
 
-        const jobs: Promise<void>[] = [];
-        if (imageFile) {
-          jobs.push(
-            compressImageFile(imageFile)
-              .then(f => uploadImageFile(f, pct => setUploadProgress(pct)))
-              .then(url => { thumbnailUrl = url; })
+        if (imageFile || bgImageFile) {
+          const hasTwo = imageFile && bgImageFile;
+          setUploadStep(
+            hasTwo ? "Compressione e caricamento copertina e sfondo..." : "Compressione e caricamento copertina..."
           );
+          setUploadProgress(0);
+
+          const jobs: Promise<void>[] = [];
+          if (imageFile) {
+            jobs.push(
+              compressImageFile(imageFile)
+                .then(f => uploadImageFile(f, pct => setUploadProgress(pct)))
+                .then(url => { thumbnailUrl = url; })
+            );
+          }
+          if (bgImageFile) {
+            jobs.push(
+              compressImageFile(bgImageFile)
+                .then(f => uploadImageFile(f, hasTwo ? () => {} : pct => setUploadProgress(pct)))
+                .then(url => { backgroundImageUrl = url; })
+            );
+          }
+          await Promise.all(jobs);
+          setUploadProgress(100);
         }
-        if (bgImageFile) {
-          jobs.push(
-            compressImageFile(bgImageFile)
-              .then(f => uploadImageFile(f, hasTwo ? () => {} : pct => setUploadProgress(pct)))
-              .then(url => { backgroundImageUrl = url; })
+
+        // 2. Video principale
+        let resolvedVideoUrl: string | null = mainVideoUrl;
+        if (mainVideoFile) {
+          setUploadStep("Caricamento video del corso...");
+          setUploadProgress(0);
+          resolvedVideoUrl = await uploadVideoFile(mainVideoFile, pct => setUploadProgress(pct));
+          setUploadProgress(100);
+        }
+
+        // 3. Gallery slots: upload pending in parallel (images) / sequential (videos)
+        const resolvedSlots: string[] = [];
+        const pendingSlots = gallerySlots
+          .map((s, i) => ({ slot: s, i }))
+          .filter(({ slot }) => slot.kind === "pending");
+        const existingSlots = gallerySlots
+          .filter(s => s.kind === "existing")
+          .map(s => (s as any).url as string);
+
+        // upload images in parallel
+        const pendingImages = pendingSlots.filter(({ slot }) => !isVideoSlotFile((slot as any).file));
+        const pendingVideos = pendingSlots.filter(({ slot }) => isVideoSlotFile((slot as any).file));
+
+        if (pendingImages.length > 0) {
+          setUploadStep(`Compressione e caricamento ${pendingImages.length} foto galleria...`);
+          setUploadProgress(0);
+          const uploadedImgs = await Promise.all(
+            pendingImages.map(({ slot }) =>
+              compressImageFile((slot as any).file)
+                .then(f => uploadImageFile(f, () => {}))
+            )
           );
+          resolvedSlots.push(...uploadedImgs);
+          setUploadProgress(100);
         }
-        await Promise.all(jobs);
-        setUploadProgress(100);
-      }
 
-      // 2. Video principale
-      let resolvedVideoUrl: string | null = mainVideoUrl;
-      if (mainVideoFile) {
-        setUploadStep("Caricamento video del corso...");
-        setUploadProgress(0);
-        resolvedVideoUrl = await uploadVideoFile(mainVideoFile, pct => setUploadProgress(pct));
-        setUploadProgress(100);
-      }
+        for (let g = 0; g < pendingVideos.length; g++) {
+          const { slot } = pendingVideos[g];
+          setUploadStep(`Caricamento video galleria ${g + 1} di ${pendingVideos.length}...`);
+          setUploadProgress(0);
+          const url = await uploadVideoFile((slot as any).file, pct => setUploadProgress(pct));
+          setUploadProgress(100);
+          resolvedSlots.push(url);
+        }
 
-      // 3. Gallery slots: upload pending in parallel (images) / sequential (videos)
-      const resolvedSlots: string[] = [];
-      const pendingSlots = gallerySlots
-        .map((s, i) => ({ slot: s, i }))
-        .filter(({ slot }) => slot.kind === "pending");
-      const existingSlots = gallerySlots
-        .filter(s => s.kind === "existing")
-        .map(s => (s as any).url as string);
+        // Reconstruct gallery preserving order: existing slots first, then new uploads.
+        // Filtra URL vuoti, blob temporanei e data URI — solo URL pubblici/stabili nel DB.
+        const finalGallery: string[] = gallerySlots.map(s => {
+          if (s.kind === "existing") return s.url;
+          // pending: find from resolvedSlots (images first, then videos)
+          return resolvedSlots.shift() || "";
+        }).filter((u): u is string => Boolean(u) && !u.startsWith("blob:") && !u.startsWith("data:"));
 
-      // upload images in parallel
-      const pendingImages = pendingSlots.filter(({ slot }) => !isVideoSlotFile((slot as any).file));
-      const pendingVideos = pendingSlots.filter(({ slot }) => isVideoSlotFile((slot as any).file));
-
-      if (pendingImages.length > 0) {
-        setUploadStep(`Compressione e caricamento ${pendingImages.length} foto galleria...`);
-        setUploadProgress(0);
-        const uploadedImgs = await Promise.all(
-          pendingImages.map(({ slot }) =>
-            compressImageFile((slot as any).file)
-              .then(f => uploadImageFile(f, () => {}))
-          )
-        );
-        resolvedSlots.push(...uploadedImgs);
-        setUploadProgress(100);
-      }
-
-      for (let g = 0; g < pendingVideos.length; g++) {
-        const { slot } = pendingVideos[g];
-        setUploadStep(`Caricamento video galleria ${g + 1} di ${pendingVideos.length}...`);
-        setUploadProgress(0);
-        const url = await uploadVideoFile((slot as any).file, pct => setUploadProgress(pct));
-        setUploadProgress(100);
-        resolvedSlots.push(url);
-      }
-
-      // Reconstruct gallery preserving order: existing slots first, then new uploads.
-      // Filtra URL vuoti, blob temporanei e data URI — solo URL pubblici/stabili nel DB.
-      const finalGallery: string[] = gallerySlots.map(s => {
-        if (s.kind === "existing") return s.url;
-        // pending: find from resolvedSlots (images first, then videos)
-        return resolvedSlots.shift() || "";
-      }).filter((u): u is string => Boolean(u) && !u.startsWith("blob:") && !u.startsWith("data:"));
-
-      setUploadStep("Salvataggio corso...");
-      const coursePayload: any = {
-        ...form,
-        price:        form.price        ? parseFloat(form.price)        : 0,
-        durationHours: form.durationHours ? parseInt(form.durationHours) : null,
-        thumbnailUrl,
-        paymentLinkUrl: form.paymentLinkUrl?.trim() || null,
-        paymentLinkId:  form.paymentLinkId?.trim()  || null,
-        additionalInfo: form.additionalInfo?.trim()  || null,
-        galleryImages:  finalGallery,
-        whatYouWillLearn: form.whatYouWillLearn.filter((s: string) => s.trim()),
-        targetAudience:   form.targetAudience.filter((s: string) => s.trim()),
-        includedContent:  form.includedContent.filter((s: string) => s.trim()),
-        trailerVideoUrl:  form.trailerVideoUrl  || null,
-        trailerPosterUrl: form.trailerPosterUrl || null,
-        academyCategoryId: form.academyCategoryId ?? null,
-        backgroundImageUrl: backgroundImageUrl || null,
-      };
-
-      let courseId: number;
-      if (course) {
-        const updated = await new Promise<any>((resolve, reject) => {
-          updateMutation.mutate({ id: course.id, data: coursePayload }, { onSuccess: resolve, onError: reject });
-        });
-        courseId = updated?.id ?? course.id;
-      } else {
-        const created = await new Promise<any>((resolve, reject) => {
-          createMutation.mutate(coursePayload, { onSuccess: resolve, onError: reject });
-        });
-        courseId = created?.id;
-      }
-
-      // 4. Save main video as module
-      if (resolvedVideoUrl !== null || mainVideoFile) {
-        const modulePayload = {
-          title:     form.title.trim() || "Video del corso",
-          videoUrl:  resolvedVideoUrl,
-          orderIndex: 0,
+        setUploadStep("Salvataggio corso...");
+        const coursePayload: any = {
+          ...form,
+          price:        form.price        ? parseFloat(form.price)        : 0,
+          durationHours: form.durationHours ? parseInt(form.durationHours) : null,
+          thumbnailUrl,
+          paymentLinkUrl: form.paymentLinkUrl?.trim() || null,
+          paymentLinkId:  form.paymentLinkId?.trim()  || null,
+          additionalInfo: form.additionalInfo?.trim()  || null,
+          galleryImages:  finalGallery,
+          whatYouWillLearn: form.whatYouWillLearn.filter((s: string) => s.trim()),
+          targetAudience:   form.targetAudience.filter((s: string) => s.trim()),
+          includedContent:  form.includedContent.filter((s: string) => s.trim()),
+          trailerVideoUrl:  form.trailerVideoUrl  || null,
+          trailerPosterUrl: form.trailerPosterUrl || null,
+          academyCategoryId: form.academyCategoryId ?? null,
+          backgroundImageUrl: backgroundImageUrl || null,
         };
-        setUploadStep("Salvataggio modulo video...");
-        if (mainModuleId) {
-          await fetchApi(`/admin/courses/${courseId}/modules/${mainModuleId}`, {
-            method: "PUT", body: JSON.stringify(modulePayload),
-          });
-        } else if (resolvedVideoUrl) {
-          await fetchApi(`/admin/courses/${courseId}/modules`, {
-            method: "POST", body: JSON.stringify(modulePayload),
-          });
+
+        let courseId: number;
+        if (course) {
+          // mutateAsync: con mutate(..., { onSuccess }) la promessa non finiva più
+          // se la finestra si chiudeva, e il modulo video non si salvava.
+          const updated: any = await updateMutation.mutateAsync({ id: course.id, data: coursePayload });
+          courseId = updated?.id ?? course.id;
+        } else {
+          const created: any = await createMutation.mutateAsync(coursePayload);
+          courseId = created?.id;
         }
-      }
+
+        // 4. Save main video as module
+        if (resolvedVideoUrl !== null || mainVideoFile) {
+          const modulePayload = {
+            title:     form.title.trim() || "Video del corso",
+            videoUrl:  resolvedVideoUrl,
+            orderIndex: 0,
+          };
+          setUploadStep("Salvataggio modulo video...");
+          if (mainModuleId) {
+            await fetchApi(`/admin/courses/${courseId}/modules/${mainModuleId}`, {
+              method: "PUT", body: JSON.stringify(modulePayload),
+            });
+          } else if (resolvedVideoUrl) {
+            await fetchApi(`/admin/courses/${courseId}/modules`, {
+              method: "POST", body: JSON.stringify(modulePayload),
+            });
+          }
+        }
+      });
 
       onClose();
     } catch (err: any) {

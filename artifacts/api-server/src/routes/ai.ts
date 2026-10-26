@@ -1,7 +1,7 @@
 import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
 import { knowledgeBaseTable, unansweredQuestionsTable, aiChatLogsTable } from "@workspace/db/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, gte, desc } from "drizzle-orm";
 import { anthropic, ASSISTANT_MODEL } from "../lib/anthropic.js";
 import { sanitizeInput, normalizeText, buildSystemPrompt } from "../lib/kb-search.js";
 import { KB_DOCUMENT } from "../lib/kb-document.js";
@@ -77,6 +77,8 @@ async function saveChatLog(data: {
     console.warn("[ai] saveChatLog failed");
   }
 }
+
+const ERRORE_TECNICO = "ERRORE_TECNICO";
 
 const FALLBACK_MSG: Record<string, string> = {
   it: "Al momento non sono in grado di darti questa informazione con certezza. Ho segnalato la tua richiesta al team, così potremo aggiornare l'assistente.",
@@ -161,6 +163,17 @@ router.post("/chat", async (req, res) => {
       });
     }
 
+    // 26/10: il log si salva PRIMA di rispondere. Se il telefono è andato in
+    // sottofondo e la risposta si è persa, il widget la ritrova qui
+    // (GET /api/ai/chat/answer). La funzione non si ferma se il cliente si
+    // scollega: la chiamata a Claude non è legata alla richiesta.
+    await saveChatLog({
+      sessionId, userMessage: sanitized, aiReply: fullReply,
+      sourceKnowledgeIds: entries.map((e) => e.id),
+      confidenceScore:    unanswered ? 0 : 1,
+      usedFallback:       unanswered, escalatedToAdmin: unanswered, pageUrl, ipAddress: ip,
+    });
+
     res.json({
       answer:       fullReply,
       confidence:   unanswered ? "low" : "high",
@@ -168,22 +181,47 @@ router.post("/chat", async (req, res) => {
       usedFallback: unanswered,
     });
 
-    // fire-and-forget log
-    saveChatLog({
-      sessionId, userMessage: sanitized, aiReply: fullReply,
-      sourceKnowledgeIds: entries.map((e) => e.id),
-      confidenceScore:    unanswered ? 0 : 1,
-      usedFallback:       unanswered, escalatedToAdmin: unanswered, pageUrl, ipAddress: ip,
-    });
-
   } catch (err) {
     console.error("[AI] Error in /chat:", err);
-    saveChatLog({
-      sessionId, userMessage: sanitized, aiReply: "ERRORE_TECNICO",
+    await saveChatLog({
+      sessionId, userMessage: sanitized, aiReply: ERRORE_TECNICO,
       sourceKnowledgeIds: [], confidenceScore: 0,
       usedFallback: true, escalatedToAdmin: false, pageUrl, ipAddress: ip,
     });
     res.json({ answer: "Si è verificato un errore tecnico. Riprova tra un momento.", confidence: "error", usedFallback: true });
+  }
+});
+
+// ─── GET /api/ai/chat/answer ──────────────────────────────────────────────────
+// 26/10: il widget chiede «la risposta alla mia domanda è pronta?» quando la
+// risposta diretta si è persa (telefono in tasca, app in sottofondo).
+// Si cerca nel log per sessione + testo della domanda, negli ultimi 15 minuti.
+router.get("/chat/answer", async (req, res) => {
+  const sessionId = String(req.query.sessionId ?? "").slice(0, 128);
+  const question  = String(req.query.question ?? "");
+  const sanitized = sanitizeInput(question).slice(0, 1000);
+  if (sessionId.length < 6 || sanitized.length < 2) {
+    res.status(400).json({ error: "Richiesta non valida." });
+    return;
+  }
+  try {
+    const [log] = await db
+      .select({ aiReply: aiChatLogsTable.aiReply, usedFallback: aiChatLogsTable.usedFallback })
+      .from(aiChatLogsTable)
+      .where(and(
+        eq(aiChatLogsTable.sessionId, sessionId),
+        eq(aiChatLogsTable.userMessage, sanitized),
+        gte(aiChatLogsTable.createdAt, new Date(Date.now() - 15 * 60_000)),
+      ))
+      .orderBy(desc(aiChatLogsTable.id))
+      .limit(1);
+
+    if (!log) { res.json({ status: "pending" }); return; }
+    if (log.aiReply === ERRORE_TECNICO) { res.json({ status: "error" }); return; }
+    res.json({ status: "ready", answer: log.aiReply, confidence: log.usedFallback ? "low" : "high" });
+  } catch (err) {
+    console.error("[AI] Error in /chat/answer:", err);
+    res.status(500).json({ error: "Errore tecnico." });
   }
 });
 

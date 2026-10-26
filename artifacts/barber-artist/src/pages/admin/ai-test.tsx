@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AdminSidebar } from "@/components/layout/AdminSidebar";
 import { fetchApi } from "@/lib/api-client";
 import { FlaskConical, Send, ChevronDown, ChevronUp, CheckCircle2, AlertCircle } from "lucide-react";
@@ -26,11 +26,30 @@ interface TestResult {
   aiAnswer: string;
 }
 
+// 26/10: il test vive fuori dalla pagina. Se si cambia sezione mentre l'AI
+// risponde, la risposta arriva lo stesso e tornando qui si vede.
+let ultimoTest: { domanda: string; risultato: TestResult | null; errore: string | null } | null = null;
+let testInCorso: { domanda: string; lavoro: Promise<void> } | null = null;
+
 export default function AdminAiTest() {
-  const [question, setQuestion] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<TestResult | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [question, setQuestion] = useState(() => testInCorso?.domanda ?? ultimoTest?.domanda ?? "");
+  const [loading, setLoading] = useState(() => testInCorso !== null);
+  const [result, setResult] = useState<TestResult | null>(() => (testInCorso ? null : ultimoTest?.risultato ?? null));
+  const [error, setError] = useState<string | null>(() => (testInCorso ? null : ultimoTest?.errore ?? null));
+
+  // Tornando con un test ancora in corso: si aspetta la sua risposta.
+  useEffect(() => {
+    let attivo = true;
+    if (testInCorso) {
+      testInCorso.lavoro.then(() => {
+        if (!attivo) return;
+        setResult(ultimoTest?.risultato ?? null);
+        setError(ultimoTest?.errore ?? null);
+        setLoading(false);
+      });
+    }
+    return () => { attivo = false; };
+  }, []);
   const [showPrompt, setShowPrompt] = useState(false);
   const [showDebug, setShowDebug] = useState(false);
 
@@ -54,17 +73,18 @@ export default function AdminAiTest() {
     setError(null);
     setShowPrompt(false);
     setShowDebug(false);
-    try {
-      const data = await fetchApi<TestResult>("/admin/ai/test", {
-        method: "POST",
-        body: JSON.stringify({ question: query }),
-      });
-      setResult(data);
-    } catch {
-      setError("Errore durante il test. Controlla che il server sia attivo.");
-    } finally {
-      setLoading(false);
-    }
+    const lavoro = fetchApi<TestResult>("/admin/ai/test", {
+      method: "POST",
+      body: JSON.stringify({ question: query }),
+    }).then(
+      (data) => { ultimoTest = { domanda: query, risultato: data, errore: null }; },
+      () => { ultimoTest = { domanda: query, risultato: null, errore: "Errore durante il test. Controlla che il server sia attivo." }; },
+    ).finally(() => { testInCorso = null; });
+    testInCorso = { domanda: query, lavoro };
+    await lavoro;
+    setResult(ultimoTest?.risultato ?? null);
+    setError(ultimoTest?.errore ?? null);
+    setLoading(false);
   };
 
   return (

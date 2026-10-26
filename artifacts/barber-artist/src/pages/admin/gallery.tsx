@@ -7,6 +7,7 @@ import {
   useGalleryCategories, useCreateGalleryCategory, useUpdateGalleryCategory, useDeleteGalleryCategory,
 } from "@/hooks/use-admin";
 import { fetchApi } from "@/lib/api-client";
+import { avviaCaricamento, caricaSulServer, caricaVideo } from "@/lib/caricamenti";
 import {
   Plus, Trash2, ImageIcon, Pencil, Tag, X, Check, FolderOpen, Upload, Loader2, Video, Film,
 } from "lucide-react";
@@ -303,7 +304,7 @@ export default function AdminGallery() {
   const [, setLocation] = useLocation();
   const { data: items, isLoading, refetch } = useAdminGallery();
   const { data: categories } = useGalleryCategories();
-  const { mutate: addItem, isPending: isAdding } = useAddGalleryItem();
+  const { mutateAsync: addItemAsync, isPending: isAdding } = useAddGalleryItem();
   const { mutate: deleteItem } = useDeleteGalleryItem();
   const { mutateAsync: updateItem } = useUpdateGalleryItem();
   const { toast } = useToast();
@@ -379,59 +380,8 @@ export default function AdminGallery() {
     setForm({ title: "", category: categories?.[0]?.slug || "" });
   };
 
-  // XHR POST with progress — used for image uploads (goes via server)
-  const uploadImageWithProgress = (
-    fd: FormData,
-    token: string,
-  ): Promise<{ url: string; thumbnailUrl?: string }> =>
-    new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      const apiBase = (import.meta.env.VITE_API_URL as string | undefined) ?? "";
-      xhr.open("POST", `${apiBase}/api/upload/image`);
-      xhr.setRequestHeader("Authorization", `Bearer ${token}`);
-      xhr.upload.onprogress = (e) => {
-        if (e.lengthComputable) setUploadProgress(Math.round((e.loaded / e.total) * 100));
-      };
-      xhr.onload = () => {
-        if (xhr.status >= 200 && xhr.status < 300) {
-          try { resolve(JSON.parse(xhr.responseText)); }
-          catch { reject(new Error("Risposta non valida dal server.")); }
-        } else {
-          try {
-            const err = JSON.parse(xhr.responseText);
-            reject(new Error(err.error || "Errore durante il caricamento."));
-          } catch {
-            reject(new Error(`Errore ${xhr.status} durante il caricamento.`));
-          }
-        }
-      };
-      xhr.onerror = () => reject(new Error("Errore di rete. Controlla la connessione e riprova."));
-      xhr.onabort = () => reject(new Error("Caricamento annullato."));
-      xhr.send(fd);
-    });
-
-  // XHR PUT with progress — used for video uploads directly to GCS (bypasses proxy)
-  const uploadVideoToSignedUrl = (
-    signedUrl: string,
-    file: File,
-    onProgress: (pct: number) => void,
-  ): Promise<void> =>
-    new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.open("PUT", signedUrl);
-      xhr.setRequestHeader("Content-Type", file.type);
-      xhr.upload.onprogress = (e) => {
-        if (e.lengthComputable) onProgress(Math.round((e.loaded / e.total) * 100));
-      };
-      xhr.onload = () => {
-        if (xhr.status >= 200 && xhr.status < 300) resolve();
-        else reject(new Error(`Errore ${xhr.status} durante il caricamento del video su storage.`));
-      };
-      xhr.onerror = () => reject(new Error("Errore di rete. Controlla la connessione e riprova."));
-      xhr.onabort = () => reject(new Error("Caricamento annullato."));
-      xhr.send(file);
-    });
-
+  // 26/10: il caricamento vive fuori dalla pagina (lib/caricamenti.ts): se si
+  // cambia sezione continua, salva in galleria e l'indicatore in basso lo mostra.
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedFile) {
@@ -441,64 +391,47 @@ export default function AdminGallery() {
     setUploading(true);
     setUploadProgress(0);
     setUploadPhase("uploading");
+
+    // Copie fisse dei dati del modulo: la pagina può sparire durante il lavoro.
+    const file = selectedFile;
+    const tipo = mediaType;
+    const dati = { title: form.title, category: form.category || "senza_categoria" };
+    const nome = tipo === "image" ? "Immagine" : "Video";
+
     try {
-      const token = localStorage.getItem("barber_artist_token") || "";
-      let uploadedUrl: string;
-      let imageThumbnailUrl: string | undefined;
+      await avviaCaricamento(`${nome} in galleria`, async (c) => {
+        const progresso = (p: number) => { setUploadProgress(p); c.avanzamento(p); };
+        let uploadedUrl: string;
+        let imageThumbnailUrl: string | undefined;
 
-      if (isImage) {
-        // ── Image: multipart POST through server (50 MB max) ──────────────
-        const fd = new FormData();
-        fd.append("file", selectedFile);
-        const result = await uploadImageWithProgress(fd, token);
-        uploadedUrl = result.url;
-        imageThumbnailUrl = result.thumbnailUrl;
-      } else {
-        // ── Video: signed URL direct upload — bypasses serverless body limit ──
-        // Step 1: ask server for a Supabase signed upload URL (no file sent)
-        setUploadProgress(3);
-        const apiBase = (import.meta.env.VITE_API_URL as string | undefined) ?? "";
-        const initRes = await fetch(`${apiBase}/api/upload/video/resumable`, {
-          method: "POST",
-          headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-          body: JSON.stringify({ contentType: selectedFile.type }),
-        });
-        if (!initRes.ok) {
-          const err = await initRes.json().catch(() => ({}));
-          throw new Error(err.error || "Errore nella preparazione dell'upload video.");
+        if (tipo === "image") {
+          // ── Image: multipart POST through server ──────────────
+          const result = await caricaSulServer(file, "image", progresso);
+          uploadedUrl = result.url;
+          imageThumbnailUrl = result.thumbnailUrl;
+        } else {
+          // ── Video: signed URL direct upload — bypasses serverless body limit ──
+          uploadedUrl = await caricaVideo(file, progresso);
         }
-        const { resumableUri, finalUrl } = await initRes.json();
 
-        // Step 2: PUT file directly to Supabase Storage using the signed URL
-        await uploadVideoToSignedUrl(resumableUri, selectedFile, (pct) => {
-          // map 5 → 98 while uploading
-          setUploadProgress(5 + Math.round(pct * 0.93));
-        });
-        uploadedUrl = finalUrl;
-      }
-
-      setUploadPhase("saving");
-      addItem(
-        {
-          imageUrl: uploadedUrl,
-          title: form.title,
-          category: form.category || "senza_categoria",
-          mediaType,
-          thumbnailUrl: imageThumbnailUrl || undefined,
-        },
-        {
-          onSuccess: () => {
-            resetForm();
-            refetch();
-            toast({ title: `${isImage ? "Immagine" : "Video"} caricato con successo` });
-          },
-          onError: () => {
-            toast({ title: "Errore", description: "Salvataggio in galleria fallito. Riprova.", variant: "destructive" });
-            setUploading(false);
-            setUploadPhase("idle");
-          },
-        },
-      );
+        setUploadPhase("saving");
+        c.passo("Salvataggio in galleria…");
+        try {
+          await addItemAsync({
+            imageUrl: uploadedUrl,
+            title: dati.title,
+            category: dati.category,
+            mediaType: tipo,
+            thumbnailUrl: imageThumbnailUrl || undefined,
+          });
+        } catch {
+          throw new Error("Salvataggio in galleria fallito. Riprova.");
+        }
+      });
+      resetForm();
+      setUploading(false);
+      refetch();
+      toast({ title: `${nome} caricato con successo` });
     } catch (err: any) {
       toast({ title: "Errore di caricamento", description: err.message || "Caricamento fallito.", variant: "destructive" });
       setUploading(false);

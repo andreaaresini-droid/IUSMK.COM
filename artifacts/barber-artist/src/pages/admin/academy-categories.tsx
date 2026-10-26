@@ -16,92 +16,14 @@ import {
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useLocation } from "wouter";
 import { compressImageFile } from "@/lib/compress-image";
+import { avviaCaricamento, caricaImmagine, caricaVideo } from "@/lib/caricamenti";
 
-// ─── Upload helpers (same as courses.tsx) ─────────────────────────────────────
-
-async function uploadImageFile(
-  file: File,
-  onProgress: (pct: number) => void,
-): Promise<string> {
-  const token = localStorage.getItem("barber_artist_token") || "";
-  return new Promise((resolve, reject) => {
-    const fd = new FormData();
-    fd.append("file", file);
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", `${(import.meta.env.VITE_API_URL as string | undefined) ?? ""}/api/upload/image`);
-    xhr.setRequestHeader("Authorization", `Bearer ${token}`);
-    xhr.upload.onprogress = (e) => {
-      if (e.lengthComputable) onProgress(Math.round((e.loaded / e.total) * 100));
-    };
-    xhr.onload = () => {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        try { resolve(JSON.parse(xhr.responseText).url); }
-        catch { reject(new Error("Risposta non valida dal server.")); }
-      } else {
-        try { reject(new Error(JSON.parse(xhr.responseText).error || `Errore ${xhr.status}.`)); }
-        catch { reject(new Error(`Errore ${xhr.status} durante il caricamento.`)); }
-      }
-    };
-    xhr.onerror = () => reject(new Error("Errore di rete. Controlla la connessione e riprova."));
-    xhr.send(fd);
-  });
-}
-
-const GCS_CHUNK_SIZE = 8 * 1024 * 1024;
-
-async function uploadVideoFile(
-  file: File,
-  onProgress: (pct: number) => void,
-): Promise<string> {
-  const token = localStorage.getItem("barber_artist_token") || "";
-  onProgress(1);
-  const initRes = await fetch(`${(import.meta.env.VITE_API_URL as string | undefined) ?? ""}/api/upload/video/resumable`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ contentType: file.type }),
-  });
-  if (!initRes.ok) {
-    const errBody = await initRes.json().catch(() => ({}));
-    throw new Error(errBody.error || "Errore nell'avvio dell'upload video.");
-  }
-  const { resumableUri, finalUrl } = await initRes.json();
-  const fileSize = file.size;
-  let offset = 0;
-  while (offset < fileSize) {
-    const chunkEnd = Math.min(offset + GCS_CHUNK_SIZE, fileSize);
-    const chunk = file.slice(offset, chunkEnd);
-    let attempts = 0;
-    while (true) {
-      try {
-        const resp = await fetch(resumableUri, {
-          method: "PUT",
-          headers: {
-            "Content-Type": file.type,
-            "Content-Range": `bytes ${offset}-${chunkEnd - 1}/${fileSize}`,
-          },
-          body: chunk,
-        });
-        if (resp.status === 308 || resp.status === 200 || resp.status === 201) {
-          offset = chunkEnd;
-          onProgress(1 + Math.round((offset / fileSize) * 98));
-          break;
-        }
-        if (resp.status >= 500 && attempts < 3) {
-          attempts++;
-          await new Promise((r) => setTimeout(r, 1500 * attempts));
-          continue;
-        }
-        throw new Error(`Errore GCS ${resp.status}.`);
-      } catch (err: any) {
-        attempts++;
-        if (attempts >= 3) throw err;
-        await new Promise((r) => setTimeout(r, 2000 * attempts));
-      }
-    }
-  }
-  onProgress(100);
-  return finalUrl;
-}
+// ─── Upload helpers (lib/caricamenti.ts, come courses.tsx) ────────────────────
+// Video: un solo PUT sull'URL firmato di Supabase. Prima qui si mandava a pezzi
+// da 8 MB (stile GCS), ma l'URL firmato di Supabase accetta un file intero:
+// i video oltre 8 MB fallivano.
+const uploadImageFile = caricaImmagine;
+const uploadVideoFile = caricaVideo;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -593,100 +515,110 @@ function CategoryModal({ initial, onClose }: { initial: any | null; onClose: () 
     setIsWorking(true);
     setUploadPct(0);
 
+    // 26/10: il lavoro vive fuori dalla finestra (lib/caricamenti.ts): se si
+    // cambia sezione i caricamenti continuano e la categoria si salva comunque.
+    const passoPagina = setUploadStep;
+    const progressoPagina = setUploadPct;
+
     try {
-      // ── Thumbnail + Poster: comprimi e carica in parallelo (se entrambi presenti) ──
-      let finalThumbUrl  = thumbUrl;
-      let finalPosterUrl = posterUrl;
+      await avviaCaricamento(initial ? `Categoria «${form.title.trim()}»` : `Nuova categoria «${form.title.trim()}»`, async (c) => {
+        const setUploadStep = (t: string) => { passoPagina(t); c.passo(t); };
+        const setUploadPct = (p: number) => { progressoPagina(p); c.avanzamento(p); };
 
-      if (thumbFile || posterFile) {
-        const hasTwo = thumbFile && posterFile;
-        setUploadStep(
-          hasTwo ? "Compressione e caricamento copertina e poster…" : "Compressione e caricamento copertina…"
-        );
+        // ── Thumbnail + Poster: comprimi e carica in parallelo (se entrambi presenti) ──
+        let finalThumbUrl  = thumbUrl;
+        let finalPosterUrl = posterUrl;
+
+        if (thumbFile || posterFile) {
+          const hasTwo = thumbFile && posterFile;
+          setUploadStep(
+            hasTwo ? "Compressione e caricamento copertina e poster…" : "Compressione e caricamento copertina…"
+          );
+          setUploadPct(0);
+
+          const imgJobs: Promise<void>[] = [];
+          if (thumbFile) {
+            imgJobs.push(
+              compressImageFile(thumbFile)
+                .then(f => uploadImageFile(f, p => setUploadPct(p)))
+                .then(url => { finalThumbUrl = url; })
+            );
+          }
+          if (posterFile) {
+            imgJobs.push(
+              compressImageFile(posterFile)
+                .then(f => uploadImageFile(f, hasTwo ? () => {} : p => setUploadPct(p)))
+                .then(url => { finalPosterUrl = url; })
+            );
+          }
+          await Promise.all(imgJobs);
+          setUploadPct(100);
+        }
+
+        // ── Trailer video ──
+        let finalTrailerUrl = trailerUrl;
+        if (trailerFile) {
+          setUploadStep("Caricamento trailer video…");
+          setUploadPct(0);
+          finalTrailerUrl = await uploadVideoFile(trailerFile, p => setUploadPct(p));
+        }
+
+        // ── Gallery: upload new/replaced items ──
+        // Existing slots are never re-uploaded — just carry the URL forward.
+        const pendingSlots   = gallerySlots.filter(s => s.kind === "pending") as Array<{ kind: "pending"; file: File; previewUrl: string }>;
+        const pendingImages  = pendingSlots.filter(s => !isVideoFile(s.file));
+        const pendingVideos  = pendingSlots.filter(s => isVideoFile(s.file));
+
         setUploadPct(0);
 
-        const imgJobs: Promise<void>[] = [];
-        if (thumbFile) {
-          imgJobs.push(
-            compressImageFile(thumbFile)
-              .then(f => uploadImageFile(f, p => setUploadPct(p)))
-              .then(url => { finalThumbUrl = url; })
+        // Upload images in parallel (fast) — comprimi client-side prima dell'upload
+        let imageUrls: string[] = [];
+        if (pendingImages.length > 0) {
+          setUploadStep(`Compressione e caricamento ${pendingImages.length} immagine/i…`);
+          imageUrls = await Promise.all(
+            pendingImages.map(s => compressImageFile(s.file).then(f => uploadImageFile(f, () => {})))
           );
         }
-        if (posterFile) {
-          imgJobs.push(
-            compressImageFile(posterFile)
-              .then(f => uploadImageFile(f, hasTwo ? () => {} : p => setUploadPct(p)))
-              .then(url => { finalPosterUrl = url; })
-          );
+
+        // Upload videos sequentially (GCS resumable)
+        const videoUrls: string[] = [];
+        for (let i = 0; i < pendingVideos.length; i++) {
+          setUploadStep(`Caricamento video ${i + 1} di ${pendingVideos.length}…`);
+          setUploadPct(0);
+          const url = await uploadVideoFile(pendingVideos[i].file, p => setUploadPct(p));
+          videoUrls.push(url);
         }
-        await Promise.all(imgJobs);
-        setUploadPct(100);
-      }
 
-      // ── Trailer video ──
-      let finalTrailerUrl = trailerUrl;
-      if (trailerFile) {
-        setUploadStep("Caricamento trailer video…");
-        setUploadPct(0);
-        finalTrailerUrl = await uploadVideoFile(trailerFile, p => setUploadPct(p));
-      }
+        // Reconstruct gallery in original order.
+        // Filtra URL vuoti, blob temporanei e data URI — solo URL pubblici/stabili nel DB.
+        let imgIdx = 0, vidIdx = 0;
+        const finalGallery: string[] = gallerySlots
+          .map(slot => {
+            if (slot.kind === "existing") return slot.url;
+            if (isVideoFile(slot.file)) return videoUrls[vidIdx++];
+            return imageUrls[imgIdx++];
+          })
+          .filter((url): url is string => Boolean(url) && !url.startsWith("blob:") && !url.startsWith("data:"));
 
-      // ── Gallery: upload new/replaced items ──
-      // Existing slots are never re-uploaded — just carry the URL forward.
-      const pendingSlots   = gallerySlots.filter(s => s.kind === "pending") as Array<{ kind: "pending"; file: File; previewUrl: string }>;
-      const pendingImages  = pendingSlots.filter(s => !isVideoFile(s.file));
-      const pendingVideos  = pendingSlots.filter(s => isVideoFile(s.file));
+        setUploadStep("Salvataggio…");
+        const payload = {
+          ...form,
+          title: form.title.trim(),
+          slug: form.slug.trim() || undefined,
+          thumbnailUrl:     finalThumbUrl   || null,
+          trailerVideoUrl:  finalTrailerUrl || null,
+          trailerPosterUrl: finalPosterUrl  || null,
+          galleryImages:    finalGallery,
+          orderIndex:       parseInt(String(form.orderIndex)) || 0,
+          whatYouWillLearn: form.whatYouWillLearn.filter((s: string) => s.trim()),
+        };
 
-      setUploadPct(0);
-
-      // Upload images in parallel (fast) — comprimi client-side prima dell'upload
-      let imageUrls: string[] = [];
-      if (pendingImages.length > 0) {
-        setUploadStep(`Compressione e caricamento ${pendingImages.length} immagine/i…`);
-        imageUrls = await Promise.all(
-          pendingImages.map(s => compressImageFile(s.file).then(f => uploadImageFile(f, () => {})))
-        );
-      }
-
-      // Upload videos sequentially (GCS resumable)
-      const videoUrls: string[] = [];
-      for (let i = 0; i < pendingVideos.length; i++) {
-        setUploadStep(`Caricamento video ${i + 1} di ${pendingVideos.length}…`);
-        setUploadPct(0);
-        const url = await uploadVideoFile(pendingVideos[i].file, p => setUploadPct(p));
-        videoUrls.push(url);
-      }
-
-      // Reconstruct gallery in original order.
-      // Filtra URL vuoti, blob temporanei e data URI — solo URL pubblici/stabili nel DB.
-      let imgIdx = 0, vidIdx = 0;
-      const finalGallery: string[] = gallerySlots
-        .map(slot => {
-          if (slot.kind === "existing") return slot.url;
-          if (isVideoFile(slot.file)) return videoUrls[vidIdx++];
-          return imageUrls[imgIdx++];
-        })
-        .filter((url): url is string => Boolean(url) && !url.startsWith("blob:") && !url.startsWith("data:"));
-
-      setUploadStep("Salvataggio…");
-      const payload = {
-        ...form,
-        title: form.title.trim(),
-        slug: form.slug.trim() || undefined,
-        thumbnailUrl:     finalThumbUrl   || null,
-        trailerVideoUrl:  finalTrailerUrl || null,
-        trailerPosterUrl: finalPosterUrl  || null,
-        galleryImages:    finalGallery,
-        orderIndex:       parseInt(String(form.orderIndex)) || 0,
-        whatYouWillLearn: form.whatYouWillLearn.filter((s: string) => s.trim()),
-      };
-
-      if (initial) {
-        await updateMut.mutateAsync({ id: initial.id, data: payload });
-      } else {
-        await createMut.mutateAsync(payload);
-      }
+        if (initial) {
+          await updateMut.mutateAsync({ id: initial.id, data: payload });
+        } else {
+          await createMut.mutateAsync(payload);
+        }
+      });
       onClose();
     } catch (err: any) {
       setError(err?.message || "Errore durante il salvataggio. Riprova.");

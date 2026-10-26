@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle, X, Send, Bot, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLang } from "@/i18n/LanguageContext";
+import { useChatAssistente, inviaDomanda, type MessaggioChat } from "@/lib/chat-assistente";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 const BTN       = 56;   // button size px (w-14)
@@ -74,21 +75,6 @@ function renderWithLinks(text: string) {
   );
 }
 
-function getSessionId(): string {
-  let sid = sessionStorage.getItem("iusmk_chat_sid");
-  if (!sid) { sid = Math.random().toString(36).slice(2); sessionStorage.setItem("iusmk_chat_sid", sid); }
-  return sid;
-}
-
-// ─── Types ───────────────────────────────────────────────────────────────────
-
-interface Message {
-  id: string;
-  role: "assistant" | "user";
-  content: string;
-  confidence?: "high" | "low" | "error";
-}
-
 // ─── Main widget ─────────────────────────────────────────────────────────────
 
 export function AiChatWidget() {
@@ -96,27 +82,22 @@ export function AiChatWidget() {
   const c = t.chat;
 
   // ── Chat state ────────────────────────────────────────────────────────────
+  // 26/10: conversazione e domanda in attesa vivono in lib/chat-assistente.ts,
+  // fuori dal widget: cambiando sezione o tornando dal sottofondo non si perdono.
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
+  const chat = useChatAssistente();
+  const loading = chat.inAttesa !== null;
+  const messages: MessaggioChat[] = [
     { id: "welcome", role: "assistant", content: c.welcome, confidence: "high" },
-  ]);
+    ...chat.messaggi,
+  ];
   const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef  = useRef<HTMLInputElement>(null);
 
-  // Update welcome message text when language changes
-  useEffect(() => {
-    setMessages((m) =>
-      m.map((msg) =>
-        msg.id === "welcome" ? { ...msg, content: c.welcome } : msg
-      )
-    );
-  }, [lang, c.welcome]);
-
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, open]);
+  }, [chat.messaggi, open]);
 
   useEffect(() => {
     if (open) setTimeout(() => inputRef.current?.focus(), 300);
@@ -245,127 +226,12 @@ export function AiChatWidget() {
   let panelLeft = pos.x + BTN - panelWidth;
   panelLeft = Math.max(MARGIN, Math.min(panelLeft, window.innerWidth - panelWidth - MARGIN));
 
-  // ── sendMessage (unchanged logic) ─────────────────────────────────────────
+  // ── sendMessage ───────────────────────────────────────────────────────────
 
-  const sendMessage = useCallback(async (text: string) => {
-    const q = text.trim();
-    if (!q || loading) return;
+  const sendMessage = useCallback((text: string) => {
+    if (!text.trim() || loading) return;
     setInput("");
-
-    const userMsg: Message = { id: Date.now().toString(), role: "user", content: q };
-    setMessages((m) => [...m, userMsg]);
-    setLoading(true);
-
-    const assistantId = (Date.now() + 1).toString();
-    const placeholder: Message = { id: assistantId, role: "assistant", content: "", confidence: "high" };
-    setMessages((m) => [...m, placeholder]);
-
-    const activeLang = lang;
-    const fallbackMsg = activeLang === "en"
-      ? "At the moment I'm not able to provide this information with certainty. I've forwarded your request to the team."
-      : "Al momento non sono in grado di darti questa informazione con certezza. Ho segnalato la tua richiesta al team.";
-    const noAnswerMsg = activeLang === "en"
-      ? "No answer available."
-      : "Nessuna risposta disponibile.";
-    const errorMsg = activeLang === "en"
-      ? "An error occurred. Please try again in a moment."
-      : "Si è verificato un errore. Riprova tra un momento.";
-
-    try {
-      const apiBase = (import.meta.env.VITE_API_URL as string | undefined) ?? "";
-      const res = await fetch(`${apiBase}/api/ai/chat`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          question:  q,
-          sessionId: getSessionId(),
-          pageUrl:   window.location.pathname,
-          language:  activeLang,
-        }),
-      });
-
-      if (!res.ok || !res.body) throw new Error("network error");
-
-      const reader  = res.body.getReader();
-      const decoder = new TextDecoder();
-
-      const { done: d0, value: v0 } = await reader.read();
-      const firstChunk = d0 ? "" : decoder.decode(v0, { stream: true });
-
-      const trimmed = firstChunk.trimStart();
-      const isSSE   = trimmed.startsWith(":") || trimmed.startsWith("data:");
-
-      if (isSSE) {
-        let buffer   = firstChunk;
-        let fullText = "";
-        let confidence: "high" | "low" | "error" = "high";
-
-        const processBuffer = () => {
-          const lines = buffer.split("\n");
-          buffer = lines.pop() ?? "";
-          for (const line of lines) {
-            if (!line.startsWith("data: ")) continue;
-            try {
-              const data = JSON.parse(line.slice(6));
-              if (data.content) {
-                fullText += data.content;
-                setMessages((m) =>
-                  m.map((msg) => msg.id === assistantId ? { ...msg, content: fullText } : msg)
-                );
-              }
-              if (data.done) confidence = data.confidence ?? "high";
-            } catch { /* skip malformed */ }
-          }
-        };
-
-        processBuffer();
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          buffer += decoder.decode(value, { stream: true });
-          processBuffer();
-        }
-
-        setMessages((m) =>
-          m.map((msg) =>
-            msg.id === assistantId
-              ? { ...msg, content: fullText || noAnswerMsg, confidence }
-              : msg
-          )
-        );
-      } else {
-        let fullBody = firstChunk;
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          fullBody += decoder.decode(value, { stream: true });
-        }
-        let json: { answer?: string; confidence?: string };
-        try { json = JSON.parse(fullBody); } catch { json = {}; }
-
-        setMessages((m) =>
-          m.map((msg) =>
-            msg.id === assistantId
-              ? {
-                  ...msg,
-                  content:    json.answer || fallbackMsg,
-                  confidence: (json.confidence as "high" | "low" | "error") ?? "low",
-                }
-              : msg
-          )
-        );
-      }
-    } catch {
-      setMessages((m) =>
-        m.map((msg) =>
-          msg.id === assistantId
-            ? { ...msg, content: errorMsg, confidence: "error" }
-            : msg
-        )
-      );
-    } finally {
-      setLoading(false);
-    }
+    inviaDomanda(text, lang === "en" ? "en" : "it");
   }, [loading, lang]);
 
   // ── Render ────────────────────────────────────────────────────────────────
