@@ -127,7 +127,10 @@ function VideoPlayer({ notifId }: { notifId: number }) {
         `/customer/notifications/${notifId}/video-token`
       );
       console.log("[VideoPlayer] Got streamUrl:", data.streamUrl);
-      setStreamUrl(data.streamUrl);
+      // Il backend dà un path relativo: va sul dominio delle API (VITE_API_URL),
+      // come in student-dashboard; il src del <video> non passa da fetchApi.
+      const apiBase = (import.meta.env.VITE_API_URL as string | undefined) ?? "";
+      setStreamUrl(data.streamUrl.startsWith("/") ? `${apiBase}${data.streamUrl}` : data.streamUrl);
       setState("ready");
     } catch (err: any) {
       const msg = err.message || td.videoError;

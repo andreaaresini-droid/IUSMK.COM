@@ -3,14 +3,14 @@ import { db } from "@workspace/db";
 import { knowledgeBaseTable, unansweredQuestionsTable, aiChatLogsTable } from "@workspace/db/schema";
 import { eq, desc, count, and, gte, sql } from "drizzle-orm";
 import { requireAdmin, AuthRequest } from "../middlewares/authMiddleware.js";
-import { openai } from "@workspace/integrations-openai-ai-server";
+import { anthropic, ASSISTANT_MODEL } from "../lib/anthropic.js";
+import { KB_DOCUMENT } from "../lib/kb-document.js";
 import {
   sanitizeInput,
   normalizeText,
   extractTokens,
   expandTokens,
   searchKB,
-  buildContext,
   buildSystemPrompt,
   MIN_SCORE_THRESHOLD,
 } from "../lib/kb-search.js";
@@ -415,34 +415,34 @@ router.post("/test", async (req, res) => {
 
     const results = await searchKB(sanitized, dbg);
     const topScore   = results[0]?.score ?? 0;
-    const hasContext = topScore >= MIN_SCORE_THRESHOLD;
 
-    let aiAnswer: string | null = null;
-    let systemPromptUsed: string | null = null;
+    // 26/10: il test usa lo stesso assistente della chat dei clienti
+    // (routes/ai.ts): Claude Haiku con TUTTA la knowledge base. Prima usava
+    // OpenAI con un modello inesistente («gpt-5-mini») e non rispondeva.
+    // Le corrispondenze per parole chiave qui sopra restano solo come debug.
+    const entries = await db
+      .select({ title: knowledgeBaseTable.title, content: knowledgeBaseTable.content })
+      .from(knowledgeBaseTable)
+      .where(and(eq(knowledgeBaseTable.isPublished, true), eq(knowledgeBaseTable.isActive, true)));
+    const dbText = entries
+      .map((e) => `### ${e.title}\n${e.content}`)
+      .join("\n\n---\n\n")
+      .trim();
+    const knowledgeText = dbText || KB_DOCUMENT;
+    dbg(`[TEST] fonte KB: ${dbText ? "db" : "incorporata"} | voci DB: ${entries.length} | caratteri: ${knowledgeText.length}`);
 
-    if (hasContext) {
-      const context = buildContext(results);
-      systemPromptUsed = buildSystemPrompt(context, "it");
-
-      // Use streaming and collect all chunks (gpt-5-mini only works in stream mode)
-      const stream = await openai.chat.completions.create({
-        model: "gpt-5-mini",
-        max_completion_tokens: 700,
-        messages: [
-          { role: "system", content: systemPromptUsed },
-          { role: "user",   content: sanitized },
-        ],
-        stream: true,
-      });
-      let collected = "";
-      for await (const chunk of stream) {
-        const delta = chunk.choices[0]?.delta?.content;
-        if (delta) collected += delta;
-      }
-      aiAnswer = collected || "(nessuna risposta — stream vuoto)";
-    } else {
-      aiAnswer = "FALLBACK — nessun contesto KB trovato sopra la soglia.";
-    }
+    const hasContext = knowledgeText.length > 0;
+    const systemPromptUsed = buildSystemPrompt(knowledgeText, "it");
+    const completion = await anthropic.messages.create({
+      model:      ASSISTANT_MODEL,
+      max_tokens: 700,
+      system:     systemPromptUsed,
+      messages:   [{ role: "user", content: sanitized }],
+    });
+    const aiAnswer = completion.content
+      .map((block) => (block.type === "text" ? block.text : ""))
+      .join("")
+      .trim() || "(nessuna risposta — testo vuoto)";
 
     res.json({
       sanitized,

@@ -11,7 +11,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
-import { avviaCaricamento, caricaSulServer } from "@/lib/caricamenti";
+import { avviaCaricamento, caricaImmagine, caricaVideo } from "@/lib/caricamenti";
+import { compressImageFile } from "@/lib/compress-image";
 
 type Mode = "all" | "with_courses" | "specific_course" | "manual";
 
@@ -103,9 +104,13 @@ function MediaUpload({
     setUploading(true);
     // 26/10: il caricamento vive fuori dalla pagina (lib/caricamenti.ts) e
     // passa da VITE_API_URL (prima «/api/upload» relativo: 405 sul sito).
+    // Come i corsi: immagine compressa e caricata dal server; video direttamente
+    // su Supabase con URL firmato (prima passava dal server: max 4 MB).
     const lavoro = avviaCaricamento(type === "image" ? "Immagine per la notifica" : "Video per la notifica", async (c) => {
-      const json = await caricaSulServer(file, type, c.avanzamento);
-      allegato = { tipo: type, url: json.url };
+      const url = type === "image"
+        ? await caricaImmagine(await compressImageFile(file), c.avanzamento)
+        : await caricaVideo(file, c.avanzamento);
+      allegato = { tipo: type, url };
       return allegato;
     }).finally(() => { allegatoInCorso = null; });
     allegatoInCorso = lavoro;
