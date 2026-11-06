@@ -1,3 +1,4 @@
+import { courseLevelLabel } from "@/lib/course-level";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { useAcademyCategory, useOwnedCourseIds } from "@/hooks/use-courses";
@@ -529,7 +530,7 @@ export default function CategoryDetail({ params }: Props) {
                           <div className="flex flex-wrap gap-2 mb-2">
                             {course.level && (
                               <span className="text-xs font-bold bg-primary/15 text-primary px-2 py-0.5 uppercase tracking-wider">
-                                {course.level}
+                                {courseLevelLabel(course.level, lang)}
                               </span>
                             )}
                             {isOwned && (

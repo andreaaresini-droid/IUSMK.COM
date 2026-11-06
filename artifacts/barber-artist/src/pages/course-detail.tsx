@@ -1,3 +1,4 @@
+import { courseLevelLabel } from "@/lib/course-level";
 import { useParams, Link } from "wouter";
 import { usePublicCourse, useOwnedCourseIds, useOwnedModuleIds } from "@/hooks/use-courses";
 import { useCurrentUser } from "@/hooks/use-auth";
@@ -426,7 +427,7 @@ export default function CourseDetail() {
 
           <div className="flex flex-wrap gap-3 mb-6">
             <span className="text-xs font-bold bg-primary/20 text-primary px-3 py-1 rounded-sm uppercase tracking-wider border border-primary/20">
-              {course.level}
+              {courseLevelLabel(course.level, lang)}
             </span>
             {course.durationHours && (
               <span className="text-xs font-bold bg-white/5 text-white px-3 py-1 rounded-sm uppercase tracking-wider flex items-center gap-1 border border-white/10">
@@ -718,9 +719,20 @@ export default function CourseDetail() {
                   </Link>
                 </div>
 
-                <p className="text-xs text-muted-foreground/60 text-center leading-relaxed">
-                  {lang === "it" ? "Accesso esclusivo tramite link di prenotazione ufficiale o codice privato." : "Exclusive access via official booking link or private code."}
-                </p>
+                <div className="text-xs text-muted-foreground text-center leading-relaxed space-y-1">
+                  {!isLoggedInUser && (
+                    <p>
+                      {lang === "it"
+                        ? "Per acquistare serve un account gratuito: lo crei in un minuto, così il corso resta sempre tuo."
+                        : "You need a free account to buy: it takes a minute and the course stays yours."}
+                    </p>
+                  )}
+                  <p>
+                    {lang === "it"
+                      ? "Pagamento con carta tramite SumUp. Hai un codice? Usa «Attiva con codice»."
+                      : "Card payment via SumUp. Got a code? Use “Activate with code”."}
+                  </p>
+                </div>
               </div>
             )}
           </div>
