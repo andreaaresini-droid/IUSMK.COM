@@ -64,7 +64,7 @@ export default function Academy() {
                   {/* Thumbnail */}
                   <div className="aspect-[16/9] overflow-hidden relative">
                     <ResilientImage
-                      src={normalizeMediaUrl(cat.thumbnailUrl) || `${import.meta.env.BASE_URL}images/academy-course-1.png`}
+                      src={normalizeMediaUrl(cat.thumbnailUrl) || `${import.meta.env.BASE_URL}images/academy-course-1.webp`}
                       alt={cat.title}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                       fallbackClassName="w-full h-full flex items-center justify-center bg-white/5"

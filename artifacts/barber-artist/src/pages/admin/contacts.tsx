@@ -21,7 +21,7 @@ function showBrowserNotification(name: string, subject: string) {
     const label = SUBJECT_LABELS[subject] || subject;
     new Notification("Nuovo messaggio — IUSMK", {
       body: `${name} ha inviato una richiesta: ${label}`,
-      icon: "/images/logo-iusmk-2025.png",
+      icon: "/images/logo-iusmk-2025.webp",
     });
   }
 }

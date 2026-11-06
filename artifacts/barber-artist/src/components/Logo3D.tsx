@@ -187,7 +187,7 @@ function HeaderAutoRotatingScene({
 // La rotazione Y è SEMPRE gestita qui (mai da Framer Motion) per evitare salti.
 // Quando animating=true la velocità cresce progressivamente e chiama onDone.
 const INTRO_BASE_SPEED = 0.72;   // rad/s a riposo (aumentato per rotazione di base più visibile)
-const INTRO_ANIM_S     = 2.8;    // durata accelerazione in secondi
+const INTRO_ANIM_S     = 2.2;    // durata accelerazione in secondi
 
 function IntroRotatingScene({
   modelScale,

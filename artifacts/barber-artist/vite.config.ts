@@ -51,7 +51,10 @@ export default defineConfig({
       output: {
         manualChunks(id) {
           if (!id.includes("node_modules")) return undefined;
-          if (id.includes("three") || id.includes("@react-three")) return "vendor-three";
+          // three.js e i suoi pezzi: niente gruppo fisso. Rollup li mette nei
+          // file caricati solo quando serve il logo 3D. Con un gruppo fisso
+          // "vendor-three" la libreria (~1 MB) si scaricava all'apertura.
+          if (/node_modules\/(three|three-stdlib|@react-three|troika|camera-controls|maath|meshline|stats-gl|detect-gpu|hls\.js|@monogrid|@use-gesture)/.test(id)) return undefined;
           if (id.includes("framer-motion")) return "vendor-motion";
           if (id.includes("@radix-ui")) return "vendor-radix";
           if (id.includes("@tanstack")) return "vendor-query";
@@ -64,7 +67,7 @@ export default defineConfig({
             /node_modules\/scheduler\//.test(id)
           ) return "vendor-react";
           if (id.includes("recharts") || id.includes("d3-")) return "vendor-charts";
-          return "vendor";
+          return undefined;
         },
       },
     },

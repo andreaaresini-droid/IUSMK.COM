@@ -511,7 +511,7 @@ export default function CategoryDetail({ params }: Props) {
                       {/* Thumbnail */}
                       <div className="sm:w-48 aspect-video sm:aspect-[4/3] shrink-0 overflow-hidden relative">
                         <ResilientImage
-                          src={normalizeMediaUrl(course.thumbnailUrl) || `${import.meta.env.BASE_URL}images/academy-course-1.png`}
+                          src={normalizeMediaUrl(course.thumbnailUrl) || `${import.meta.env.BASE_URL}images/academy-course-1.webp`}
                           alt={course.title}
                           className="w-full h-full object-cover"
                           fallbackClassName="w-full h-full flex items-center justify-center bg-white/5"

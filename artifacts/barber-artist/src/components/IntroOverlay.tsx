@@ -12,14 +12,14 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Logo3D } from "./Logo3D";
+import { Logo3D } from "./Logo3DLazy";
 
-const LOGO_SRC      = `${import.meta.env.BASE_URL}images/logo-iusmk-white.png`;
+const LOGO_SRC      = `${import.meta.env.BASE_URL}images/logo-iusmk-white.webp`;
 const BG_SRC        = `${import.meta.env.BASE_URL}images/intro-bg.webp`;
 const AUDIO_SRC     = `${import.meta.env.BASE_URL}audio/intro-sound.mp3`;
 
 const OUTRO_MS  = 400;   // durata fade-out finale
-const ANIM_S    = 2.8;   // deve coincidere con INTRO_ANIM_S in Logo3D
+const ANIM_S    = 2.2;   // deve coincidere con INTRO_ANIM_S in Logo3D
 
 interface Props {
   onComplete: () => void;
@@ -68,7 +68,7 @@ export function IntroOverlay({ onComplete }: Props) {
       audio.currentTime = 0;
     }
 
-    sessionStorage.setItem("iusmkIntroSeen", "true");
+    try { sessionStorage.setItem("iusmkIntroSeen", "true"); } catch {}
     setFadingOut(true);
     setTimeout(() => {
       setDone(true);
@@ -94,7 +94,7 @@ export function IntroOverlay({ onComplete }: Props) {
           // Browser ha bloccato l'audio (es. policy su alcuni mobile)
           // L'intro continua normalmente senza audio
         });
-      }, 1000);
+      }, 800);
     }
 
     setPhase("animating");
@@ -170,7 +170,7 @@ export function IntroOverlay({ onComplete }: Props) {
           }
           transition={
             phase === "idle"
-              ? { duration: 0.9, delay: 0.1, ease: "easeOut" }
+              ? { duration: 0.5, ease: "easeOut" }
               : {
                   duration: ANIM_S,
                   times:    [0, 0.12, 0.29, 0.58, 0.82, 1.0],
@@ -276,7 +276,7 @@ export function IntroOverlay({ onComplete }: Props) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0, transition: { duration: 0.12 } }}
-            transition={{ duration: 0.6, delay: 0.5 }}
+            transition={{ duration: 0.35, delay: 0.1 }}
           >
             <div
               style={{
@@ -291,11 +291,11 @@ export function IntroOverlay({ onComplete }: Props) {
               <p
                 style={{
                   color:         "#FFD600",
-                  fontSize:      "clamp(13px, 3.2vw, 16px)",
+                  fontSize:      "clamp(15px, 4vw, 19px)",
                   letterSpacing: "0.28em",
                   textTransform: "uppercase",
                   fontFamily:    "'Space Grotesk', sans-serif",
-                  fontWeight:    500,
+                  fontWeight:    600,
                   textAlign:     "center",
                   lineHeight:    1.6,
                   margin:        0,
@@ -304,7 +304,7 @@ export function IntroOverlay({ onComplete }: Props) {
                   outline:       "none",
                   boxShadow:     "none",
                   background:    "none",
-                  textShadow:    "0 0 6px rgba(255,214,0,0.75), 0 0 14px rgba(255,214,0,0.45)",
+                  textShadow:    "0 1px 3px rgba(0,0,0,0.95), 0 0 6px rgba(255,214,0,0.6), 0 0 14px rgba(255,214,0,0.35)",
                 }}
               >
                 Tocca per entrare<br />nel mondo di IUSMK

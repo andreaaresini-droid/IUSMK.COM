@@ -183,12 +183,20 @@ function ScrollToTop() {
 }
 
 function App() {
-  const [showIntro, setShowIntro] = useState<boolean>(
-    () => !sessionStorage.getItem(INTRO_SESSION_KEY)
-  );
+  // L'intro si vede solo entrando dalla home: chi arriva da un link diretto
+  // (un corso, i contatti) va subito alla pagina che cercava.
+  const [showIntro, setShowIntro] = useState<boolean>(() => {
+    try {
+      const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+      const path = window.location.pathname.replace(base, "") || "/";
+      return path === "/" && !sessionStorage.getItem(INTRO_SESSION_KEY);
+    } catch {
+      return false;
+    }
+  });
 
   const handleIntroComplete = () => {
-    sessionStorage.setItem(INTRO_SESSION_KEY, "1");
+    try { sessionStorage.setItem(INTRO_SESSION_KEY, "1"); } catch {}
     setShowIntro(false);
   };
 

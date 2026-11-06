@@ -9,7 +9,7 @@ import { usePublicCourses } from "@/hooks/use-courses";
 import { SITE_CONTENT } from "@/lib/site-content";
 import { useLang } from "@/i18n/LanguageContext";
 import { useEffect, useRef, useState } from "react";
-import { Logo3D } from "@/components/Logo3D";
+import { Logo3D } from "@/components/Logo3DLazy";
 
 const HERO_SLIDES = [
   `${import.meta.env.BASE_URL}slide-2.webp`,
@@ -106,7 +106,7 @@ export default function Home() {
             variant="hero"
             fallback={
               <img
-                src={`${import.meta.env.BASE_URL}images/logo-iusmk-white.png`}
+                src={`${import.meta.env.BASE_URL}images/logo-iusmk-white.webp`}
                 alt="IUSMK"
                 style={{
                   width: "clamp(300px, 52vw, 600px)",

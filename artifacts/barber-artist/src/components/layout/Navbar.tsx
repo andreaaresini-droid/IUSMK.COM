@@ -9,7 +9,7 @@ import { fetchApiOptional } from "@/lib/api-client";
 import { useOwnedCourseIds } from "@/hooks/use-courses";
 import { useLang } from "@/i18n/LanguageContext";
 import type { Lang } from "@/i18n/translations";
-import { Logo3D } from "@/components/Logo3D";
+import { Logo3D } from "@/components/Logo3DLazy";
 
 function LangToggle({ compact = false }: { compact?: boolean }) {
   const { lang, setLang } = useLang();
@@ -220,7 +220,7 @@ export function Navbar() {
             variant="header"
             fallback={
               <img
-                src={`${import.meta.env.BASE_URL}images/logo-iusmk-2025.png`}
+                src={`${import.meta.env.BASE_URL}images/logo-iusmk-2025.webp`}
                 alt="IUSMK"
                 className="navbar-logo"
                 style={{ filter: "drop-shadow(0 1px 4px rgba(0,0,0,0.6))" }}
